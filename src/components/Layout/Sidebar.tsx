@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Car, 
@@ -15,13 +15,15 @@ import {
   Bell, 
   Settings, 
   Menu,
-  X
+  X,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
-  { title: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { title: "Drivers", icon: Car, path: "/drivers" },
   { title: "Riders", icon: Users, path: "/riders" },
   { title: "Ride Fare", icon: DollarSign, path: "/ride-fare" },
@@ -38,7 +40,24 @@ const menuItems = [
 
 export const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Force redirect even if logout API fails
+      navigate('/login');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <>
@@ -106,20 +125,42 @@ export const Sidebar = () => {
             </ul>
           </nav>
 
-          {/* Footer */}
-          {!collapsed && (
-            <div className="p-4 border-t border-border">
+          {/* Footer with Logout */}
+          <div className="p-4 border-t border-border space-y-2">
+            {!collapsed && (
               <div className="flex items-center space-x-3 p-2 bg-primary-light rounded-lg">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-xs font-medium text-primary-foreground">A</span>
+                  <span className="text-xs font-medium text-primary-foreground">
+                    {user?.name?.charAt(0)?.toUpperCase() || 'A'}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-primary truncate">Admin</p>
-                  <p className="text-xs text-primary/70 truncate">administrator</p>
+                  <p className="text-sm font-medium text-primary truncate">{user?.name || 'Admin'}</p>
+                  <p className="text-xs text-primary/70 truncate">{user?.role || 'administrator'}</p>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className={cn(
+                "w-full",
+                collapsed && "w-10 h-10 p-0"
+              )}
+            >
+              {isLoggingOut ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+              ) : (
+                <>
+                  <LogOut className={cn("w-4 h-4", !collapsed && "mr-2")} />
+                  {!collapsed && "Logout"}
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </aside>
 

@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 interface StatsCardProps {
@@ -10,6 +11,7 @@ interface StatsCardProps {
   changeType?: "positive" | "negative" | "neutral";
   variant?: "blue" | "green" | "orange" | "purple" | "red" | "teal";
   className?: string;
+  isLoading?: boolean;
 }
 
 const variantStyles = {
@@ -28,8 +30,26 @@ export const StatsCard = ({
   change, 
   changeType = "neutral", 
   variant = "blue",
-  className 
+  className,
+  isLoading = false
 }: StatsCardProps) => {
+  if (isLoading) {
+    return (
+      <Card className={cn("shadow-medium", className)}>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-8 w-16" />
+              {change && <Skeleton className="h-3 w-32" />}
+            </div>
+            <Skeleton className="w-12 h-12 rounded-full" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className={cn("shadow-medium hover:shadow-large transition-shadow", className)}>
       <CardContent className="p-6">

@@ -1,73 +1,195 @@
-# Welcome to your Lovable project
+# H-Cab Admin Dashboard v3
 
-## Project info
+A modern, responsive admin dashboard built with React, TypeScript, and Tailwind CSS for the H-Cab ride-sharing platform.
 
-**URL**: https://lovable.dev/projects/2efad583-ebad-4a47-acbe-be3d9fba50d1
+## Features
 
-## How can I edit this code?
+### 🚀 Dashboard Overview
+- **Real-time Stats Cards**: Active trips, online drivers, pending trips, and alerts/panics
+- **Interactive Map Section**: Placeholder for real-time driver and ride tracking
+- **Recent Rides Table**: Last 3 rides with essential information
+- **All Rides Table**: Complete rides list with search and filtering capabilities
 
-There are several ways of editing your application.
+### 🔐 Authentication
+- Bearer token-based authentication
+- Secure token storage in localStorage
+- Protected routes and API calls
+- Login/logout functionality
 
-**Use Lovable**
+### 📊 Data Management
+- React Query integration for efficient data fetching
+- Automatic data refresh intervals
+- Loading states and error handling
+- Search and filter functionality
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2efad583-ebad-4a47-acbe-be3d9fba50d1) and start prompting.
+### 🎨 UI/UX
+- Modern, clean design using shadcn/ui components
+- Responsive layout for all screen sizes
+- Loading skeletons and error states
+- Status indicators with appropriate colors
+- Hover effects and smooth transitions
 
-Changes made via Lovable will be committed automatically to this repo.
+## API Integration
 
-**Use your preferred IDE**
+### Base URL
+```
+https://api.hcab.tech/api/v1/admin
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Endpoints
+- `GET /dashboard/stats` - Dashboard statistics
+- `GET /rides` - All rides data
+- `GET /user/{rider_id}` - User details
+- `GET /ride-option/{ride_option_id}` - Ride option details
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Authentication
+All API requests include the Bearer token in the Authorization header:
+```
+Authorization: Bearer <your-token>
+```
 
-Follow these steps:
+## Getting Started
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Installation
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd hcab-admin-v3
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+2. Install dependencies
+```bash
+npm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Start the development server
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Open your browser and navigate to `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Authentication Setup
+1. Navigate to the root path `/`
+2. Enter your admin bearer token
+3. Click "Sign In" to access the dashboard
+4. You'll be redirected to `/dashboard` upon successful authentication
 
-**Use GitHub Codespaces**
+## Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+├── components/
+│   ├── Auth/
+│   │   └── LoginForm.tsx          # Authentication form
+│   ├── Dashboard/
+│   │   ├── DataTable.tsx          # Enhanced data table with search
+│   │   ├── MapSection.tsx         # Interactive map placeholder
+│   │   └── StatsCard.tsx          # Statistics cards with loading states
+│   ├── Layout/
+│   │   ├── AdminLayout.tsx        # Main layout wrapper
+│   │   └── Sidebar.tsx            # Navigation sidebar with logout
+│   └── ui/                        # shadcn/ui components
+├── contexts/
+│   └── AuthContext.tsx            # Authentication state management
+├── hooks/
+│   └── useDashboard.ts            # React Query hooks for data fetching
+├── lib/
+│   └── api.ts                     # API service layer
+└── pages/
+    ├── Dashboard.tsx              # Main dashboard page
+    └── Index.tsx                  # Landing page with authentication
+```
 
-## What technologies are used for this project?
+## Key Components
 
-This project is built with:
+### StatsCard
+- Displays individual statistics with icons
+- Loading states with skeleton placeholders
+- Dynamic color variants based on data type
+- Change indicators and trend information
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### DataTable
+- Searchable and filterable data tables
+- Loading states with skeleton rows
+- Status badges with appropriate colors
+- Action menus for each row
+- Responsive column handling
 
-## How can I deploy this project?
+### MapSection
+- Interactive map placeholder
+- Real-time statistics display
+- Animated background elements
+- Map control buttons
 
-Simply open [Lovable](https://lovable.dev/projects/2efad583-ebad-4a47-acbe-be3d9fba50d1) and click on Share -> Publish.
+## State Management
 
-## Can I connect a custom domain to my Lovable project?
+### React Query
+- Efficient data fetching and caching
+- Automatic background updates
+- Error handling and retry logic
+- Optimistic updates
 
-Yes, you can!
+### Authentication Context
+- Centralized auth state management
+- Token persistence and cleanup
+- Protected route handling
+- Logout functionality
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Styling
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Tailwind CSS
+- Utility-first CSS framework
+- Custom color schemes and gradients
+- Responsive design utilities
+- Dark mode support (configurable)
+
+### shadcn/ui
+- Pre-built, accessible components
+- Consistent design system
+- Customizable component variants
+- TypeScript support
+
+## Development
+
+### Available Scripts
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+### Code Quality
+- TypeScript for type safety
+- ESLint for code linting
+- Prettier for code formatting
+- Husky for git hooks (if configured)
+
+## Deployment
+
+### Build
+```bash
+npm run build
+```
+
+### Production
+The built files will be in the `dist/` directory, ready for deployment to any static hosting service.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support or questions, please contact the development team or create an issue in the repository.
