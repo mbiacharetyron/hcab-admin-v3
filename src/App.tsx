@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Drivers from "./pages/Drivers";
 import Riders from "./pages/Riders";
 import UserDetails from "./pages/UserDetails";
+import RideOptions from "./pages/RideOptions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -54,6 +55,11 @@ const App = () => (
             <Route path="/user/:userId" element={
               <ProtectedRoute>
                 <UserDetails />
+              </ProtectedRoute>
+            } />
+            <Route path="/ride-options" element={
+              <ProtectedRoute>
+                <RideOptions />
               </ProtectedRoute>
             } />
             

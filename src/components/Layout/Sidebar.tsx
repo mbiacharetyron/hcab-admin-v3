@@ -16,7 +16,8 @@ import {
   Settings, 
   Menu,
   X,
-  LogOut
+  LogOut,
+  Settings2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { title: "Drivers", icon: Car, path: "/drivers" },
+  { title: "Ride Options", icon: Settings2, path: "/ride-options" },
   { title: "Riders", icon: Users, path: "/riders" },
   { title: "Ride Fare", icon: DollarSign, path: "/ride-fare" },
   { title: "Support Messages", icon: MessageSquare, path: "/support" },

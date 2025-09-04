@@ -210,6 +210,71 @@ export interface UserDetailsResponse {
   code: number;
 }
 
+export interface RideClass {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export interface RideOption {
+  id: number;
+  name: string;
+  ride_class_id: number;
+  base_price: number;
+  price_per_km: number;
+  seat_capacity: number;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  ride_class?: RideClass;
+  is_assigned?: boolean;
+}
+
+export interface RideOptionsResponse {
+  success: boolean;
+  message: string;
+  data: RideOption[];
+}
+
+export interface RideOptionResponse {
+  success: boolean;
+  message: string;
+  data: RideOption;
+}
+
+export interface DriverAssignmentRequest {
+  ride_option_id: number;
+  driver_id: number;
+}
+
+export interface DriverAssignmentResponse {
+  success: boolean;
+  message: string;
+  data: null;
+}
+
+export interface DriverRide {
+  id: number;
+  booking_id: number;
+  rider_id: number;
+  driver_id: number;
+  pickup_location: string;
+  dropoff_location: string;
+  status: string;
+  fare: number;
+  duration: number;
+  started_at: string;
+  completed_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DriverRidesResponse {
+  success: boolean;
+  message: string;
+  data: DriverRide[];
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -478,6 +543,159 @@ class ApiService {
     }
   }
 
+  // Ride Options Management
+  async getRideOptions(lang?: string): Promise<RideOptionsResponse> {
+    try {
+      const endpoint = `/admin/ride-option${lang ? `?lang=${lang}` : ''}`;
+      console.log('API: Fetching ride options from:', `${this.baseURL}${endpoint}`);
+      const result = await this.request<RideOptionsResponse>(endpoint);
+      console.log('API: Ride options response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Ride options fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getRideOption(id: number, lang?: string): Promise<RideOptionResponse> {
+    try {
+      const endpoint = `/admin/ride-option/${id}${lang ? `?lang=${lang}` : ''}`;
+      console.log('API: Fetching ride option from:', `${this.baseURL}${endpoint}`);
+      const result = await this.request<RideOptionResponse>(endpoint);
+      console.log('API: Ride option response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Ride option fetch error:', error);
+      throw error;
+    }
+  }
+
+  async createRideOption(data: {
+    name: string;
+    ride_class_id: number;
+    base_price: number;
+    price_per_km: number;
+    seat_capacity: number;
+    description?: string;
+    lang?: string;
+  }): Promise<RideOptionResponse> {
+    try {
+      console.log('API: Creating ride option:', data);
+      const result = await this.request<RideOptionResponse>('/admin/ride-option', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      console.log('API: Ride option created:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Ride option creation error:', error);
+      throw error;
+    }
+  }
+
+  async updateRideOption(id: number, data: {
+    name: string;
+    ride_class_id: number;
+    base_price: number;
+    price_per_km: number;
+    seat_capacity: number;
+    description?: string;
+    lang?: string;
+  }): Promise<RideOptionResponse> {
+    try {
+      console.log('API: Updating ride option:', id, data);
+      const result = await this.request<RideOptionResponse>(`/admin/ride-option/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+      console.log('API: Ride option updated:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Ride option update error:', error);
+      throw error;
+    }
+  }
+
+  async deleteRideOption(id: number, lang?: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const endpoint = `/admin/ride-option/${id}${lang ? `?lang=${lang}` : ''}`;
+      console.log('API: Deleting ride option:', `${this.baseURL}${endpoint}`);
+      const result = await this.request<{ success: boolean; message: string }>(endpoint, {
+        method: 'DELETE',
+      });
+      console.log('API: Ride option deleted:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Ride option deletion error:', error);
+      throw error;
+    }
+  }
+
+  // Driver Assignment Management
+  async assignDriverToRideOption(data: DriverAssignmentRequest): Promise<DriverAssignmentResponse> {
+    try {
+      console.log('API: Assigning driver to ride option:', data);
+      const result = await this.request<DriverAssignmentResponse>('/admin/ride-option/assign-driver', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      console.log('API: Driver assigned:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Driver assignment error:', error);
+      throw error;
+    }
+  }
+
+  async unassignDriverFromRideOption(data: DriverAssignmentRequest): Promise<DriverAssignmentResponse> {
+    try {
+      console.log('API: Unassigning driver from ride option:', data);
+      const result = await this.request<DriverAssignmentResponse>('/admin/ride-option/unassign-driver', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      console.log('API: Driver unassigned:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Driver unassignment error:', error);
+      throw error;
+    }
+  }
+
+  async getDriverRideOptions(driverId: number): Promise<RideOptionsResponse> {
+    try {
+      console.log('API: Fetching driver ride options for driver:', driverId);
+      const result = await this.request<RideOptionsResponse>(`/admin/ride-options/driver/${driverId}`);
+      console.log('API: Driver ride options response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Driver ride options fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getDriverRides(driverId: number, params?: {
+    status?: 'ongoing' | 'completed';
+    start_date?: string;
+    end_date?: string;
+  }): Promise<DriverRidesResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+
+      const endpoint = `/admin/driver/${driverId}/rides${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      console.log('API: Fetching driver rides from:', `${this.baseURL}${endpoint}`);
+      const result = await this.request<DriverRidesResponse>(endpoint);
+      console.log('API: Driver rides response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Driver rides fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -514,3 +732,14 @@ export const getUserDetails = (userId: number) => apiService.getUserDetails(user
 export const getRideOptionDetails = (rideOptionId: number) => apiService.getRideOptionDetails(rideOptionId);
 export const getDrivers = (params?: Parameters<typeof apiService.getDrivers>[0]) => apiService.getDrivers(params);
 export const getOnlineDriverCoordinates = () => apiService.getOnlineDriverCoordinates();
+
+// Ride Options API exports
+export const getRideOptions = (lang?: string) => apiService.getRideOptions(lang);
+export const getRideOption = (id: number, lang?: string) => apiService.getRideOption(id, lang);
+export const createRideOption = (data: Parameters<typeof apiService.createRideOption>[0]) => apiService.createRideOption(data);
+export const updateRideOption = (id: number, data: Parameters<typeof apiService.updateRideOption>[1]) => apiService.updateRideOption(id, data);
+export const deleteRideOption = (id: number, lang?: string) => apiService.deleteRideOption(id, lang);
+export const assignDriverToRideOption = (data: DriverAssignmentRequest) => apiService.assignDriverToRideOption(data);
+export const unassignDriverFromRideOption = (data: DriverAssignmentRequest) => apiService.unassignDriverFromRideOption(data);
+export const getDriverRideOptions = (driverId: number) => apiService.getDriverRideOptions(driverId);
+export const getDriverRides = (driverId: number, params?: Parameters<typeof apiService.getDriverRides>[1]) => apiService.getDriverRides(driverId, params);
