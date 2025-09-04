@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Car, Users, UserCheck, UserX, Plus, Search, Filter, AlertTriangle, RefreshCw } from "lucide-react";
 import { useEnhancedDrivers } from "@/hooks/useDrivers";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 const driversColumns: DataTableColumn[] = [
@@ -18,10 +19,13 @@ const driversColumns: DataTableColumn[] = [
   { key: "username", title: "USERNAME", width: "120px" },
   { key: "is_online", title: "ONLINE", width: "100px" },
   { key: "is_validated", title: "VALIDATED", width: "120px" },
-  { key: "created_at", title: "DATE CREATED", width: "120px" }
+  { key: "created_at", title: "DATE CREATED", width: "120px" },
+  { key: "actions", title: "ACTIONS", width: "120px" }
 ];
 
 const Drivers = () => {
+  const navigate = useNavigate();
+  
   // State for filters
   const [search, setSearch] = useState('');
   const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline' | 'all'>('all');
@@ -44,7 +48,16 @@ const Drivers = () => {
     ...driver,
     is_online: driver.is_online ? 'Online' : 'Offline',
     is_validated: driver.is_validated ? 'Validated' : 'Not Validated',
-    created_at: new Date(driver.created_at).toLocaleDateString()
+    created_at: new Date(driver.created_at).toLocaleDateString(),
+    actions: (
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={() => navigate(`/user/${driver.id}`)}
+      >
+        View Details
+      </Button>
+    )
   }));
 
   const handleResetFilters = () => {

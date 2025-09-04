@@ -29,7 +29,7 @@ export interface Ride {
   ride_type: string;
   total_seats?: number;
   available_seats?: number;
-  route_data?: any;
+  route_data?: Record<string, unknown>;
   waiting_until?: string;
   is_shared_ride: boolean;
   shared_ride_price?: string;
@@ -115,6 +115,101 @@ export interface OnlineDriverCoordinates {
   longitude: number;
 }
 
+export interface CarDetails {
+  id: number;
+  user_id: number;
+  car_brand: string;
+  car_brand_model: string;
+  model_year: string;
+  car_color: string;
+  license_plate: string;
+  seat_number: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BankDetails {
+  id: number;
+  user_id: number;
+  bank_name: string;
+  account_number: number;
+  ifsc_code: string;
+  beneficiary_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DriverDocuments {
+  id: number;
+  user_id: number;
+  license_number: string;
+  license_front_side: string;
+  license_back_side: string;
+  expiry_date: string;
+  insurance_number: string;
+  insurance_expiry_date: string;
+  insurance_image: string;
+  car_registration: string | null;
+  car_registration_expiry_date: string;
+  car_registration_photo: string;
+  car_inspection_date: string;
+  car_inspection_photo: string;
+  id_document_type: string;
+  id_document_number: string;
+  id_document_front: string;
+  id_document_back: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DetailedUser {
+  id: number;
+  name: string;
+  email: string;
+  username: string;
+  phone: string;
+  role: string;
+  cab_mode: string | null;
+  in_drive: boolean;
+  image: string;
+  is_active: boolean;
+  otp_verified: boolean;
+  bank_submitted: boolean;
+  car_submitted: boolean;
+  doc_submitted: boolean;
+  car_photos_submitted: boolean;
+  id_document_submitted: boolean;
+  license_submitted: boolean;
+  insurance_submitted: boolean;
+  registration_submitted: boolean;
+  car_inspection_submitted: boolean;
+  is_online: boolean;
+  is_validated: boolean;
+  last_login_at: string;
+  has_active_passcode: boolean;
+  passcode_activated_at: string | null;
+  passcode_last_used_at: string | null;
+  passcode_attempts: number;
+  passcode_locked_until: string | null;
+  created_at: string;
+  updated_at: string;
+  latitude: string;
+  longitude: string;
+  deleted_at: string | null;
+  referral_code: string;
+  referred_by: string | null;
+  language: string;
+  car_details: CarDetails;
+  bank_details: BankDetails;
+  driver_documents: DriverDocuments;
+}
+
+export interface UserDetailsResponse {
+  message: string;
+  data: DetailedUser;
+  code: number;
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -148,10 +243,10 @@ class ApiService {
     if (endpoint.startsWith('/auth/')) {
       const url = `${this.baseURL}${endpoint}`;
       
-      const headers: HeadersInit = {
+      const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        ...options.headers,
+        ...(options.headers as Record<string, string>),
       };
 
       if (this.token) {
@@ -207,10 +302,10 @@ class ApiService {
 
     const url = `${this.baseURL}${endpoint}`;
     
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (this.token) {
@@ -285,7 +380,7 @@ class ApiService {
         // '/admin/stats'
       ];
       
-      let lastError: any;
+      let lastError: Error;
       
       for (const endpoint of endpoints) {
         try {
@@ -309,10 +404,10 @@ class ApiService {
   }
 
   // All Rides
-  async getAllRides(): Promise<{ data: Ride[]; meta: any }> {
+  async getAllRides(): Promise<{ data: Ride[]; meta: Record<string, unknown> }> {
     try {
       console.log('API: Fetching rides from:', `${this.baseURL}/admin/rides`);
-      const result = await this.request<{ data: Ride[]; meta: any }>('/admin/rides');
+      const result = await this.request<{ data: Ride[]; meta: Record<string, unknown> }>('/admin/rides');
       console.log('API: Rides response:', result);
       return result;
     } catch (error) {
@@ -322,8 +417,16 @@ class ApiService {
   }
 
   // User Details
-  async getUserDetails(userId: number): Promise<User> {
-    return this.request<User>(`/user/${userId}`);
+  async getUserDetails(userId: number): Promise<UserDetailsResponse> {
+    try {
+      console.log('API: Fetching user details from:', `${this.baseURL}/admin/user/${userId}`);
+      const result = await this.request<UserDetailsResponse>(`/admin/user/${userId}`);
+      console.log('API: User details response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: User details fetch error:', error);
+      throw error;
+    }
   }
 
   // Ride Option Details
@@ -350,7 +453,7 @@ class ApiService {
       if (params?.limit) queryParams.append('limit', params.limit.toString());
       if (params?.lang) queryParams.append('lang', params.lang);
 
-      const endpoint = `/drivers${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const endpoint = `/admin/drivers${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
       console.log('API: Fetching drivers from:', `${this.baseURL}${endpoint}`);
       
       const result = await this.request<DriversResponse>(endpoint);
@@ -365,8 +468,8 @@ class ApiService {
   // Get Online Driver Coordinates
   async getOnlineDriverCoordinates(): Promise<{ success: boolean; message: string; data: OnlineDriverCoordinates[] }> {
     try {
-      console.log('API: Fetching online driver coordinates from:', `${this.baseURL}/drivers/online-coordinates`);
-      const result = await this.request<{ success: boolean; message: string; data: OnlineDriverCoordinates[] }>('/drivers/online-coordinates');
+      console.log('API: Fetching online driver coordinates from:', `${this.baseURL}/admin/drivers/online-coordinates`);
+      const result = await this.request<{ success: boolean; message: string; data: OnlineDriverCoordinates[] }>('/admin/drivers/online-coordinates');
       console.log('API: Online driver coordinates response:', result);
       return result;
     } catch (error) {
