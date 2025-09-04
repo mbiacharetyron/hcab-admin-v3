@@ -80,6 +80,41 @@ export interface RideOption {
   updated_at: string;
 }
 
+export interface Driver {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  username: string;
+  is_online: boolean;
+  is_validated: boolean;
+  created_at: string;
+}
+
+export interface DriversResponse {
+  message: string;
+  statistics: {
+    total_drivers: number;
+    online_drivers: number;
+    offline_drivers: number;
+    validated_drivers: number;
+  };
+  drivers: Driver[];
+  pagination: {
+    current_page: number;
+    total_items: number;
+    total_pages: number;
+    limit: number;
+  };
+}
+
+export interface OnlineDriverCoordinates {
+  id: number;
+  username: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -296,6 +331,50 @@ class ApiService {
     return this.request<RideOption>(`/ride-option/${rideOptionId}`);
   }
 
+  // Drivers Management
+  async getDrivers(params?: {
+    search?: string;
+    online_status?: 'online' | 'offline' | 'all';
+    validated?: 'validated' | 'invalidated' | 'all';
+    page?: number;
+    limit?: number;
+    lang?: string;
+  }): Promise<DriversResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.online_status) queryParams.append('online_status', params.online_status);
+      if (params?.validated) queryParams.append('validated', params.validated);
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const endpoint = `/drivers${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      console.log('API: Fetching drivers from:', `${this.baseURL}${endpoint}`);
+      
+      const result = await this.request<DriversResponse>(endpoint);
+      console.log('API: Drivers response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Drivers fetch error:', error);
+      throw error;
+    }
+  }
+
+  // Get Online Driver Coordinates
+  async getOnlineDriverCoordinates(): Promise<{ success: boolean; message: string; data: OnlineDriverCoordinates[] }> {
+    try {
+      console.log('API: Fetching online driver coordinates from:', `${this.baseURL}/drivers/online-coordinates`);
+      const result = await this.request<{ success: boolean; message: string; data: OnlineDriverCoordinates[] }>('/drivers/online-coordinates');
+      console.log('API: Online driver coordinates response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Online driver coordinates fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -330,3 +409,5 @@ export const getDashboardStats = () => apiService.getDashboardStats();
 export const getAllRides = () => apiService.getAllRides();
 export const getUserDetails = (userId: number) => apiService.getUserDetails(userId);
 export const getRideOptionDetails = (rideOptionId: number) => apiService.getRideOptionDetails(rideOptionId);
+export const getDrivers = (params?: Parameters<typeof apiService.getDrivers>[0]) => apiService.getDrivers(params);
+export const getOnlineDriverCoordinates = () => apiService.getOnlineDriverCoordinates();

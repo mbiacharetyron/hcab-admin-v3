@@ -4,51 +4,11 @@ import { StatsCard } from "@/components/Dashboard/StatsCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Car, Users, UserCheck, UserX, Plus, Search, Filter } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Car, Users, UserCheck, UserX, Plus, Search, Filter, AlertTriangle, RefreshCw } from "lucide-react";
+import { useEnhancedDrivers } from "@/hooks/useDrivers";
+import { useState } from "react";
 
-// Sample drivers data
-const driversData = [
-  {
-    id: "252",
-    name: "Garth Tonye Biaga Fog",
-    email: "du4life@hotmail.fr", 
-    phone: "+237693890763",
-    username: "Tony",
-    online: "Offline",
-    validated: "Not Validated",
-    dateCreated: "2025-09-02"
-  },
-  {
-    id: "250",
-    name: "nana Kesha",
-    email: "ketchalbin@gmail.com",
-    phone: "+237651375754", 
-    username: "Kesha auto",
-    online: "Offline",
-    validated: "Not Validated", 
-    dateCreated: "2025-08-26"
-  },
-  {
-    id: "243",
-    name: "Ndounmen Lucien William",
-    email: "ndounmen@gmail.com",
-    phone: "+237676222967",
-    username: "Lucien", 
-    online: "Offline",
-    validated: "Not Validated",
-    dateCreated: "2025-08-19"
-  },
-  {
-    id: "223",
-    name: "Chenwi",
-    email: "chenwieddy@gmail.com", 
-    phone: "+237679611727",
-    username: "edna",
-    online: "Offline",
-    validated: "Validated",
-    dateCreated: "2025-07-17"
-  }
-];
 
 const driversColumns: DataTableColumn[] = [
   { key: "id", title: "ID", width: "60px" },
@@ -56,16 +16,43 @@ const driversColumns: DataTableColumn[] = [
   { key: "email", title: "EMAIL", width: "220px" }, 
   { key: "phone", title: "PHONE", width: "140px" },
   { key: "username", title: "USERNAME", width: "120px" },
-  { key: "online", title: "ONLINE", width: "100px" },
-  { key: "validated", title: "VALIDATED", width: "120px" },
-  { key: "dateCreated", title: "DATE CREATED", width: "120px" }
+  { key: "is_online", title: "ONLINE", width: "100px" },
+  { key: "is_validated", title: "VALIDATED", width: "120px" },
+  { key: "created_at", title: "DATE CREATED", width: "120px" }
 ];
 
 const Drivers = () => {
-  const totalDrivers = driversData.length;
-  const onlineDrivers = driversData.filter(d => d.online === "Online").length;
-  const validatedDrivers = driversData.filter(d => d.validated === "Validated").length;
-  const offlineDrivers = totalDrivers - onlineDrivers;
+  // State for filters
+  const [search, setSearch] = useState('');
+  const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline' | 'all'>('all');
+  const [validated, setValidated] = useState<'validated' | 'invalidated' | 'all'>('all');
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+
+  // API call with filters
+  const { drivers, statistics, pagination, isLoading, error, refetch } = useEnhancedDrivers({
+    search: search || undefined,
+    online_status: onlineStatus,
+    validated: validated,
+    page,
+    limit,
+    lang: 'en'
+  });
+
+  // Transform drivers data for table display
+  const transformedDrivers = drivers.map(driver => ({
+    ...driver,
+    is_online: driver.is_online ? 'Online' : 'Offline',
+    is_validated: driver.is_validated ? 'Validated' : 'Not Validated',
+    created_at: new Date(driver.created_at).toLocaleDateString()
+  }));
+
+  const handleResetFilters = () => {
+    setSearch('');
+    setOnlineStatus('all');
+    setValidated('all');
+    setPage(1);
+  };
 
   return (
     <AdminLayout>
@@ -76,39 +63,75 @@ const Drivers = () => {
             <h1 className="text-2xl font-bold text-foreground">All Drivers</h1>
             <p className="text-muted-foreground">Manage and monitor all registered drivers</p>
           </div>
-          <Button className="w-fit">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Driver
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => refetch()}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+            <Button className="w-fit">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Driver
+            </Button>
+          </div>
         </div>
 
+        {/* Error State */}
+        {error && (
+          <Card className="border-destructive/50 bg-destructive/5">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3">
+                <AlertTriangle className="w-6 h-6 text-destructive" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-destructive">Failed to Load Drivers</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {error.message || "Unable to load drivers data"}
+                  </p>
+                </div>
+                <Button 
+                  size="sm" 
+                  onClick={() => refetch()}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Retry
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard
-            title="Total Drivers"
-            value={totalDrivers}
-            icon={<Users className="w-5 h-5" />}
-            variant="blue"
-          />
-          <StatsCard
-            title="Online Drivers" 
-            value={onlineDrivers}
-            icon={<UserCheck className="w-5 h-5" />}
-            variant="green"
-          />
-          <StatsCard
-            title="Offline Drivers"
-            value={offlineDrivers} 
-            icon={<UserX className="w-5 h-5" />}
-            variant="orange"
-          />
-          <StatsCard
-            title="Validated Drivers"
-            value={validatedDrivers}
-            icon={<Car className="w-5 h-5" />}
-            variant="purple"
-          />
-        </div>
+        {statistics && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatsCard
+              title="Total Drivers"
+              value={statistics.total_drivers}
+              icon={<Users className="w-5 h-5" />}
+              variant="blue"
+              isLoading={isLoading}
+            />
+            <StatsCard
+              title="Online Drivers" 
+              value={statistics.online_drivers}
+              icon={<UserCheck className="w-5 h-5" />}
+              variant="green"
+              isLoading={isLoading}
+            />
+            <StatsCard
+              title="Offline Drivers"
+              value={statistics.offline_drivers} 
+              icon={<UserX className="w-5 h-5" />}
+              variant="orange"
+              isLoading={isLoading}
+            />
+            <StatsCard
+              title="Validated Drivers"
+              value={statistics.validated_drivers}
+              icon={<Car className="w-5 h-5" />}
+              variant="purple"
+              isLoading={isLoading}
+            />
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 p-4 bg-card rounded-lg border border-border">
@@ -120,10 +143,15 @@ const Drivers = () => {
           <div className="flex flex-1 gap-4">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Search drivers..." className="pl-9" />
+              <Input 
+                placeholder="Search drivers..." 
+                className="pl-9" 
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
             
-            <Select>
+            <Select value={onlineStatus} onValueChange={(value: 'online' | 'offline' | 'all') => setOnlineStatus(value)}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Online Status" />
               </SelectTrigger>
@@ -134,18 +162,18 @@ const Drivers = () => {
               </SelectContent>
             </Select>
 
-            <Select>
+            <Select value={validated} onValueChange={(value: 'validated' | 'invalidated' | 'all') => setValidated(value)}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Validated" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="validated">Validated</SelectItem>
-                <SelectItem value="not-validated">Not Validated</SelectItem>
+                <SelectItem value="invalidated">Not Validated</SelectItem>
               </SelectContent>
             </Select>
 
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleResetFilters}>
               Reset Filter
             </Button>
           </div>
@@ -153,10 +181,20 @@ const Drivers = () => {
 
         {/* Drivers Table */}
         <DataTable
-          title={`Drivers (${totalDrivers})`}
+          title={`Drivers ${pagination ? `(${pagination.total_items})` : ''}`}
           columns={driversColumns}
-          data={driversData}
+          data={transformedDrivers}
+          isLoading={isLoading}
+          searchable={false} // We handle search via filters
         />
+
+        {/* Pagination Info */}
+        {pagination && (
+          <div className="text-sm text-muted-foreground text-center">
+            Showing {drivers.length} of {pagination.total_items} drivers
+            <span> • Page {pagination.current_page} of {pagination.total_pages}</span>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
