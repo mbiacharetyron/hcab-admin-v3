@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthService } from '@/lib/services/AuthService';
 import { TokenStorage } from '@/lib/utils/TokenStorage';
+import { apiService } from '@/lib/api';
 import { AuthContextType, AuthState, LoginCredentials, User } from '@/lib/types/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +22,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, setState] = useState<AuthState>(() => {
     const token = TokenStorage.getToken();
     const user = TokenStorage.getUser();
+    
+    // Ensure API service has the current token
+    if (token) {
+      apiService.setToken(token);
+    }
     
     return {
       user,
@@ -95,6 +101,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         TokenStorage.saveUser(user);
         console.log('AuthContext: Token and user saved to storage');
         
+        // Update API service with the new token
+        apiService.setToken(token);
+        console.log('AuthContext: Token set in API service');
+        
         // Update state
         setState({
           user,
@@ -123,6 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       // Clear storage and state regardless of API call success
       TokenStorage.clearAll();
+      apiService.clearToken();
       setState({
         user: null,
         token: null,

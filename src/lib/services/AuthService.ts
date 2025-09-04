@@ -54,6 +54,7 @@ export class AuthService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: JSON.stringify(credentials),
     });
@@ -82,6 +83,7 @@ export class AuthService {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
     });
 
@@ -105,13 +107,15 @@ export class AuthService {
       }
     }
 
-    // Real API call to backend
-    const response = await fetch(`${API_BASE_URL_1}/auth/verify`, {
-      method: 'GET',
+    // Real API call to backend - using correct endpoint and method from documentation
+    const response = await fetch(`${API_BASE_URL_1}/auth/verify-token`, {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      body: JSON.stringify({ lang: 'en' }),
     });
 
     if (!response.ok) {
@@ -119,8 +123,14 @@ export class AuthService {
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
 
-    const data: VerifyTokenResponse = await response.json();
-    return data.data.user;
+    const data = await response.json();
+    
+    // Handle the correct response structure from documentation
+    if (data.success && data.data.valid) {
+      return data.data.user;
+    } else {
+      throw new Error(data.message || 'Token is invalid or expired');
+    }
   }
 
   // Helper method to check if in demo mode

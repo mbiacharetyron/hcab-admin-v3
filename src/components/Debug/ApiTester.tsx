@@ -6,7 +6,7 @@ export const ApiTester = () => {
   const [results, setResults] = useState<any>({});
   const [loading, setLoading] = useState<string | null>(null);
 
-  const testEndpoint = async (endpoint: string, name: string) => {
+  const testEndpoint = async (endpoint: string, name: string, method: string = 'GET') => {
     setLoading(name);
     try {
       const token = localStorage.getItem('hcab_admin_token');
@@ -19,10 +19,17 @@ export const ApiTester = () => {
         headers.Authorization = `Bearer ${token}`;
       }
 
-      const response = await fetch(`https://api.hcab.tech/api/v1${endpoint}`, {
-        method: 'GET',
+      const requestOptions: RequestInit = {
+        method,
         headers,
-      });
+      };
+
+      // Add body for POST requests (like auth verify)
+      if (method === 'POST' && endpoint === '/auth/verify-token') {
+        requestOptions.body = JSON.stringify({ lang: 'en' });
+      }
+
+      const response = await fetch(`https://api.hcab.tech/api/v1${endpoint}`, requestOptions);
 
       const data = await response.json();
       
@@ -50,7 +57,7 @@ export const ApiTester = () => {
 
   const endpoints = [
     { path: '/admin/dashboard/stats', name: 'Dashboard Stats' },
-    { path: '/auth/verify', name: 'Auth Verify' },
+    { path: '/auth/verify-token', name: 'Auth Verify', method: 'POST' },
     { path: '/admin/dashboard/stats', name: 'Dashboard Stats (No Auth)' },
   ];
 
@@ -60,11 +67,11 @@ export const ApiTester = () => {
         <CardTitle className="text-sm">API Endpoint Tester</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {endpoints.map(({ path, name }) => (
+        {endpoints.map(({ path, name, method = 'GET' }) => (
           <div key={name} className="space-y-1">
             <Button
               size="sm"
-              onClick={() => testEndpoint(path, name)}
+              onClick={() => testEndpoint(path, name, method)}
               disabled={loading === name}
               className="w-full text-xs"
             >

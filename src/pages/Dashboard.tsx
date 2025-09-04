@@ -3,8 +3,6 @@ import { StatsCard } from "@/components/Dashboard/StatsCard";
 import { DataTable, DataTableColumn } from "@/components/Dashboard/DataTable";
 import { MapSection } from "@/components/Dashboard/MapSection";
 import { ApiStatus } from "@/components/Dashboard/ApiStatus";
-import { AuthDebug } from "@/components/Debug/AuthDebug";
-import { ApiTester } from "@/components/Debug/ApiTester";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -21,25 +19,12 @@ import { useDashboardStats, useEnhancedRides } from "@/hooks/useDashboard";
 import { formatDistanceToNow } from "date-fns";
 
 const Dashboard = () => {
-  console.log('Dashboard: Component rendering started');
-  
 
     const { data: statsResponse, isLoading: statsLoading, error: statsError, refetch: refetchStats } = useDashboardStats();
     const { rides, meta, isLoading: ridesLoading, error: ridesError, refetch } = useEnhancedRides();
 
-    console.log('Dashboard: Hooks loaded successfully', {
-      statsResponse,
-      statsLoading,
-      statsError,
-      rides,
-      ridesLoading,
-      ridesError
-    });
-
     // Extract stats data from the response
     const stats = statsResponse?.data;
-    console.log('Dashboard: Extracted stats data:', stats);
-    console.log('Dashboard: Full stats response:', statsResponse);
 
     // Fallback demo data if API fails
     const fallbackStats = {
@@ -52,11 +37,8 @@ const Dashboard = () => {
     // Use fallback data if API fails
     const displayStats = stats || fallbackStats;
     
-    console.log('Dashboard: Will use displayStats:', displayStats);
-    
     // Ensure displayStats is always defined
     if (!displayStats) {
-      console.error('Dashboard: displayStats is undefined, using fallback');
       return (
         <AdminLayout>
           <div className="min-h-screen flex items-center justify-center">
@@ -116,16 +98,6 @@ const Dashboard = () => {
     }
   ];
 
-  // Add debug logging for API responses
-  if (import.meta.env.DEV) {
-    console.log('Dashboard Debug Info:', {
-      stats,
-      statsError,
-      statsLoading,
-      displayStats,
-      fallbackMode: !stats && !statsLoading
-    });
-  }
 
   // Get recent rides (last 3)
   const recentRides = rides?.slice(0, 3) || [];
@@ -153,57 +125,31 @@ const Dashboard = () => {
 
   // Individual section error handling - don't crash the entire dashboard
   const hasCriticalError = false; // We'll handle errors per section instead
-
-    console.log('Dashboard: Preparing to render JSX');
     
     // Add a simple loading check
     if (statsLoading && ridesLoading) {
-      console.log('Dashboard: Both hooks are loading');
-      return (
-        <AdminLayout>
+    return (
+      <AdminLayout>
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
               <p className="text-gray-600">Loading dashboard...</p>
               <p className="text-sm text-gray-500 mt-2">Stats: {statsLoading ? 'Loading' : 'Loaded'}, Rides: {ridesLoading ? 'Loading' : 'Loaded'}</p>
             </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  return (
+    <AdminLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground">Welcome to H-Cab Admin Dashboard</p>
           </div>
-        </AdminLayout>
-      );
-    }
-    
-    return (
-      <AdminLayout>
-        <div className="space-y-6">
-          {/* Simple Test Header */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h1 className="text-2xl font-bold text-blue-900">Dashboard Test</h1>
-            <p className="text-blue-700">If you can see this, the dashboard is rendering!</p>
-            <div className="mt-2 text-sm text-blue-600">
-              <div>Stats Loading: {String(statsLoading)}</div>
-              <div>Rides Loading: {String(ridesLoading)}</div>
-              <div>Stats Error: {statsError ? 'Yes' : 'No'}</div>
-              <div>Rides Error: {ridesError ? 'Yes' : 'No'}</div>
-              <div>Stats Response: {statsResponse ? 'Received' : 'None'}</div>
-              <div>Extracted Stats: {stats ? 'Yes' : 'No'}</div>
-              <div>Display Stats: {displayStats ? 'Yes' : 'No'}</div>
-              {stats && (
-                <div className="mt-2 p-2 bg-blue-100 rounded text-xs">
-                  <div>ongoing_trips: {stats.ongoing_trips}</div>
-                  <div>online_drivers: {stats.online_drivers}</div>
-                  <div>pending_trips: {stats.pending_trips}</div>
-                  <div>panics: {stats.panics}</div>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-              <p className="text-muted-foreground">Welcome to H-Cab Admin Dashboard</p>
-            </div>
             <div className="flex items-center space-x-4">
               <ApiStatus 
                 isConnected={!!stats && !statsError}
@@ -223,11 +169,11 @@ const Dashboard = () => {
                 <RefreshCw className="w-4 h-4" />
                 <span>Refresh</span>
               </button>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date().toLocaleDateString()}</span>
-              </div>
-            </div>
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Calendar className="w-4 h-4" />
+            <span>{new Date().toLocaleDateString()}</span>
+          </div>
+        </div>
           </div>
 
         {/* Dashboard Status Summary */}
@@ -281,7 +227,7 @@ const Dashboard = () => {
           ) : (
             // Show stats cards normally
             statsData.map((stat, index) => (
-              <StatsCard key={index} {...stat} />
+            <StatsCard key={index} {...stat} />
             ))
           )}
         </div>
@@ -310,7 +256,7 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-                          <MapSection 
+            <MapSection 
               onlineDrivers={displayStats?.online_drivers || 0}
               activeTrips={displayStats?.ongoing_trips || 0}
             />
@@ -342,14 +288,14 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-              <DataTable 
-                title="Recent Rides"
-                columns={recentRideColumns}
-                data={recentRides}
-                className="h-fit"
-                isLoading={ridesLoading}
-                actions={false}
-              />
+            <DataTable 
+              title="Recent Rides"
+              columns={recentRideColumns}
+              data={recentRides}
+              className="h-fit"
+              isLoading={ridesLoading}
+              actions={false}
+            />
             )}
           </div>
         </div>
@@ -378,15 +324,15 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         ) : (
-          <DataTable 
-            title="All Rides"
-            columns={rideColumns}
-            data={rides || []}
-            isLoading={ridesLoading}
-            searchable={true}
-            onRefresh={refetch}
-            searchPlaceholder="Search rides..."
-          />
+        <DataTable 
+          title="All Rides"
+          columns={rideColumns}
+          data={rides || []}
+          isLoading={ridesLoading}
+          searchable={true}
+          onRefresh={refetch}
+          searchPlaceholder="Search rides..."
+        />
         )}
         
         {/* Pagination Info */}
@@ -400,11 +346,8 @@ const Dashboard = () => {
         )}
       </div>
       
-      {/* Debug Component - Remove in production */}
-      {import.meta.env.DEV && <AuthDebug />}
-      {import.meta.env.DEV && <ApiTester />}
-      </AdminLayout>
-    );
+    </AdminLayout>
+  );
 };
 
 export default Dashboard;
