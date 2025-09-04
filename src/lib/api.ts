@@ -275,6 +275,39 @@ export interface DriverRidesResponse {
   data: DriverRide[];
 }
 
+export interface Rider {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  username: string;
+  role: string;
+  is_online: boolean;
+  is_validated: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RidersResponse {
+  success: boolean;
+  message: string;
+  data: Rider[];
+  statistics: {
+    total_riders: number;
+    online_riders: number;
+    offline_riders: number;
+    validated_riders: number;
+    active_riders: number;
+  };
+  pagination: {
+    current_page: number;
+    total_items: number;
+    total_pages: number;
+    limit: number;
+  };
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -696,6 +729,47 @@ class ApiService {
     }
   }
 
+  // Riders Management
+  async getRiders(params?: {
+    search?: string;
+    is_validated?: 'validated' | 'invalidated' | 'all';
+    is_active?: 'active' | 'inactive' | 'all';
+    start_date?: string;
+    end_date?: string;
+    page?: number;
+    limit?: number;
+    lang?: string;
+  }): Promise<RidersResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.is_validated && params.is_validated !== 'all') queryParams.append('is_validated', params.is_validated);
+      if (params?.is_active && params.is_active !== 'all') queryParams.append('is_active', params.is_active);
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const endpoint = `/admin/riders${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      console.log('API: Fetching riders from:', `${this.baseURL}${endpoint}`);
+      const result = await this.request<RidersResponse>(endpoint);
+      console.log('API: Riders response:', result);
+      console.log('API: Riders response structure:', {
+        success: result.success,
+        message: result.message,
+        hasData: !!result.data,
+        dataLength: result.data?.length,
+        hasStatistics: !!result.statistics,
+        hasPagination: !!result.pagination
+      });
+      return result;
+    } catch (error) {
+      console.error('API: Riders fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -743,3 +817,6 @@ export const assignDriverToRideOption = (data: DriverAssignmentRequest) => apiSe
 export const unassignDriverFromRideOption = (data: DriverAssignmentRequest) => apiService.unassignDriverFromRideOption(data);
 export const getDriverRideOptions = (driverId: number) => apiService.getDriverRideOptions(driverId);
 export const getDriverRides = (driverId: number, params?: Parameters<typeof apiService.getDriverRides>[1]) => apiService.getDriverRides(driverId, params);
+
+// Riders API exports
+export const getRiders = (params?: Parameters<typeof apiService.getRiders>[0]) => apiService.getRiders(params);

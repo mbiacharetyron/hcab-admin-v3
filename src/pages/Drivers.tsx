@@ -81,11 +81,11 @@ const Drivers = () => {
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button className="w-fit">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Driver
-            </Button>
-          </div>
+          <Button className="w-fit">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Driver
+          </Button>
+        </div>
         </div>
 
         {/* Error State */}
@@ -114,36 +114,36 @@ const Drivers = () => {
 
         {/* Stats Cards */}
         {statistics && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatsCard
-              title="Total Drivers"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard
+            title="Total Drivers"
               value={statistics.total_drivers}
-              icon={<Users className="w-5 h-5" />}
-              variant="blue"
+            icon={<Users className="w-5 h-5" />}
+            variant="blue"
               isLoading={isLoading}
-            />
-            <StatsCard
-              title="Online Drivers" 
+          />
+          <StatsCard
+            title="Online Drivers" 
               value={statistics.online_drivers}
-              icon={<UserCheck className="w-5 h-5" />}
-              variant="green"
+            icon={<UserCheck className="w-5 h-5" />}
+            variant="green"
               isLoading={isLoading}
-            />
-            <StatsCard
-              title="Offline Drivers"
+          />
+          <StatsCard
+            title="Offline Drivers"
               value={statistics.offline_drivers} 
-              icon={<UserX className="w-5 h-5" />}
-              variant="orange"
+            icon={<UserX className="w-5 h-5" />}
+            variant="orange"
               isLoading={isLoading}
-            />
-            <StatsCard
-              title="Validated Drivers"
+          />
+          <StatsCard
+            title="Validated Drivers"
               value={statistics.validated_drivers}
-              icon={<Car className="w-5 h-5" />}
-              variant="purple"
+            icon={<Car className="w-5 h-5" />}
+            variant="purple"
               isLoading={isLoading}
-            />
-          </div>
+          />
+        </div>
         )}
 
         {/* Filters */}
