@@ -37,10 +37,10 @@ const menuItems = [
   { title: "Booking Report", icon: FileText, path: "/booking-report" },
   { title: "Transaction Report", icon: Receipt, path: "/transaction-report" },
   { title: "Revenue Report", icon: BarChart3, path: "/revenue-report" },
-  { title: "Panic Management", icon: AlertTriangle, path: "/panic" },
+  { title: "Panic Management", icon: AlertTriangle, path: "/panic-management" },
+  { title: "Notifications", icon: Bell, path: "/notifications" },
   { title: "Pay-outs", icon: PayOut, path: "/payouts" },
   { title: "Supports", icon: HeadphonesIcon, path: "/supports" },
-  { title: "Notifications", icon: Bell, path: "/notifications" },
   { title: "Settings", icon: Settings, path: "/settings" },
 ];
 

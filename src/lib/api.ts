@@ -843,7 +843,7 @@ class ApiService {
         if (error.name === 'AbortError') {
           throw new Error('Request timeout - API is taking too long to respond');
         }
-        throw error;
+      throw error;
       }
       
       throw new Error('Network error - Unable to connect to API');
@@ -1310,6 +1310,191 @@ class ApiService {
     }
   }
 
+  // Panic Management
+  async getPanicReports(params?: {
+    status?: 'resolved' | 'unresolved';
+    user_type?: 'driver' | 'rider';
+    start_date?: string;
+    end_date?: string;
+    page?: number;
+    limit?: number;
+    lang?: string;
+  }): Promise<PanicReportsResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.user_type) queryParams.append('user_type', params.user_type);
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const url = `/admin/panic-reports${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+      console.log('API: Fetching panic reports from:', `${this.baseURL}${url}`);
+      const result = await this.request<PanicReportsResponse>(url);
+      console.log('API: Panic reports response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Panic reports fetch error:', error);
+      throw error;
+    }
+  }
+
+  async resolvePanicReport(panicId: number): Promise<PanicResolveResponse> {
+    try {
+      console.log('API: Resolving panic report:', `${this.baseURL}/admin/panic-reports/${panicId}/resolve`);
+      const result = await this.request<PanicResolveResponse>(`/admin/panic-reports/${panicId}/resolve`, {
+        method: 'PUT',
+      });
+      console.log('API: Panic report resolve response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Panic report resolve error:', error);
+      throw error;
+    }
+  }
+
+  // Firebase Notifications
+  async sendNotification(request: NotificationRequest): Promise<NotificationResponse> {
+    try {
+      console.log('API: Sending notification:', `${this.baseURL}/admin/notifications/send`);
+      const result = await this.request<NotificationResponse>('/admin/notifications/send', {
+        method: 'POST',
+        body: JSON.stringify(request),
+      });
+      console.log('API: Notification send response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Notification send error:', error);
+      throw error;
+    }
+  }
+
+  async sendTestNotification(request: {
+    title: string;
+    body: string;
+    device_token?: string;
+    device_tokens?: string[];
+    data?: Record<string, string | number | boolean>;
+  }): Promise<NotificationResponse> {
+    try {
+      const endpoint = request.device_tokens ? '/test/notification/multiple' : '/test/notification/single';
+      console.log('API: Sending test notification:', `${this.baseURL}${endpoint}`);
+      const result = await this.request<NotificationResponse>(endpoint, {
+        method: 'POST',
+        body: JSON.stringify(request),
+      });
+      console.log('API: Test notification response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Test notification error:', error);
+      throw error;
+    }
+  }
+
+  async getDevices(params?: {
+    page?: number;
+    limit?: number;
+    device_type?: 'ios' | 'android' | 'web' | 'unknown';
+    is_active?: boolean;
+    user_id?: number;
+  }): Promise<{
+    success: boolean;
+    data: DeviceInfo[];
+    pagination: {
+      current_page: number;
+      total_items: number;
+      total_pages: number;
+      limit: number;
+    };
+    statistics: DeviceStats;
+  }> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.device_type) queryParams.append('device_type', params.device_type);
+      if (params?.is_active !== undefined) queryParams.append('is_active', params.is_active.toString());
+      if (params?.user_id) queryParams.append('user_id', params.user_id.toString());
+
+      const url = `/admin/devices${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+      console.log('API: Fetching devices from:', `${this.baseURL}${url}`);
+      const result = await this.request<{
+        success: boolean;
+        data: DeviceInfo[];
+        pagination: {
+          current_page: number;
+          total_items: number;
+          total_pages: number;
+          limit: number;
+        };
+        statistics: DeviceStats;
+      }>(url);
+      console.log('API: Devices response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Devices fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getNotificationLogs(params?: {
+    page?: number;
+    limit?: number;
+    type?: string;
+    success?: boolean;
+    user_id?: number;
+    start_date?: string;
+    end_date?: string;
+  }): Promise<{
+    success: boolean;
+    data: NotificationLog[];
+    pagination: {
+      current_page: number;
+      total_items: number;
+      total_pages: number;
+      limit: number;
+    };
+    metrics: NotificationMetrics;
+  }> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.type) queryParams.append('type', params.type);
+      if (params?.success !== undefined) queryParams.append('success', params.success.toString());
+      if (params?.user_id) queryParams.append('user_id', params.user_id.toString());
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+
+      const url = `/admin/notification-logs${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+      console.log('API: Fetching notification logs from:', `${this.baseURL}${url}`);
+      const result = await this.request<{
+        success: boolean;
+        data: NotificationLog[];
+        pagination: {
+          current_page: number;
+          total_items: number;
+          total_pages: number;
+          limit: number;
+        };
+        metrics: NotificationMetrics;
+      }>(url);
+      console.log('API: Notification logs response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Notification logs fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -1376,3 +1561,180 @@ export const getS3PBalance = () => apiService.getS3PBalance();
 // Revenue Report API exports
 export const getRevenueStats = () => apiService.getRevenueStats();
 export const getRevenueRides = (params?: Parameters<typeof apiService.getRevenueRides>[0]) => apiService.getRevenueRides(params);
+
+// Panic Management API exports
+export const getPanicReports = (params?: Parameters<typeof apiService.getPanicReports>[0]) => apiService.getPanicReports(params);
+export const resolvePanicReport = (panicId: number) => apiService.resolvePanicReport(panicId);
+
+// Firebase Notifications API exports
+export const sendNotification = (request: NotificationRequest) => apiService.sendNotification(request);
+export const sendTestNotification = (request: Parameters<typeof apiService.sendTestNotification>[0]) => apiService.sendTestNotification(request);
+export const getDevices = (params?: Parameters<typeof apiService.getDevices>[0]) => apiService.getDevices(params);
+export const getNotificationLogs = (params?: Parameters<typeof apiService.getNotificationLogs>[0]) => apiService.getNotificationLogs(params);
+
+// Firebase Notifications Interfaces
+export interface NotificationRequest {
+  title: string;
+  body: string;
+  device_token?: string;
+  device_tokens?: string[];
+  target_type?: 'all' | 'drivers' | 'riders';
+  user_ids?: number[];
+  data?: Record<string, string | number | boolean>;
+}
+
+export interface NotificationResponse {
+  success: boolean;
+  message: string;
+  data: {
+    name?: string;
+    successful?: Array<{
+      device_token: string;
+      status: string;
+      result: string;
+    }>;
+    failed?: Array<{
+      device_token: string;
+      error: string;
+    }>;
+  };
+}
+
+export interface DeviceInfo {
+  id: number;
+  user_id: number;
+  device_token: string;
+  device_type: 'ios' | 'android' | 'web' | 'unknown';
+  is_active: boolean;
+  last_used_at: string;
+  created_at: string;
+  updated_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+    role: 'driver' | 'rider';
+  };
+}
+
+export interface DeviceStats {
+  total_devices: number;
+  active_devices: number;
+  ios_devices: number;
+  android_devices: number;
+  web_devices: number;
+  recent_devices: number;
+  inactive_devices: number;
+}
+
+export interface NotificationLog {
+  id: number;
+  user_id: number;
+  type: string;
+  title: string;
+  body: string;
+  success: boolean;
+  error_message?: string;
+  sent_at: string;
+  created_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+    role: 'driver' | 'rider';
+  };
+}
+
+export interface NotificationMetrics {
+  total_sent: number;
+  success_rate: number;
+  failure_rate: number;
+  top_errors: Array<{
+    error_message: string;
+    count: number;
+  }>;
+  delivery_stats: {
+    today: number;
+    this_week: number;
+    this_month: number;
+  };
+}
+
+// Panic Management Interfaces
+export interface PanicReport {
+  id: number;
+  user_id: number;
+  booking_id: number | null;
+  latitude: number;
+  longitude: number;
+  is_resolved: boolean;
+  description: string | null;
+  location: string;
+  created_at: string;
+  updated_at: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    username: string;
+    role: 'driver' | 'rider';
+    is_active: boolean;
+    is_validated: boolean;
+    is_online: boolean;
+  };
+  booking?: {
+    id: number;
+    status: string;
+    source_name: string;
+    destination_name: string;
+    ride_fare: number;
+    booking_time: string;
+    rider: {
+      id: number;
+      name: string;
+      phone: string;
+    };
+    driver: {
+      id: number;
+      name: string;
+      phone: string;
+    };
+  };
+}
+
+export interface PanicReportsResponse {
+  success: boolean;
+  message: string;
+  data: PanicReport[];
+  pagination: {
+    current_page: number;
+    total_items: number;
+    total_pages: number;
+    limit: number;
+  };
+  statistics: {
+    total_reports: number;
+    resolved_reports: number;
+    unresolved_reports: number;
+    driver_reports: number;
+    rider_reports: number;
+    recent_reports: number;
+  };
+}
+
+export interface PanicResolveResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: number;
+    user_id: number;
+    booking_id: number | null;
+    latitude: number;
+    longitude: number;
+    is_resolved: boolean;
+    description: string | null;
+    created_at: string;
+    updated_at: string;
+  };
+}

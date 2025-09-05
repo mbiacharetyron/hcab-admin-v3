@@ -15,6 +15,8 @@ import RideOptions from "./pages/RideOptions";
 import { BookingReport } from "./pages/BookingReport";
 import { TransactionReport } from "./pages/TransactionReport";
 import RevenueReport from "./pages/RevenueReport";
+import PanicManagement from "./pages/PanicManagement";
+import NotificationManagement from "./pages/NotificationManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -78,6 +80,16 @@ const App = () => (
         <Route path="/revenue-report" element={
           <ProtectedRoute>
             <RevenueReport />
+          </ProtectedRoute>
+        } />
+        <Route path="/panic-management" element={
+          <ProtectedRoute>
+            <PanicManagement />
+          </ProtectedRoute>
+        } />
+        <Route path="/notifications" element={
+          <ProtectedRoute>
+            <NotificationManagement />
           </ProtectedRoute>
         } />
             
