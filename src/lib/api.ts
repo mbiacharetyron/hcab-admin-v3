@@ -392,6 +392,40 @@ export interface DriverValidationStatusResponse {
   data: DriverValidationStatus;
 }
 
+// Booking Report Types
+export interface WeeklyRideStats {
+  total_booked: number;
+  completed: number;
+  scheduled: number;
+  cancelled: number;
+}
+
+export interface PercentageChange {
+  total_booked: number;
+  completed: number;
+  scheduled: number;
+  cancelled: number;
+}
+
+export interface PercentageRide {
+  completed: number;
+  scheduled: number;
+  cancelled: number;
+}
+
+export interface WeeklyRideStatsData {
+  current_week: WeeklyRideStats;
+  previous_week: WeeklyRideStats;
+  percentage_change: PercentageChange;
+  percentage_ride: PercentageRide;
+}
+
+export interface WeeklyRideStatsResponse {
+  message: string;
+  data: WeeklyRideStatsData;
+  code: number;
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -883,6 +917,19 @@ class ApiService {
     }
   }
 
+  // Booking Report Management
+  async getWeeklyRideStats(): Promise<WeeklyRideStatsResponse> {
+    try {
+      console.log('API: Fetching weekly ride stats from:', `${this.baseURL}/admin/weekly-ride-stats`);
+      const result = await this.request<WeeklyRideStatsResponse>('/admin/weekly-ride-stats');
+      console.log('API: Weekly ride stats response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Weekly ride stats fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -937,3 +984,6 @@ export const getRiders = (params?: Parameters<typeof apiService.getRiders>[0]) =
 // Driver Validation API exports
 export const validateDriver = (driverId: number, data: DriverValidationRequest) => apiService.validateDriver(driverId, data);
 export const getDriverValidationStatus = (driverId: number, lang?: string) => apiService.getDriverValidationStatus(driverId, lang);
+
+// Booking Report API exports
+export const getWeeklyRideStats = () => apiService.getWeeklyRideStats();

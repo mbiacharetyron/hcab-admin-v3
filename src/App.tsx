@@ -12,6 +12,7 @@ import Drivers from "./pages/Drivers";
 import Riders from "./pages/Riders";
 import UserDetails from "./pages/UserDetails";
 import RideOptions from "./pages/RideOptions";
+import { BookingReport } from "./pages/BookingReport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -60,6 +61,11 @@ const App = () => (
             <Route path="/ride-options" element={
               <ProtectedRoute>
                 <RideOptions />
+              </ProtectedRoute>
+            } />
+            <Route path="/booking-report" element={
+              <ProtectedRoute>
+                <BookingReport />
               </ProtectedRoute>
             } />
             
