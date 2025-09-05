@@ -636,7 +636,7 @@ export interface RevenueRide {
     ride_type: string;
     total_seats: number | null;
     available_seats: number | null;
-    route_data: any;
+    route_data: string | null;
     waiting_until: string | null;
     is_shared_ride: boolean;
     shared_ride_price: string | null;
@@ -649,7 +649,12 @@ export interface RevenueRide {
     original_fare: string;
     discount_amount: string;
     final_fare: string;
-    discount_details: any;
+    discount_details: {
+      discount_name: string;
+      discount_type: string;
+      discount_value: string;
+      discount_percentage: number;
+    } | null;
     driver_fare: string;
     cancellation_reason: string | null;
     created_at: string;

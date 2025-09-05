@@ -14,6 +14,7 @@ import UserDetails from "./pages/UserDetails";
 import RideOptions from "./pages/RideOptions";
 import { BookingReport } from "./pages/BookingReport";
 import { TransactionReport } from "./pages/TransactionReport";
+import RevenueReport from "./pages/RevenueReport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -69,11 +70,16 @@ const App = () => (
                 <BookingReport />
               </ProtectedRoute>
             } />
-            <Route path="/transaction-report" element={
-              <ProtectedRoute>
-                <TransactionReport />
-              </ProtectedRoute>
-            } />
+                    <Route path="/transaction-report" element={
+          <ProtectedRoute>
+            <TransactionReport />
+          </ProtectedRoute>
+        } />
+        <Route path="/revenue-report" element={
+          <ProtectedRoute>
+            <RevenueReport />
+          </ProtectedRoute>
+        } />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
