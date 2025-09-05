@@ -557,6 +557,134 @@ export interface S3PBalanceResponse {
   code: number;
 }
 
+// Revenue Report Interfaces
+export interface RevenueStats {
+  total_revenue: number;
+  revenue_breakdown: {
+    ride_revenue: string;
+    wallet_revenue: string;
+  };
+  current_period: {
+    week: {
+      total: number;
+      ride_revenue: string;
+      wallet_revenue: string;
+    };
+    month: {
+      total: number;
+      ride_revenue: string;
+      wallet_revenue: string;
+    };
+    year: {
+      total: number;
+      ride_revenue: string;
+      wallet_revenue: string;
+    };
+  };
+  previous_period: {
+    week: {
+      total: number;
+      ride_revenue: string;
+      wallet_revenue: string;
+    };
+    month: {
+      total: number;
+      ride_revenue: string;
+      wallet_revenue: string;
+    };
+    year: {
+      total: number;
+      ride_revenue: string;
+      wallet_revenue: string;
+    };
+  };
+  percentage_change: {
+    week: number;
+    month: number;
+    year: number;
+  };
+}
+
+export interface RevenueStatsResponse {
+  message: string;
+  data: RevenueStats;
+  code: number;
+}
+
+export interface RevenueRide {
+  id: number;
+  ride_id: number;
+  total_fare: string;
+  platform_revenue: string;
+  driver_revenue: string;
+  status: string;
+  completed_at: string;
+  created_at: string;
+  updated_at: string;
+  ride: {
+    id: number;
+    rider_id: number;
+    driver_id: number;
+    source_name: string;
+    source_lat: string;
+    source_lng: string;
+    destination_name: string;
+    destination_lat: string;
+    destination_lng: string;
+    booking_time: string;
+    status: string;
+    ride_type: string;
+    total_seats: number | null;
+    available_seats: number | null;
+    route_data: any;
+    waiting_until: string | null;
+    is_shared_ride: boolean;
+    shared_ride_price: string | null;
+    total_shared_price: string | null;
+    cancelled_by: string | null;
+    ride_option_id: number;
+    discount_id: number | null;
+    promo_code: string | null;
+    ride_fare: string;
+    original_fare: string;
+    discount_amount: string;
+    final_fare: string;
+    discount_details: any;
+    driver_fare: string;
+    cancellation_reason: string | null;
+    created_at: string;
+    updated_at: string;
+    trip_start_time: string;
+    trip_end_time: string;
+    trip_duration: string;
+    is_paid: boolean;
+    deleted_at: string | null;
+  };
+}
+
+export interface RevenueRidesResponse {
+  status: string;
+  data: {
+    current_page: number;
+    data: RevenueRide[];
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    links: Array<{
+      url: string | null;
+      label: string;
+      active: boolean;
+    }>;
+    next_page_url: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: number;
+    total: number;
+  };
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -1136,6 +1264,47 @@ class ApiService {
     }
   }
 
+  // Revenue Report Management
+  async getRevenueStats(): Promise<RevenueStatsResponse> {
+    try {
+      console.log('API: Fetching revenue stats from:', `${this.baseURL}/admin/revenue/stats`);
+      const result = await this.request<RevenueStatsResponse>('/admin/revenue/stats');
+      console.log('API: Revenue stats response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Revenue stats fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getRevenueRides(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    start_date?: string;
+    end_date?: string;
+  }): Promise<RevenueRidesResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+
+      const url = `/admin/revenue/rides${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+      console.log('API: Fetching revenue rides from:', `${this.baseURL}${url}`);
+      const result = await this.request<RevenueRidesResponse>(url);
+      console.log('API: Revenue rides response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Revenue rides fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -1198,3 +1367,7 @@ export const getWeeklyRideStats = () => apiService.getWeeklyRideStats();
 export const getWalletStats = () => apiService.getWalletStats();
 export const getWalletTransactions = (params?: Parameters<typeof apiService.getWalletTransactions>[0]) => apiService.getWalletTransactions(params);
 export const getS3PBalance = () => apiService.getS3PBalance();
+
+// Revenue Report API exports
+export const getRevenueStats = () => apiService.getRevenueStats();
+export const getRevenueRides = (params?: Parameters<typeof apiService.getRevenueRides>[0]) => apiService.getRevenueRides(params);

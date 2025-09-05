@@ -14,7 +14,36 @@ import {
   PaginationPrevious,
   PaginationEllipsis
 } from "@/components/ui/pagination";
-import { Car, Users, UserCheck, UserX, Plus, Search, Filter, AlertTriangle, RefreshCw } from "lucide-react";
+import { 
+  Car, 
+  Users, 
+  UserCheck, 
+  UserX, 
+  Plus, 
+  Search, 
+  Filter, 
+  AlertTriangle, 
+  RefreshCw,
+  Download,
+  Eye,
+  Edit,
+  Trash2,
+  MapPin,
+  Phone,
+  Mail,
+  Calendar,
+  ArrowUp,
+  ArrowDown,
+  Minus,
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  Shield,
+  Clock,
+  CheckCircle,
+  XCircle,
+  MoreHorizontal
+} from "lucide-react";
 import { useEnhancedDrivers } from "@/hooks/useDrivers";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -186,42 +215,73 @@ const Drivers = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">All Drivers</h1>
-            <p className="text-muted-foreground">Manage and monitor all registered drivers</p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => refetch()}>
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </Button>
-          <Button className="w-fit">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Driver
-          </Button>
-        </div>
-        </div>
-
-        {/* Error State */}
-        {error && (
-          <Card className="border-destructive/50 bg-destructive/5">
-            <CardContent className="p-6">
+      {/* Enhanced Header Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/20 dark:via-teal-950/20 dark:to-cyan-950/20 rounded-2xl"></div>
+        <div className="relative p-8">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
               <div className="flex items-center space-x-3">
-                <AlertTriangle className="w-6 h-6 text-destructive" />
+                <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
+                  <Car className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                    All Drivers
+                  </h1>
+                  <p className="text-lg text-muted-foreground font-medium">
+                    Manage and monitor all registered drivers
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => refetch()}
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                size="lg"
+              >
+                <RefreshCw className="w-5 h-5 mr-2" />
+                Refresh Data
+              </Button>
+              <Button 
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                size="lg"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add Driver
+              </Button>
+              <Button variant="outline" size="lg" className="border-2 hover:bg-gray-50">
+                <Download className="w-5 h-5 mr-2" />
+                Export
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-8 mt-8">
+
+        {/* Enhanced Error State */}
+        {error && (
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
+            <CardContent className="p-8">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-xl">
+                  <AlertTriangle className="w-8 h-8 text-red-600" />
+                </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-destructive">Failed to Load Drivers</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-xl font-bold text-red-800 dark:text-red-200">Failed to Load Drivers</h3>
+                  <p className="text-sm text-red-600 dark:text-red-400 mt-1">
                     {error.message || "Unable to load drivers data"}
                   </p>
                 </div>
                 <Button 
-                  size="sm" 
+                  size="lg" 
                   onClick={() => refetch()}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
                 >
+                  <RefreshCw className="w-4 h-4 mr-2" />
                   Retry
                 </Button>
               </div>
@@ -229,112 +289,226 @@ const Drivers = () => {
           </Card>
         )}
 
-        {/* Stats Cards */}
+        {/* Enhanced Stats Cards */}
         {statistics && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatsCard
             title="Total Drivers"
-              value={statistics.total_drivers}
+            value={statistics.total_drivers}
             icon={<Users className="w-5 h-5" />}
             variant="blue"
-              isLoading={isLoading}
+            isLoading={isLoading}
           />
           <StatsCard
             title="Online Drivers" 
-              value={statistics.online_drivers}
+            value={statistics.online_drivers}
             icon={<UserCheck className="w-5 h-5" />}
             variant="green"
-              isLoading={isLoading}
+            isLoading={isLoading}
           />
           <StatsCard
             title="Offline Drivers"
-              value={statistics.offline_drivers} 
+            value={statistics.offline_drivers} 
             icon={<UserX className="w-5 h-5" />}
             variant="orange"
-              isLoading={isLoading}
+            isLoading={isLoading}
           />
           <StatsCard
             title="Validated Drivers"
-              value={statistics.validated_drivers}
+            value={statistics.validated_drivers}
             icon={<Car className="w-5 h-5" />}
             variant="purple"
-              isLoading={isLoading}
+            isLoading={isLoading}
           />
         </div>
         )}
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 p-4 bg-card rounded-lg border border-border">
-          <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-muted-foreground">Filter By</span>
-          </div>
-          
-          <div className="flex flex-1 gap-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search drivers..." 
-                className="pl-9" 
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+        {/* Enhanced Filters */}
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
+                <Filter className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Advanced Filters</h3>
+                <p className="text-sm text-muted-foreground">Filter and search through driver data</p>
+              </div>
             </div>
             
-            <Select value={onlineStatus} onValueChange={(value: 'online' | 'offline' | 'all') => setOnlineStatus(value)}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Online Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="online">Online</SelectItem>
-                <SelectItem value="offline">Offline</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Search</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search drivers..." 
+                    className="pl-10 border-2 focus:border-emerald-500 transition-colors" 
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Online Status</label>
+                <Select value={onlineStatus} onValueChange={(value: 'online' | 'offline' | 'all') => setOnlineStatus(value)}>
+                  <SelectTrigger className="border-2 focus:border-emerald-500 transition-colors">
+                    <SelectValue placeholder="Online Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="online">Online</SelectItem>
+                    <SelectItem value="offline">Offline</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <Select value={validated} onValueChange={(value: 'validated' | 'invalidated' | 'all') => setValidated(value)}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Validated" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="validated">Validated</SelectItem>
-                <SelectItem value="invalidated">Not Validated</SelectItem>
-              </SelectContent>
-            </Select>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Validation Status</label>
+                <Select value={validated} onValueChange={(value: 'validated' | 'invalidated' | 'all') => setValidated(value)}>
+                  <SelectTrigger className="border-2 focus:border-emerald-500 transition-colors">
+                    <SelectValue placeholder="Validated" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="validated">Validated</SelectItem>
+                    <SelectItem value="invalidated">Not Validated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <Button variant="outline" onClick={handleResetFilters}>
-              Reset Filter
-            </Button>
-          </div>
-        </div>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Results</label>
+                <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-xl">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-2xl font-bold text-emerald-600">{drivers.length}</div>
+                      <div className="text-sm text-muted-foreground">drivers</div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={handleResetFilters}
+                      className="text-xs h-8 px-3 bg-white hover:bg-gray-50 shadow-sm"
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Drivers Table */}
-        <DataTable
-          title={`Drivers ${pagination ? `(${pagination.total_items})` : ''}`}
-          columns={driversColumns}
-          data={transformedDrivers}
-          isLoading={isLoading}
-          searchable={false} // We handle search via filters
-        />
+        {/* Enhanced Drivers Table */}
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
+                <Car className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Drivers List</h3>
+                <p className="text-sm text-muted-foreground">Comprehensive driver information ({pagination?.total_items || 0} total)</p>
+              </div>
+            </div>
+            <DataTable
+              title=""
+              columns={driversColumns}
+              data={transformedDrivers}
+              isLoading={isLoading}
+              searchable={false} // We handle search via filters
+            />
+          </CardContent>
+        </Card>
 
-        {/* Pagination Info */}
+        {/* Enhanced Pagination */}
         {pagination && (
-          <div className="text-sm text-muted-foreground text-center">
-            Showing {drivers.length} of {pagination.total_items} drivers
-            <span> • Page {pagination.current_page} of {pagination.total_pages}</span>
-          </div>
-        )}
-
-        {/* Pagination Controls */}
-        {pagination && pagination.total_pages > 1 && (
-          <div className="flex justify-center">
-            <Pagination>
-              <PaginationContent>
-                {renderPaginationItems()}
-              </PaginationContent>
-            </Pagination>
-          </div>
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+            <CardContent className="p-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
+                    <Activity className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                      Showing {drivers.length} of {pagination.total_items} drivers
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Page {pagination.current_page} of {pagination.total_pages}
+                    </div>
+                  </div>
+                </div>
+                
+                {pagination.total_pages > 1 && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(1)}
+                      disabled={pagination.current_page <= 1}
+                      className="border-2 hover:bg-gray-50"
+                    >
+                      First
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pagination.current_page - 1)}
+                      disabled={pagination.current_page <= 1}
+                      className="border-2 hover:bg-gray-50"
+                    >
+                      <ArrowUp className="w-4 h-4 mr-1" />
+                      Previous
+                    </Button>
+                    
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, pagination.total_pages) }, (_, i) => {
+                        const pageNum = Math.max(1, pagination.current_page - 2) + i;
+                        if (pageNum > pagination.total_pages) return null;
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={pageNum === pagination.current_page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handlePageChange(pageNum)}
+                            className={pageNum === pagination.current_page 
+                              ? "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg" 
+                              : "border-2 hover:bg-gray-50"
+                            }
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pagination.current_page + 1)}
+                      disabled={pagination.current_page >= pagination.total_pages}
+                      className="border-2 hover:bg-gray-50"
+                    >
+                      Next
+                      <ArrowDown className="w-4 h-4 ml-1" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pagination.total_pages)}
+                      disabled={pagination.current_page >= pagination.total_pages}
+                      className="border-2 hover:bg-gray-50"
+                    >
+                      Last
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     </AdminLayout>
