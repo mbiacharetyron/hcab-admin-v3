@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,65 +46,42 @@ import { useBookingReportData } from "@/hooks/useBookingReport";
 import { BookingStatsCard } from "@/components/BookingReport/StatsCard";
 import { PercentageCard } from "@/components/BookingReport/PercentageCard";
 import { format } from "date-fns";
+import type { BookingReportRide } from "@/lib/api";
 
 export const BookingReport = () => {
-  const { weeklyStats, rides, ridesMeta, isLoading, error, refetch } = useBookingReportData();
-  
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // API params
+  const apiParams = {
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchTerm || undefined,
+    status: statusFilter !== "all" ? statusFilter : undefined,
+    // Add date filtering logic here if needed
+  };
+  
+  const { weeklyStats, rides, pagination, isLoading, error, refetch } = useBookingReportData(apiParams);
 
-  // Filter rides based on search and filters
-  const filteredRides = useMemo(() => {
-    let filtered = rides;
+  // Reset to first page when filters change
+  const resetPagination = () => {
+    setCurrentPage(1);
+  };
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(ride => 
-        ride.id.toString().includes(searchTerm) ||
-        ride.rider_id.toString().includes(searchTerm) ||
-        ride.source_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ride.destination_name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  // Reset pagination when filters change
+  useEffect(() => {
+    resetPagination();
+  }, [searchTerm, statusFilter, dateFilter]);
 
-    // Status filter
-    if (statusFilter !== "all") {
-      filtered = filtered.filter(ride => ride.status === statusFilter);
-    }
-
-    // Date filter (simplified - you can enhance this)
-    if (dateFilter !== "all") {
-      const now = new Date();
-      const rideDate = new Date(ride.created_at);
-      
-      switch (dateFilter) {
-        case "today":
-          filtered = filtered.filter(ride => 
-            rideDate.toDateString() === now.toDateString()
-          );
-          break;
-        case "week":
-          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-          filtered = filtered.filter(ride => rideDate >= weekAgo);
-          break;
-        case "month":
-          const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-          filtered = filtered.filter(ride => rideDate >= monthAgo);
-          break;
-      }
-    }
-
-    return filtered;
-  }, [rides, searchTerm, statusFilter, dateFilter]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredRides.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedRides = filteredRides.slice(startIndex, startIndex + itemsPerPage);
+  // Use server-side pagination data
+  const totalPages = pagination?.total_pages || 1;
+  const totalItems = pagination?.total_items || 0;
+  const currentPageFromAPI = pagination?.current_page || 1;
+  const itemsPerPageFromAPI = pagination?.limit || 10;
 
   // Get status badge variant
   const getStatusBadge = (status: string) => {
@@ -226,10 +203,10 @@ export const BookingReport = () => {
         )}
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue="rides" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="rides">Ride Details</TabsTrigger>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
@@ -306,89 +283,142 @@ export const BookingReport = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Search</label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
-                        placeholder="Search rides..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
+                                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Search</label>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                        <Input
+                          placeholder="Search rides..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Status</label>
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="All Statuses" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Statuses</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="scheduled">Scheduled</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Date Range</label>
+                      <Select value={dateFilter} onValueChange={setDateFilter}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="All Time" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Time</SelectItem>
+                          <SelectItem value="today">Today</SelectItem>
+                          <SelectItem value="week">This Week</SelectItem>
+                          <SelectItem value="month">This Month</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Results</label>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          {totalItems} rides
+                        </span>
+                        {(searchTerm || statusFilter !== "all" || dateFilter !== "all") && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setSearchTerm("");
+                              setStatusFilter("all");
+                              setDateFilter("all");
+                              setCurrentPage(1);
+                            }}
+                            className="text-xs h-6 px-2"
+                          >
+                            Clear
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Status</label>
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="All Statuses" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Statuses</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                        <SelectItem value="scheduled">Scheduled</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Date Range</label>
-                    <Select value={dateFilter} onValueChange={setDateFilter}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="All Time" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Time</SelectItem>
-                        <SelectItem value="today">Today</SelectItem>
-                        <SelectItem value="week">This Week</SelectItem>
-                        <SelectItem value="month">This Month</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Results</label>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-muted-foreground">
-                        {filteredRides.length} rides
-                      </span>
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
             {/* Rides Table */}
             <Card>
               <CardHeader>
-                <CardTitle>Ride Details ({filteredRides.length})</CardTitle>
+                <CardTitle>Ride Details ({totalItems})</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>ID</TableHead>
+                        <TableHead>Booking ID</TableHead>
                         <TableHead>Rider</TableHead>
+                        <TableHead>Driver</TableHead>
+                        <TableHead>Ride Option</TableHead>
                         <TableHead>Source</TableHead>
                         <TableHead>Destination</TableHead>
+                        <TableHead>Fare</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Created</TableHead>
                         <TableHead className="w-[50px]"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {paginatedRides.map((ride) => (
+                      {rides.map((ride) => (
                         <TableRow key={ride.id}>
-                          <TableCell className="font-medium">#{ride.id}</TableCell>
-                          <TableCell>Rider {ride.rider_id}</TableCell>
+                          <TableCell className="font-medium">#{ride.booking_id}</TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <div className="font-medium">{ride.rider?.name || 'Unknown'}</div>
+                              <div className="text-xs text-muted-foreground">
+                                @{ride.rider?.username || 'N/A'}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {ride.driver ? (
+                              <div className="space-y-1">
+                                <div className="font-medium">{ride.driver.name}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  @{ride.driver.username}
+                                </div>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">No driver assigned</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <div className="font-medium">{ride.ride_option?.name || 'Unknown'}</div>
+                              <div className="text-xs text-muted-foreground">
+                                XAF {ride.ride_option?.base_price || '0'}
+                              </div>
+                            </div>
+                          </TableCell>
                           <TableCell className="max-w-[200px] truncate">
                             {ride.source_name}
                           </TableCell>
                           <TableCell className="max-w-[200px] truncate">
                             {ride.destination_name}
+                          </TableCell>
+                          <TableCell>
+                            <div className="font-medium">XAF {ride.ride_fare}</div>
+                            {ride.distance && (
+                              <div className="text-xs text-muted-foreground">
+                                {ride.distance} km
+                              </div>
+                            )}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center space-x-2">
@@ -397,7 +427,12 @@ export const BookingReport = () => {
                             </div>
                           </TableCell>
                           <TableCell>
-                            {format(new Date(ride.created_at), "MMM dd, yyyy")}
+                            <div className="space-y-1">
+                              <div>{format(new Date(ride.created_at), "MMM dd, yyyy")}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {format(new Date(ride.created_at), "HH:mm")}
+                              </div>
+                            </div>
                           </TableCell>
                           <TableCell>
                             <DropdownMenu>
@@ -421,35 +456,170 @@ export const BookingReport = () => {
                   </Table>
                 </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4">
+                {/* Enhanced Pagination */}
+                {rides.length > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
+                    {/* Results Summary */}
                     <div className="text-sm text-muted-foreground">
-                      Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredRides.length)} of {filteredRides.length} rides
+                      Showing {((currentPageFromAPI - 1) * itemsPerPageFromAPI) + 1} to {Math.min(currentPageFromAPI * itemsPerPageFromAPI, totalItems)} of {totalItems} rides
                     </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                      <div className="flex items-center space-x-2">
+                        {/* First Page */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(1)}
+                          disabled={currentPageFromAPI === 1}
+                          className="hidden sm:flex"
+                        >
+                          First
+                        </Button>
+
+                        {/* Previous Page */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                          disabled={currentPageFromAPI === 1}
+                        >
+                          Previous
+                        </Button>
+
+                        {/* Page Numbers */}
+                        <div className="flex items-center space-x-1">
+                          {(() => {
+                            const pages = [];
+                            const maxVisiblePages = 5;
+                            let startPage = Math.max(1, currentPageFromAPI - Math.floor(maxVisiblePages / 2));
+                            const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                            // Adjust start page if we're near the end
+                            if (endPage - startPage + 1 < maxVisiblePages) {
+                              startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                            }
+
+                            // Add first page and ellipsis if needed
+                            if (startPage > 1) {
+                              pages.push(
+                                                                    <Button
+                                      key={1}
+                                      variant={currentPageFromAPI === 1 ? "default" : "outline"}
+                                      size="sm"
+                                      onClick={() => setCurrentPage(1)}
+                                      className="w-8 h-8 p-0"
+                                    >
+                                      1
+                                    </Button>
+                              );
+                              if (startPage > 2) {
+                                pages.push(
+                                  <span key="ellipsis1" className="px-2 text-muted-foreground">
+                                    ...
+                                  </span>
+                                );
+                              }
+                            }
+
+                            // Add visible page numbers
+                            for (let i = startPage; i <= endPage; i++) {
+                              pages.push(
+                                                                    <Button
+                                      key={i}
+                                      variant={currentPageFromAPI === i ? "default" : "outline"}
+                                      size="sm"
+                                      onClick={() => setCurrentPage(i)}
+                                      className="w-8 h-8 p-0"
+                                    >
+                                      {i}
+                                    </Button>
+                              );
+                            }
+
+                            // Add last page and ellipsis if needed
+                            if (endPage < totalPages) {
+                              if (endPage < totalPages - 1) {
+                                pages.push(
+                                  <span key="ellipsis2" className="px-2 text-muted-foreground">
+                                    ...
+                                  </span>
+                                );
+                              }
+                              pages.push(
+                                                                    <Button
+                                      key={totalPages}
+                                      variant={currentPageFromAPI === totalPages ? "default" : "outline"}
+                                      size="sm"
+                                      onClick={() => setCurrentPage(totalPages)}
+                                      className="w-8 h-8 p-0"
+                                    >
+                                      {totalPages}
+                                    </Button>
+                              );
+                            }
+
+                            return pages;
+                          })()}
+                        </div>
+
+                        {/* Next Page */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                          disabled={currentPageFromAPI === totalPages}
+                        >
+                          Next
+                        </Button>
+
+                        {/* Last Page */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(totalPages)}
+                          disabled={currentPageFromAPI === totalPages}
+                          className="hidden sm:flex"
+                        >
+                          Last
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Items Per Page Selector */}
                     <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
+                      <span className="text-sm text-muted-foreground">Show:</span>
+                      <Select
+                        value={itemsPerPage.toString()}
+                        onValueChange={(value) => {
+                          setItemsPerPage(parseInt(value));
+                          setCurrentPage(1); // Reset to first page when changing page size
+                        }}
                       >
-                        Previous
-                      </Button>
-                      <span className="text-sm">
-                        Page {currentPage} of {totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                      </Button>
+                        <SelectTrigger className="w-16 h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="10">10</SelectItem>
+                          <SelectItem value="25">25</SelectItem>
+                          <SelectItem value="50">50</SelectItem>
+                          <SelectItem value="100">100</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 )}
+
+                                    {/* No Results Message */}
+                    {rides.length === 0 && (
+                      <div className="text-center py-8">
+                        <div className="text-muted-foreground mb-2">No rides found</div>
+                        <p className="text-sm text-muted-foreground">
+                          Try adjusting your search criteria or filters
+                        </p>
+                      </div>
+                    )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -511,7 +681,7 @@ export const BookingReport = () => {
                     <span className="text-lg font-bold">{rides.length}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Active Rides</span>
+                    <span className="text-sm font-medium">Completed Rides</span>
                     <span className="text-lg font-bold text-green-600">
                       {rides.filter(ride => ride.status === 'completed').length}
                     </span>
@@ -520,6 +690,12 @@ export const BookingReport = () => {
                     <span className="text-sm font-medium">Cancelled Rides</span>
                     <span className="text-lg font-bold text-red-600">
                       {rides.filter(ride => ride.status === 'cancelled').length}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Total Revenue</span>
+                    <span className="text-lg font-bold text-blue-600">
+                      XAF {rides.reduce((sum, ride) => sum + parseFloat(ride.ride_fare || '0'), 0).toLocaleString()}
                     </span>
                   </div>
                 </CardContent>

@@ -426,6 +426,66 @@ export interface WeeklyRideStatsResponse {
   code: number;
 }
 
+// Booking Report Ride Interface (matches actual API response)
+export interface BookingReportRide {
+  id: number;
+  booking_id: number;
+  status: string;
+  ride_fare: string;
+  distance: string | null;
+  duration: string | null;
+  source_name: string;
+  destination_name: string;
+  source_lat: string;
+  source_lng: string;
+  destination_lat: string;
+  destination_lng: string;
+  booking_time: string;
+  trip_start_time: string | null;
+  trip_end_time: string | null;
+  created_at: string;
+  updated_at: string;
+  rider?: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    username: string;
+    is_active: boolean;
+    is_validated: boolean;
+  };
+  driver?: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    username: string;
+    is_active: boolean;
+    is_validated: boolean;
+    is_online: boolean;
+  } | null;
+  ride_option?: {
+    id: number;
+    name: string;
+    base_price: string;
+    price_per_km: string;
+    seat_capacity: number;
+    description: string;
+  };
+}
+
+export interface BookingReportRidesResponse {
+  success: boolean;
+  message: string;
+  data: BookingReportRide[];
+  pagination: {
+    current_page: number;
+    total_items: number;
+    total_pages: number;
+    limit: number;
+  };
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -620,10 +680,28 @@ class ApiService {
   }
 
   // All Rides
-  async getAllRides(): Promise<{ data: Ride[]; meta: Record<string, unknown> }> {
+  async getAllRides(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    start_date?: string;
+    end_date?: string;
+  }): Promise<BookingReportRidesResponse> {
     try {
-      console.log('API: Fetching rides from:', `${this.baseURL}/admin/rides`);
-      const result = await this.request<{ data: Ride[]; meta: Record<string, unknown> }>('/admin/rides');
+      const queryParams = new URLSearchParams();
+      
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+      
+      const url = `/admin/rides${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      
+      console.log('API: Fetching rides from:', `${this.baseURL}${url}`);
+      const result = await this.request<BookingReportRidesResponse>(url);
       console.log('API: Rides response:', result);
       return result;
     } catch (error) {
@@ -961,7 +1039,7 @@ export const apiService = new ApiService();
 
 // Export individual functions for convenience
 export const getDashboardStats = () => apiService.getDashboardStats();
-export const getAllRides = () => apiService.getAllRides();
+export const getAllRides = (params?: Parameters<typeof apiService.getAllRides>[0]) => apiService.getAllRides(params);
 export const getUserDetails = (userId: number) => apiService.getUserDetails(userId);
 export const getRideOptionDetails = (rideOptionId: number) => apiService.getRideOptionDetails(rideOptionId);
 export const getDrivers = (params?: Parameters<typeof apiService.getDrivers>[0]) => apiService.getDrivers(params);

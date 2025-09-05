@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getWeeklyRideStats, getAllRides } from '@/lib/api';
-import type { WeeklyRideStatsResponse } from '@/lib/api';
+import type { WeeklyRideStatsResponse, BookingReportRide, BookingReportRidesResponse } from '@/lib/api';
 import { API_CONFIG } from '@/config/api';
 
 export const useWeeklyRideStats = () => {
@@ -14,11 +14,18 @@ export const useWeeklyRideStats = () => {
   });
 };
 
-export const useBookingReportData = () => {
+export const useBookingReportData = (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  start_date?: string;
+  end_date?: string;
+}) => {
   const weeklyStatsQuery = useWeeklyRideStats();
-  const ridesQuery = useQuery({
-    queryKey: ['admin/rides'],
-    queryFn: getAllRides,
+  const ridesQuery = useQuery<BookingReportRidesResponse, Error>({
+    queryKey: ['admin/rides', params],
+    queryFn: () => getAllRides(params),
     refetchInterval: API_CONFIG.REQUEST_CONFIG.REFETCH_INTERVALS.RIDES,
     staleTime: 30000,
     retry: 2,
@@ -28,7 +35,7 @@ export const useBookingReportData = () => {
   return {
     weeklyStats: weeklyStatsQuery.data?.data,
     rides: ridesQuery.data?.data || [],
-    ridesMeta: ridesQuery.data?.meta,
+    pagination: ridesQuery.data?.pagination,
     isLoading: weeklyStatsQuery.isLoading || ridesQuery.isLoading,
     error: weeklyStatsQuery.error || ridesQuery.error,
     refetch: () => {
