@@ -16,12 +16,14 @@ import {
   RefreshCw
 } from "lucide-react";
 import { useDashboardStats, useEnhancedRides } from "@/hooks/useDashboard";
+import { useDriverLocations } from "@/hooks/useDriverLocations";
 import { formatDistanceToNow } from "date-fns";
 
 const Dashboard = () => {
 
     const { data: statsResponse, isLoading: statsLoading, error: statsError, refetch: refetchStats } = useDashboardStats();
     const { rides, meta, isLoading: ridesLoading, error: ridesError, refetch } = useEnhancedRides();
+    const { data: driverLocationsResponse, isLoading: driverLocationsLoading, refetch: refetchDriverLocations } = useDriverLocations();
 
     // Extract stats data from the response
     const stats = statsResponse?.data;
@@ -36,6 +38,32 @@ const Dashboard = () => {
 
     // Use fallback data if API fails
     const displayStats = stats || fallbackStats;
+
+    // Transform driver locations data
+    const driverLocations = driverLocationsResponse?.data
+      ?.filter(driver => driver.latitude && driver.longitude) // Only include drivers with valid coordinates
+      ?.map(driver => ({
+        id: driver.id,
+        name: driver.username || `Driver ${driver.id}`,
+        lat: parseFloat(driver.latitude),
+        lng: parseFloat(driver.longitude),
+        isOnline: true // All drivers from this endpoint are online
+      })) || [];
+
+    // Transform ride locations data (using recent rides)
+    const rideLocations = rides?.slice(0, 5).map(ride => ({
+      id: ride.id,
+      riderId: ride.rider_id,
+      pickup: {
+        lat: parseFloat(ride.source_lat) || 4.0483,
+        lng: parseFloat(ride.source_lng) || 9.7043
+      },
+      destination: {
+        lat: parseFloat(ride.destination_lat) || 4.0483,
+        lng: parseFloat(ride.destination_lng) || 9.7043
+      },
+      status: ride.status
+    })) || [];
     
     // Ensure displayStats is always defined
     if (!displayStats) {
@@ -65,7 +93,7 @@ const Dashboard = () => {
       value: displayStats?.ongoing_trips?.toString() || "0",
       icon: <Car className="w-6 h-6" />,
       change: `${(displayStats?.ongoing_trips || 0) > 0 ? '+' : ''}${displayStats?.ongoing_trips || 0} active now`,
-      changeType: (displayStats?.ongoing_trips || 0) > 0 ? "positive" : "neutral" as const,
+      changeType: ((displayStats?.ongoing_trips || 0) > 0 ? "positive" : "neutral") as "positive" | "neutral" | "negative",
       variant: "green" as const,
       isLoading: statsLoading
     },
@@ -74,7 +102,7 @@ const Dashboard = () => {
       value: displayStats?.online_drivers?.toString() || "0",
       icon: <Users className="w-6 h-6" />,
       change: `${displayStats?.online_drivers || 0} drivers available`,
-      changeType: (displayStats?.online_drivers || 0) > 0 ? "positive" : "neutral" as const,
+      changeType: ((displayStats?.online_drivers || 0) > 0 ? "positive" : "neutral") as "positive" | "neutral" | "negative",
       variant: "orange" as const,
       isLoading: statsLoading
     },
@@ -83,7 +111,7 @@ const Dashboard = () => {
       value: displayStats?.pending_trips?.toString() || "0", 
       icon: <Clock className="w-6 h-6" />,
       change: `${displayStats?.pending_trips || 0} waiting`,
-      changeType: (displayStats?.pending_trips || 0) > 0 ? "negative" : "neutral" as const,
+      changeType: ((displayStats?.pending_trips || 0) > 0 ? "negative" : "neutral") as "positive" | "neutral" | "negative",
       variant: "purple" as const,
       isLoading: statsLoading
     },
@@ -92,7 +120,7 @@ const Dashboard = () => {
       value: displayStats?.panics?.toString() || "0",
       icon: <AlertTriangle className="w-6 h-6" />,
       change: (displayStats?.panics || 0) > 0 ? `${displayStats?.panics || 0} active alerts` : "All clear",
-      changeType: (displayStats?.panics || 0) > 0 ? "negative" : "positive" as const,
+      changeType: ((displayStats?.panics || 0) > 0 ? "negative" : "positive") as "positive" | "neutral" | "negative",
       variant: "red" as const,
       isLoading: statsLoading
     }
@@ -135,7 +163,7 @@ const Dashboard = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
               <p className="text-gray-600">Loading dashboard...</p>
               <p className="text-sm text-gray-500 mt-2">Stats: {statsLoading ? 'Loading' : 'Loaded'}, Rides: {ridesLoading ? 'Loading' : 'Loaded'}</p>
-            </div>
+          </div>
         </div>
       </AdminLayout>
     );
@@ -259,6 +287,12 @@ const Dashboard = () => {
             <MapSection 
               onlineDrivers={displayStats?.online_drivers || 0}
               activeTrips={displayStats?.ongoing_trips || 0}
+              driverLocations={driverLocations}
+              rideLocations={rideLocations}
+              onRefresh={() => {
+                refetchDriverLocations();
+                refetch();
+              }}
             />
             )}
           </div>
@@ -340,7 +374,7 @@ const Dashboard = () => {
           <div className="text-sm text-muted-foreground text-center">
             Showing {rides.length} rides
             {meta && (
-              <span> • Page {meta.current_page} of {meta.total_pages} • Total: {meta.total_items}</span>
+              <span> • Page {String(meta.current_page)} of {String(meta.total_pages)} • Total: {String(meta.total_items)}</span>
             )}
           </div>
         )}

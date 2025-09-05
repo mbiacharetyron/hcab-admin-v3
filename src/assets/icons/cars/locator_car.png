@@ -1,0 +1,13 @@
+# Placeholder for locator_car.png
+
+This file should be replaced with your actual locator_car.png icon.
+
+## Instructions:
+1. Replace this file with your actual `locator_car.png` icon
+2. Recommended size: 32x32 pixels or 64x64 pixels
+3. Format: PNG with transparency support
+4. The icon will be automatically resized to 32x32 pixels in the map
+
+## Usage:
+The car icon will be used to display driver positions on the Google Maps component.
+Each online driver will be shown with this car icon at their current location.
