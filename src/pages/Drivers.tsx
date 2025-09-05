@@ -5,6 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious,
+  PaginationEllipsis
+} from "@/components/ui/pagination";
 import { Car, Users, UserCheck, UserX, Plus, Search, Filter, AlertTriangle, RefreshCw } from "lucide-react";
 import { useEnhancedDrivers } from "@/hooks/useDrivers";
 import { useState } from "react";
@@ -65,6 +74,114 @@ const Drivers = () => {
     setOnlineStatus('all');
     setValidated('all');
     setPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const renderPaginationItems = () => {
+    if (!pagination) return null;
+
+    const { current_page, total_pages } = pagination;
+    const items = [];
+
+    // Previous button
+    items.push(
+      <PaginationItem key="prev">
+        <PaginationPrevious 
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (current_page > 1) handlePageChange(current_page - 1);
+          }}
+          className={current_page <= 1 ? "pointer-events-none opacity-50" : ""}
+        />
+      </PaginationItem>
+    );
+
+    // Page numbers
+    const startPage = Math.max(1, current_page - 2);
+    const endPage = Math.min(total_pages, current_page + 2);
+
+    if (startPage > 1) {
+      items.push(
+        <PaginationItem key="first">
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handlePageChange(1);
+            }}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+      if (startPage > 2) {
+        items.push(
+          <PaginationItem key="ellipsis1">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handlePageChange(i);
+            }}
+            isActive={i === current_page}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    if (endPage < total_pages) {
+      if (endPage < total_pages - 1) {
+        items.push(
+          <PaginationItem key="ellipsis2">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+      items.push(
+        <PaginationItem key="last">
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handlePageChange(total_pages);
+            }}
+          >
+            {total_pages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Next button
+    items.push(
+      <PaginationItem key="next">
+        <PaginationNext 
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (current_page < total_pages) handlePageChange(current_page + 1);
+          }}
+          className={current_page >= total_pages ? "pointer-events-none opacity-50" : ""}
+        />
+      </PaginationItem>
+    );
+
+    return items;
   };
 
   return (
@@ -206,6 +323,17 @@ const Drivers = () => {
           <div className="text-sm text-muted-foreground text-center">
             Showing {drivers.length} of {pagination.total_items} drivers
             <span> • Page {pagination.current_page} of {pagination.total_pages}</span>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {pagination && pagination.total_pages > 1 && (
+          <div className="flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                {renderPaginationItems()}
+              </PaginationContent>
+            </Pagination>
           </div>
         )}
       </div>

@@ -36,18 +36,68 @@ import {
   CreditCard as CardIcon,
   FileCheck,
   AlertCircle,
-  Info
+  Info,
+  Settings2,
+  UserMinus,
+  UserPlus,
+  ThumbsUp,
+  ThumbsDown,
+  Percent,
+  ClipboardList
 } from "lucide-react";
 import { useUserDetails } from "@/hooks/useUserDetails";
+import { useDriverValidationStatus, useValidateDriver } from "@/hooks/useDriverValidation";
+import { useDriverRideOptions, useUnassignDriver, useAssignDriver, useRideOptions } from "@/hooks/useRideOptions";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 
 const UserDetails = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { data: userResponse, isLoading, error, refetch } = useUserDetails(Number(userId));
 
+  // Driver validation hooks
+  const { data: validationResponse, isLoading: validationLoading, refetch: refetchValidation } = useDriverValidationStatus(Number(userId), 'en');
+  const validateDriver = useValidateDriver();
+
+  // Driver ride options hooks
+  const { data: rideOptionsResponse, isLoading: rideOptionsLoading, refetch: refetchRideOptions } = useDriverRideOptions(Number(userId));
+  const { data: allRideOptionsResponse, isLoading: allRideOptionsLoading } = useRideOptions('en');
+  const unassignDriver = useUnassignDriver();
+  const assignDriver = useAssignDriver();
+
+  // State for validation dialog
+  const [isValidationDialogOpen, setIsValidationDialogOpen] = useState(false);
+  const [validationAction, setValidationAction] = useState<'approve' | 'reject'>('approve');
+  const [validationReason, setValidationReason] = useState('');
+  const [adminNotes, setAdminNotes] = useState('');
+
+  // State for assignment dialog
+  const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
+  const [selectedRideOptionId, setSelectedRideOptionId] = useState<number | null>(null);
+
   const user = userResponse?.data;
+  const validationData = validationResponse?.data;
+  const rideOptions = rideOptionsResponse?.data || [];
 
   if (isLoading) {
     return (
@@ -141,6 +191,68 @@ const UserDetails = () => {
     return documents;
   };
 
+  const handleValidation = async () => {
+    if (!validationReason.trim()) return;
+
+    try {
+      // For invalidation, we use 'reject' action
+      const action = user.is_validated ? 'reject' : validationAction;
+      
+      await validateDriver.mutateAsync({
+        driverId: Number(userId),
+        data: {
+          action: action,
+          reason: validationReason,
+          admin_notes: adminNotes,
+          lang: 'en'
+        }
+      });
+      
+      setIsValidationDialogOpen(false);
+      setValidationReason('');
+      setAdminNotes('');
+      refetchValidation();
+    } catch (error) {
+      console.error('Validation error:', error);
+    }
+  };
+
+  const handleUnassignRideOption = async (rideOptionId: number) => {
+    if (confirm('Are you sure you want to unassign this driver from the ride option?')) {
+      try {
+        await unassignDriver.mutateAsync({
+          ride_option_id: rideOptionId,
+          driver_id: Number(userId)
+        });
+        refetchRideOptions();
+      } catch (error) {
+        console.error('Unassignment error:', error);
+      }
+    }
+  };
+
+  const handleAssignRideOption = async () => {
+    if (!selectedRideOptionId) return;
+
+    try {
+      await assignDriver.mutateAsync({
+        ride_option_id: selectedRideOptionId,
+        driver_id: Number(userId)
+      });
+      
+      setIsAssignmentDialogOpen(false);
+      setSelectedRideOptionId(null);
+      refetchRideOptions();
+    } catch (error) {
+      console.error('Assignment error:', error);
+    }
+  };
+
+  // Get available ride options (not already assigned)
+  const availableRideOptions = allRideOptionsResponse?.data?.filter(option => 
+    !rideOptions.some(assigned => assigned.id === option.id && assigned.is_assigned)
+  ) || [];
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -212,7 +324,7 @@ const UserDetails = () => {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <User className="w-4 h-4" />
               Overview
@@ -228,6 +340,14 @@ const UserDetails = () => {
             <TabsTrigger value="financial" className="flex items-center gap-2">
               <CreditCard className="w-4 h-4" />
               Financial
+            </TabsTrigger>
+            <TabsTrigger value="ride-options" className="flex items-center gap-2">
+              <Settings2 className="w-4 h-4" />
+              Ride Options
+            </TabsTrigger>
+            <TabsTrigger value="validation" className="flex items-center gap-2">
+              <ClipboardList className="w-4 h-4" />
+              Validation
             </TabsTrigger>
             <TabsTrigger value="security" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
@@ -715,6 +835,337 @@ const UserDetails = () => {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </TabsContent>
+
+          {/* Ride Options Tab */}
+          <TabsContent value="ride-options" className="space-y-6">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold">Assigned Ride Options</h3>
+                  <p className="text-sm text-muted-foreground">Manage driver's ride option assignments</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => refetchRideOptions()}>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </Button>
+                  {availableRideOptions.length > 0 && (
+                    <Dialog open={isAssignmentDialogOpen} onOpenChange={setIsAssignmentDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button>
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Assign Ride Option
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>Assign Ride Option</DialogTitle>
+                          <DialogDescription>
+                            Select a ride option to assign to this driver.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="ride-option">Available Ride Options</Label>
+                            <Select value={selectedRideOptionId?.toString() || ''} onValueChange={(value) => setSelectedRideOptionId(Number(value))}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a ride option..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {availableRideOptions.map((option) => (
+                                  <SelectItem key={option.id} value={option.id.toString()}>
+                                    <div className="flex flex-col">
+                                      <span className="font-medium">{option.name}</span>
+                                      <span className="text-sm text-muted-foreground">
+                                        ${option.base_price} base + ${option.price_per_km}/km • {option.seat_capacity} seats
+                                      </span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setIsAssignmentDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button 
+                            onClick={handleAssignRideOption} 
+                            disabled={!selectedRideOptionId || assignDriver.isPending}
+                          >
+                            {assignDriver.isPending ? 'Assigning...' : 'Assign Driver'}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                </div>
+              </div>
+
+              {rideOptionsLoading ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <RefreshCw className="w-8 h-8 mx-auto animate-spin text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">Loading ride options...</p>
+                  </CardContent>
+                </Card>
+              ) : rideOptions.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {rideOptions.map((option) => (
+                    <Card key={option.id} className={option.is_assigned ? "border-green-200 bg-green-50" : "border-gray-200"}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-base">{option.name}</CardTitle>
+                          <Badge variant={option.is_assigned ? "default" : "secondary"}>
+                            {option.is_assigned ? "Assigned" : "Not Assigned"}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Base Price:</span>
+                            <span className="font-medium">${option.base_price}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Price/KM:</span>
+                            <span className="font-medium">${option.price_per_km}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Seats:</span>
+                            <span className="font-medium">{option.seat_capacity}</span>
+                          </div>
+                          {option.ride_class && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Class:</span>
+                              <Badge variant="outline">{option.ride_class.name}</Badge>
+                            </div>
+                          )}
+                        </div>
+                        {option.description && (
+                          <p className="text-sm text-muted-foreground">{option.description}</p>
+                        )}
+                        {option.is_assigned && (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleUnassignRideOption(option.id)}
+                            className="w-full"
+                          >
+                            <UserMinus className="w-4 h-4 mr-2" />
+                            Unassign
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <Settings2 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Ride Options Available</h3>
+                    <p className="text-muted-foreground">
+                      {availableRideOptions.length === 0 
+                        ? "All ride options have been assigned to this driver."
+                        : "This driver hasn't been assigned to any ride options yet."
+                      }
+                    </p>
+                    {availableRideOptions.length > 0 && (
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Use the "Assign Ride Option" button above to assign available options.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Validation Tab */}
+          <TabsContent value="validation" className="space-y-6">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold">Driver Validation</h3>
+                  <p className="text-sm text-muted-foreground">Review and validate driver application</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => refetchValidation()}>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </Button>
+                  {validationData?.can_be_validated && (
+                    <Dialog open={isValidationDialogOpen} onOpenChange={setIsValidationDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant={user.is_validated ? "destructive" : "default"}>
+                          {user.is_validated ? (
+                            <>
+                              <ThumbsDown className="w-4 h-4 mr-2" />
+                              Invalidate Driver
+                            </>
+                          ) : (
+                            <>
+                              <ThumbsUp className="w-4 h-4 mr-2" />
+                              Validate Driver
+                            </>
+                          )}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>
+                            {user.is_validated ? 'Invalidate Driver' : 'Validate Driver'}
+                          </DialogTitle>
+                          <DialogDescription>
+                            {user.is_validated 
+                              ? 'Invalidate this driver and remove their validation status.'
+                              : 'Approve or reject this driver\'s application.'
+                            }
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          {!user.is_validated && (
+                            <div className="space-y-2">
+                              <Label htmlFor="action">Action</Label>
+                              <Select value={validationAction} onValueChange={(value: 'approve' | 'reject') => setValidationAction(value)}>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="approve">Approve</SelectItem>
+                                  <SelectItem value="reject">Reject</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                          <div className="space-y-2">
+                            <Label htmlFor="reason">Reason *</Label>
+                            <Textarea
+                              id="reason"
+                              placeholder="Enter the reason for this action..."
+                              value={validationReason}
+                              onChange={(e) => setValidationReason(e.target.value)}
+                              rows={3}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="admin_notes">Admin Notes (Optional)</Label>
+                            <Textarea
+                              id="admin_notes"
+                              placeholder="Additional notes for internal use..."
+                              value={adminNotes}
+                              onChange={(e) => setAdminNotes(e.target.value)}
+                              rows={2}
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setIsValidationDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button 
+                            onClick={handleValidation} 
+                            disabled={!validationReason.trim() || validateDriver.isPending}
+                            className={user.is_validated ? 'bg-red-600 hover:bg-red-700' : (validationAction === 'approve' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700')}
+                          >
+                            {validateDriver.isPending 
+                              ? 'Processing...' 
+                              : user.is_validated 
+                                ? 'Invalidate Driver'
+                                : `${validationAction === 'approve' ? 'Approve' : 'Reject'} Driver`
+                            }
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                </div>
+              </div>
+
+              {validationLoading ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <RefreshCw className="w-8 h-8 mx-auto animate-spin text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">Loading validation status...</p>
+                  </CardContent>
+                </Card>
+              ) : validationData ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Validation Status */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ClipboardList className="w-5 h-5" />
+                        Validation Status
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Current Status</span>
+                        {getStatusBadge(user.is_validated, "Validated", "Not Validated")}
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Can Be Validated</span>
+                        {getStatusBadge(validationData.can_be_validated, "Yes", "No")}
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Completion</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-blue-600 h-2 rounded-full" 
+                              style={{ width: `${validationData.completion_percentage}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-sm font-medium">{validationData.completion_percentage}%</span>
+                        </div>
+                      </div>
+                      {validationData.missing_requirements.length > 0 && (
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-2">Missing Requirements:</p>
+                          <div className="space-y-1">
+                            {validationData.missing_requirements.map((req, index) => (
+                              <Badge key={index} variant="destructive" className="mr-1">
+                                {req.replace('_', ' ')}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Document Submission Status */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileCheck className="w-5 h-5" />
+                        Document Status
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {Object.entries(validationData.submission_status).map(([key, status]) => (
+                        <div key={key} className="flex justify-between items-center">
+                          <span className="text-sm capitalize">{key.replace('_', ' ')}</span>
+                          {getStatusBadge(status, "Submitted", "Not Submitted")}
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <AlertTriangle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Validation Data Unavailable</h3>
+                    <p className="text-muted-foreground">Unable to load driver validation information.</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </TabsContent>
         </Tabs>

@@ -308,6 +308,90 @@ export interface RidersResponse {
   };
 }
 
+// Driver Validation Types
+export interface DriverValidationRequest {
+  action: 'approve' | 'reject';
+  reason: string;
+  admin_notes?: string;
+  lang?: string;
+}
+
+export interface DriverValidationResponse {
+  success: boolean;
+  message: string;
+  data: {
+    driver_id: number;
+    driver_name: string;
+    driver_email: string;
+    action: 'approve' | 'reject';
+    is_validated: boolean;
+    validated_at: string;
+    validated_by: number;
+    validated_by_name: string;
+    reason: string;
+    admin_notes?: string;
+  };
+}
+
+export interface DriverValidationStatus {
+  driver: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    username: string;
+    is_validated: boolean;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+  submission_status: {
+    doc_submitted: boolean;
+    car_submitted: boolean;
+    bank_submitted: boolean;
+    car_photos_submitted: boolean;
+    id_document_submitted: boolean;
+    license_submitted: boolean;
+    insurance_submitted: boolean;
+    registration_submitted: boolean;
+    car_inspection_submitted: boolean;
+  };
+  completion_percentage: number;
+  missing_requirements: string[];
+  can_be_validated: boolean;
+  documents: {
+    license_number?: string;
+    license_expiry?: string;
+    insurance_number?: string;
+    insurance_expiry?: string;
+    car_registration?: string;
+    car_registration_expiry?: string;
+    car_inspection_date?: string;
+    id_document_type?: string;
+    id_document_number?: string;
+  };
+  car_details: {
+    car_brand?: string;
+    car_model?: string;
+    model_year?: string;
+    car_color?: string;
+    license_plate?: string;
+    vin_number?: string;
+    seat_number?: number;
+  };
+  bank_details: {
+    bank_name?: string;
+    account_number?: string;
+    account_holder_name?: string;
+  };
+}
+
+export interface DriverValidationStatusResponse {
+  success: boolean;
+  message: string;
+  data: DriverValidationStatus;
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -770,6 +854,35 @@ class ApiService {
     }
   }
 
+  // Driver Validation Management
+  async validateDriver(driverId: number, data: DriverValidationRequest): Promise<DriverValidationResponse> {
+    try {
+      console.log('API: Validating driver:', driverId, data);
+      const result = await this.request<DriverValidationResponse>(`/admin/driver/${driverId}/validate`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      console.log('API: Driver validation response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Driver validation error:', error);
+      throw error;
+    }
+  }
+
+  async getDriverValidationStatus(driverId: number, lang?: string): Promise<DriverValidationStatusResponse> {
+    try {
+      const endpoint = `/admin/driver/${driverId}/validation-status${lang ? `?lang=${lang}` : ''}`;
+      console.log('API: Fetching driver validation status from:', `${this.baseURL}${endpoint}`);
+      const result = await this.request<DriverValidationStatusResponse>(endpoint);
+      console.log('API: Driver validation status response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Driver validation status fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -820,3 +933,7 @@ export const getDriverRides = (driverId: number, params?: Parameters<typeof apiS
 
 // Riders API exports
 export const getRiders = (params?: Parameters<typeof apiService.getRiders>[0]) => apiService.getRiders(params);
+
+// Driver Validation API exports
+export const validateDriver = (driverId: number, data: DriverValidationRequest) => apiService.validateDriver(driverId, data);
+export const getDriverValidationStatus = (driverId: number, lang?: string) => apiService.getDriverValidationStatus(driverId, lang);
