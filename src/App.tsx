@@ -15,8 +15,9 @@ import RideOptions from "./pages/RideOptions";
 import { BookingReport } from "./pages/BookingReport";
 import { TransactionReport } from "./pages/TransactionReport";
 import RevenueReport from "./pages/RevenueReport";
-import PanicManagement from "./pages/PanicManagementWorking";
+import PanicManagement from "./pages/PanicManagementEnhanced";
 import NotificationManagement from "./pages/NotificationManagement";
+import DiscountManagement from "./pages/DiscountManagementDebug";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -90,6 +91,11 @@ const App = () => (
         <Route path="/notifications" element={
           <ProtectedRoute>
             <NotificationManagement />
+          </ProtectedRoute>
+        } />
+        <Route path="/discounts" element={
+          <ProtectedRoute>
+            <DiscountManagement />
           </ProtectedRoute>
         } />
             

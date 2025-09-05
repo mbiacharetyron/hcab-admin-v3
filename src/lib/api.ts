@@ -1357,6 +1357,123 @@ class ApiService {
     }
   }
 
+  // Discount Management
+  async getDiscounts(params?: {
+    per_page?: number;
+    search?: string;
+    status?: boolean;
+    lang?: string;
+  }): Promise<DiscountsResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.status !== undefined) queryParams.append('status', params.status.toString());
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const url = `/admin/discounts${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const result = await this.request<DiscountsResponse>(url);
+      return result;
+    } catch (error) {
+      console.error('API: Discounts fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getDiscount(id: number): Promise<{ data: Discount }> {
+    try {
+      const result = await this.request<{ data: Discount }>(`/admin/discounts/${id}`);
+      return result;
+    } catch (error) {
+      console.error('API: Discount fetch error:', error);
+      throw error;
+    }
+  }
+
+  async createDiscount(data: DiscountCreateRequest): Promise<{ data: Discount }> {
+    try {
+      const result = await this.request<{ data: Discount }>('/admin/discounts', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      return result;
+    } catch (error) {
+      console.error('API: Discount create error:', error);
+      throw error;
+    }
+  }
+
+  async updateDiscount(id: number, data: DiscountUpdateRequest): Promise<{ data: Discount }> {
+    try {
+      const result = await this.request<{ data: Discount }>(`/admin/discounts/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+      return result;
+    } catch (error) {
+      console.error('API: Discount update error:', error);
+      throw error;
+    }
+  }
+
+  async deleteDiscount(id: number): Promise<{ message: string }> {
+    try {
+      const result = await this.request<{ message: string }>(`/admin/discounts/${id}`, {
+        method: 'DELETE',
+      });
+      return result;
+    } catch (error) {
+      console.error('API: Discount delete error:', error);
+      throw error;
+    }
+  }
+
+  async toggleDiscountStatus(id: number): Promise<{ data: { id: number; is_active: boolean } }> {
+    try {
+      const result = await this.request<{ data: { id: number; is_active: boolean } }>(`/admin/discounts/${id}/toggle-status`, {
+        method: 'PUT',
+      });
+      return result;
+    } catch (error) {
+      console.error('API: Discount status toggle error:', error);
+      throw error;
+    }
+  }
+
+  async getDiscountStats(): Promise<{ data: DiscountStats }> {
+    try {
+      const result = await this.request<{ data: DiscountStats }>('/admin/discounts/stats/overview');
+      return result;
+    } catch (error) {
+      console.error('API: Discount stats fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getDiscountUsageHistory(params?: {
+    per_page?: number;
+    discount_id?: number;
+    user_id?: number;
+    lang?: string;
+  }): Promise<DiscountUsageResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
+      if (params?.discount_id) queryParams.append('discount_id', params.discount_id.toString());
+      if (params?.user_id) queryParams.append('user_id', params.user_id.toString());
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const url = `/admin/discounts/usage/history${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const result = await this.request<DiscountUsageResponse>(url);
+      return result;
+    } catch (error) {
+      console.error('API: Discount usage history fetch error:', error);
+      throw error;
+    }
+  }
+
   // Firebase Notifications
   async sendNotification(request: NotificationRequest): Promise<NotificationResponse> {
     try {
@@ -1566,6 +1683,16 @@ export const getRevenueRides = (params?: Parameters<typeof apiService.getRevenue
 export const getPanicReports = (params?: Parameters<typeof apiService.getPanicReports>[0]) => apiService.getPanicReports(params);
 export const resolvePanicReport = (panicId: number) => apiService.resolvePanicReport(panicId);
 
+// Discount Management API exports
+export const getDiscounts = (params?: Parameters<typeof apiService.getDiscounts>[0]) => apiService.getDiscounts(params);
+export const getDiscount = (id: number) => apiService.getDiscount(id);
+export const createDiscount = (data: DiscountCreateRequest) => apiService.createDiscount(data);
+export const updateDiscount = (id: number, data: DiscountUpdateRequest) => apiService.updateDiscount(id, data);
+export const deleteDiscount = (id: number) => apiService.deleteDiscount(id);
+export const toggleDiscountStatus = (id: number) => apiService.toggleDiscountStatus(id);
+export const getDiscountStats = () => apiService.getDiscountStats();
+export const getDiscountUsageHistory = (params?: Parameters<typeof apiService.getDiscountUsageHistory>[0]) => apiService.getDiscountUsageHistory(params);
+
 // Firebase Notifications API exports
 export const sendNotification = (request: NotificationRequest) => apiService.sendNotification(request);
 export const sendTestNotification = (request: Parameters<typeof apiService.sendTestNotification>[0]) => apiService.sendTestNotification(request);
@@ -1737,4 +1864,116 @@ export interface PanicResolveResponse {
     created_at: string;
     updated_at: string;
   };
+}
+
+// Discount System Interfaces
+export interface Discount {
+  id: number;
+  name: string;
+  description?: string;
+  code?: string;
+  type: 'percentage' | 'fixed_amount' | 'free_ride';
+  value: number;
+  minimum_amount?: number;
+  maximum_discount?: number;
+  usage_limit?: number;
+  usage_count: number;
+  per_user_limit: number;
+  applicable_ride_options?: number[];
+  applicable_ride_classes?: number[];
+  is_active: boolean;
+  starts_at?: string;
+  expires_at?: string;
+  user_restrictions?: Record<string, unknown>;
+  is_first_ride_only: boolean;
+  is_shared_ride_only: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface DiscountUsage {
+  id: number;
+  discount_id: number;
+  user_id: number;
+  booking_id?: number;
+  original_amount: number;
+  discount_amount: number;
+  final_amount: number;
+  promo_code?: string;
+  discount_details?: Record<string, unknown>;
+  created_at: string;
+  discount?: {
+    name: string;
+    code?: string;
+  };
+  user?: {
+    name: string;
+    email: string;
+  };
+  booking?: {
+    id: number;
+    source_name: string;
+    destination_name: string;
+  };
+}
+
+export interface DiscountStats {
+  total_discounts: number;
+  active_discounts: number;
+  total_usage: number;
+  total_savings: number;
+  top_discounts: Array<{
+    id: number;
+    name: string;
+    usages_count: number;
+  }>;
+  recent_usage: Array<{
+    id: number;
+    discount: {
+      name: string;
+    };
+    user: {
+      name: string;
+    };
+    original_amount: number;
+    discount_amount: number;
+    created_at: string;
+  }>;
+}
+
+export interface DiscountCreateRequest {
+  name: string;
+  description?: string;
+  code?: string;
+  type: 'percentage' | 'fixed_amount' | 'free_ride';
+  value: number;
+  minimum_amount?: number;
+  maximum_discount?: number;
+  usage_limit?: number;
+  per_user_limit?: number;
+  applicable_ride_options?: number[];
+  applicable_ride_classes?: number[];
+  is_active?: boolean;
+  starts_at?: string;
+  expires_at?: string;
+  user_restrictions?: Record<string, unknown>;
+  is_first_ride_only?: boolean;
+  is_shared_ride_only?: boolean;
+  lang?: string;
+}
+
+export type DiscountUpdateRequest = Partial<DiscountCreateRequest>;
+
+export interface DiscountsResponse {
+  current_page: number;
+  data: Discount[];
+  total: number;
+  per_page: number;
+}
+
+export interface DiscountUsageResponse {
+  current_page: number;
+  data: DiscountUsage[];
+  total: number;
+  per_page: number;
 }

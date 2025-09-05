@@ -6,22 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { 
   AlertTriangle,
   RefreshCw,
   Download,
   Filter,
   Search,
-  BarChart3,
-  PieChart,
-  Activity,
   MapPin,
   Eye,
   Car,
@@ -31,20 +20,30 @@ import {
   XCircle,
   User,
   Phone,
-  Calendar
+  Calendar,
+  Map,
+  ChevronLeft,
+  ChevronRight,
+  BarChart3,
+  PieChart,
+  Activity
 } from "lucide-react";
 import { usePanicManagementData } from "@/hooks/usePanicManagement";
 import { useState } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import PanicMap from "@/components/PanicMap";
+import { PanicReport } from "@/lib/api";
 
-const PanicManagementFull = () => {
-  // State for filters
+const PanicManagementEnhanced = () => {
+  // State for filters and pagination
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [userTypeFilter, setUserTypeFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(15);
+  const [limit] = useState(10);
+  const [selectedReport, setSelectedReport] = useState<PanicReport | null>(null);
+  const [showMap, setShowMap] = useState(false);
 
   // API call with filters
   const { 
@@ -64,6 +63,7 @@ const PanicManagementFull = () => {
   });
 
   const totalItems = pagination?.total_items || 0;
+  const totalPages = pagination?.total_pages || 1;
 
   // Helper functions
   const getStatusBadge = (isResolved: boolean) => {
@@ -113,6 +113,103 @@ const PanicManagementFull = () => {
     setStatusFilter('all');
     setUserTypeFilter('all');
     setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleViewOnMap = (report: PanicReport) => {
+    setSelectedReport(report);
+    setShowMap(true);
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <Button
+          key={i}
+          variant={i === currentPage ? "default" : "outline"}
+          size="sm"
+          onClick={() => handlePageChange(i)}
+          className={cn(
+            "w-10 h-10",
+            i === currentPage 
+              ? "bg-red-600 hover:bg-red-700 text-white" 
+              : "hover:bg-gray-100"
+          )}
+        >
+          {i}
+        </Button>
+      );
+    }
+
+    return (
+      <div className="flex items-center justify-center space-x-2 mt-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="flex items-center space-x-1"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span>Previous</span>
+        </Button>
+        
+        {startPage > 1 && (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(1)}
+              className="w-10 h-10"
+            >
+              1
+            </Button>
+            {startPage > 2 && <span className="text-gray-500">...</span>}
+          </>
+        )}
+        
+        {pages}
+        
+        {endPage < totalPages && (
+          <>
+            {endPage < totalPages - 1 && <span className="text-gray-500">...</span>}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(totalPages)}
+              className="w-10 h-10"
+            >
+              {totalPages}
+            </Button>
+          </>
+        )}
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="flex items-center space-x-1"
+        >
+          <span>Next</span>
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
+    );
   };
 
   return (
@@ -290,11 +387,11 @@ const PanicManagementFull = () => {
                 Overview
               </TabsTrigger>
               <TabsTrigger 
-                value="analytics"
+                value="map"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-red-600 font-semibold transition-all duration-200"
               >
-                <PieChart className="w-4 h-4 mr-2" />
-                Analytics
+                <Map className="w-4 h-4 mr-2" />
+                Map View
               </TabsTrigger>
             </TabsList>
           </div>
@@ -381,7 +478,7 @@ const PanicManagementFull = () => {
               </CardContent>
             </Card>
 
-            {/* Enhanced Panic Reports Table */}
+            {/* Enhanced Panic Reports List */}
             <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3 text-xl">
@@ -393,159 +490,146 @@ const PanicManagementFull = () => {
                 <p className="text-sm text-muted-foreground">Emergency reports requiring immediate attention ({totalItems} total)</p>
               </CardHeader>
               <CardContent>
-                <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Report ID</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">User Details</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Location</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Booking Info</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Status</TableHead>
-                        <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Reported</TableHead>
-                        <TableHead className="w-[120px] font-semibold text-gray-700 dark:text-gray-300">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {isLoading ? (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8">
-                            <div className="flex items-center justify-center gap-2">
-                              <RefreshCw className="w-4 h-4 animate-spin" />
-                              <span>Loading panic reports...</span>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ) : panicReports.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8">
-                            <div className="text-gray-500">
-                              <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                              <p>No panic reports found</p>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        panicReports.map((report, index) => (
-                          <TableRow 
-                            key={report.id}
-                            className={cn(
-                              "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors",
-                              index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50/50 dark:bg-gray-800/30"
-                            )}
-                          >
-                            <TableCell className="font-semibold text-gray-800 dark:text-gray-200">
-                              #{report.id}
-                            </TableCell>
-                            <TableCell>
-                              <div className="space-y-2">
-                                <div className="font-semibold text-gray-800 dark:text-gray-200">{report.user.name}</div>
-                                <div className="flex items-center space-x-2">
-                                  {getUserTypeBadge(report.user.role)}
-                                </div>
-                                <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                                  <Phone className="w-3 h-3" />
-                                  <span>{report.user.phone}</span>
-                                </div>
-                                <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
-                                  {report.user.email}
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="space-y-2">
-                                <div className="flex items-center space-x-2">
-                                  <MapPin className="w-3 h-3 text-gray-400" />
-                                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {report.location}
-                                  </span>
-                                </div>
-                                <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
-                                  {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
-                                </div>
-                                {report.description && (
-                                  <div className="text-xs text-gray-600 dark:text-gray-400 italic">
-                                    "{report.description}"
-                                  </div>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {report.booking ? (
-                                <div className="space-y-2">
-                                  <div className="font-medium text-gray-800 dark:text-gray-200">
-                                    Booking #{report.booking.id}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    <div className="flex items-center space-x-1 mb-1">
-                                      <MapPin className="w-3 h-3" />
-                                      <span className="truncate max-w-[150px]">{report.booking.source_name}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <MapPin className="w-3 h-3" />
-                                      <span className="truncate max-w-[150px]">{report.booking.destination_name}</span>
-                                    </div>
-                                  </div>
-                                  <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
-                                    {report.booking.status}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    Fare: {report.booking.ride_fare} XAF
-                                  </div>
-                                </div>
-                              ) : (
-                                <span className="text-muted-foreground bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded-full text-xs">No booking</span>
-                              )}
-                            </TableCell>
-                            <TableCell>
+                {isLoading ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2" />
+                    <p>Loading panic reports...</p>
+                  </div>
+                ) : panicReports.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>No panic reports found</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {panicReports.map((report, index) => (
+                      <div 
+                        key={report.id} 
+                        className={cn(
+                          "border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200",
+                          index % 2 === 0 
+                            ? "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" 
+                            : "bg-gray-50/50 dark:bg-gray-800/30 border-gray-200 dark:border-gray-700"
+                        )}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 space-y-4">
+                            {/* Header Row */}
+                            <div className="flex items-center gap-4">
+                              <span className="text-2xl font-bold text-gray-800 dark:text-gray-200">#{report.id}</span>
+                              {getUserTypeBadge(report.user.role)}
                               {getStatusBadge(report.is_resolved)}
-                            </TableCell>
-                            <TableCell>
-                              <div className="space-y-1">
-                                <div className="font-medium text-gray-800 dark:text-gray-200">
-                                  {format(new Date(report.created_at), "MMM dd, yyyy")}
-                                </div>
-                                <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
-                                  {format(new Date(report.created_at), "HH:mm")}
-                                </div>
-                                <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                                  <Calendar className="w-3 h-3" />
-                                  <span>{format(new Date(report.created_at), "EEEE")}</span>
+                            </div>
+
+                            {/* User Details */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                  <User className="w-4 h-4" />
+                                  User Information
+                                </h4>
+                                <div className="space-y-1 text-sm">
+                                  <p><span className="font-medium">Name:</span> {report.user.name}</p>
+                                  <p className="flex items-center gap-1">
+                                    <Phone className="w-3 h-3" />
+                                    <span className="font-medium">Phone:</span> {report.user.phone}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
+                                    {report.user.email}
+                                  </p>
                                 </div>
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center space-x-1">
-                                {!report.is_resolved && (
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm"
-                                    onClick={() => handleResolvePanic(report.id)}
-                                    disabled={isResolving}
-                                    className="hover:bg-green-100 dark:hover:bg-green-900/30 hover:text-green-600 dark:hover:text-green-400 transition-colors"
-                                    title="Mark as resolved"
-                                  >
-                                    <CheckCircle className="w-4 h-4" />
-                                  </Button>
-                                )}
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  className="hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                  title="View details"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </Button>
+
+                              <div className="space-y-2">
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                  <MapPin className="w-4 h-4" />
+                                  Location Details
+                                </h4>
+                                <div className="space-y-1 text-sm">
+                                  <p><span className="font-medium">Address:</span> {report.location}</p>
+                                  <p className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
+                                    {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
+                                  </p>
+                                  {report.description && (
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 italic">
+                                      "{report.description}"
+                                    </p>
+                                  )}
+                                </div>
                               </div>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                            </div>
+
+                            {/* Booking Information */}
+                            {report.booking && (
+                              <div className="space-y-2">
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                  <Car className="w-4 h-4" />
+                                  Associated Booking
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                  <div>
+                                    <p><span className="font-medium">Booking ID:</span> #{report.booking.id}</p>
+                                    <p><span className="font-medium">Status:</span> {report.booking.status}</p>
+                                  </div>
+                                  <div>
+                                    <p><span className="font-medium">From:</span> {report.booking.source_name}</p>
+                                    <p><span className="font-medium">To:</span> {report.booking.destination_name}</p>
+                                  </div>
+                                  <div>
+                                    <p><span className="font-medium">Fare:</span> {report.booking.ride_fare} XAF</p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Timestamp */}
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Calendar className="w-4 h-4" />
+                              <span>Reported on {format(new Date(report.created_at), "EEEE, MMMM dd, yyyy 'at' HH:mm")}</span>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="ml-6 flex flex-col gap-2">
+                            {!report.is_resolved && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleResolvePanic(report.id)}
+                                disabled={isResolving}
+                                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                              >
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                Resolve
+                              </Button>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewOnMap(report)}
+                              className="border-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                              <Map className="w-4 h-4 mr-1" />
+                              View on Map
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="border-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              Details
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
+
+            {/* Pagination */}
+            {renderPagination()}
           </TabsContent>
 
           {/* Overview Tab */}
@@ -641,30 +725,27 @@ const PanicManagementFull = () => {
             </div>
           </TabsContent>
 
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-8">
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-3 text-xl">
-                  <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
-                    <PieChart className="w-6 h-6 text-white" />
+          {/* Map View Tab */}
+          <TabsContent value="map" className="space-y-8">
+            {panicReports.length > 0 ? (
+              <PanicMap
+                reports={panicReports as PanicReport[]}
+                selectedReport={selectedReport}
+                onReportSelect={(report) => setSelectedReport(report)}
+              />
+            ) : (
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                <CardContent className="p-8 text-center">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl w-fit mx-auto mb-4">
+                    <Map className="w-8 h-8 text-blue-600" />
                   </div>
-                  Advanced Analytics
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">Coming soon - Advanced panic analytics</p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="p-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-xl text-center">
-                  <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl w-fit mx-auto mb-4">
-                    <Activity className="w-8 h-8 text-emerald-600" />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Coming Soon</h3>
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">No Panic Reports to Display</h3>
                   <p className="text-sm text-muted-foreground">
-                    Advanced panic analytics with geographic distribution, response time tracking, and predictive insights will be available soon.
+                    There are currently no panic reports to display on the map.
                   </p>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
@@ -672,4 +753,4 @@ const PanicManagementFull = () => {
   );
 };
 
-export default PanicManagementFull;
+export default PanicManagementEnhanced;
