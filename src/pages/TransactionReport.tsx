@@ -97,9 +97,9 @@ export const TransactionReport = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge variant="success" className="bg-green-100 text-green-700 hover:bg-green-100"><CheckCircle className="w-3 h-3 mr-1" /> Completed</Badge>;
+        return <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100"><CheckCircle className="w-3 h-3 mr-1" /> Completed</Badge>;
       case "pending":
-        return <Badge variant="warning" className="bg-orange-100 text-orange-700 hover:bg-orange-100"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
+        return <Badge variant="secondary" className="bg-orange-100 text-orange-700 hover:bg-orange-100"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
       case "failed":
         return <Badge variant="destructive" className="bg-red-100 text-red-700 hover:bg-red-100"><XCircle className="w-3 h-3 mr-1" /> Failed</Badge>;
       default:
@@ -111,7 +111,7 @@ export const TransactionReport = () => {
   const getTransactionTypeBadge = (type: string) => {
     switch (type) {
       case "deposit":
-        return <Badge variant="success" className="bg-green-100 text-green-700 hover:bg-green-100"><ArrowDownLeft className="w-3 h-3 mr-1" /> Deposit</Badge>;
+        return <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100"><ArrowDownLeft className="w-3 h-3 mr-1" /> Deposit</Badge>;
       case "withdrawal":
         return <Badge variant="destructive" className="bg-red-100 text-red-700 hover:bg-red-100"><ArrowUpRight className="w-3 h-3 mr-1" /> Withdrawal</Badge>;
       default:
@@ -498,34 +498,37 @@ export const TransactionReport = () => {
           </div>
         </TabsContent>
 
-        {/* Transactions Tab */}
-        <TabsContent value="transactions" className="space-y-6">
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="w-5 h-5" />
-                <span>Filters</span>
+        {/* Enhanced Transactions Tab */}
+        <TabsContent value="transactions" className="space-y-8">
+          {/* Enhanced Filters */}
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+                  <Filter className="w-6 h-6 text-white" />
+                </div>
+                Advanced Filters
               </CardTitle>
+              <p className="text-sm text-muted-foreground">Filter and search through transaction data</p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Search</label>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Search</label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       placeholder="Search transactions..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 border-2 focus:border-blue-500 transition-colors"
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Type</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Type</label>
                   <Select value={transactionTypeFilter} onValueChange={setTransactionTypeFilter}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-2 focus:border-blue-500 transition-colors">
                       <SelectValue placeholder="All Types" />
                     </SelectTrigger>
                     <SelectContent>
@@ -535,10 +538,10 @@ export const TransactionReport = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Status</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Status</label>
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-2 focus:border-blue-500 transition-colors">
                       <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>
                     <SelectContent>
@@ -549,10 +552,10 @@ export const TransactionReport = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Payment Method</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Payment Method</label>
                   <Select value={paymentMethodFilter} onValueChange={setPaymentMethodFilter}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-2 focus:border-blue-500 transition-colors">
                       <SelectValue placeholder="All Methods" />
                     </SelectTrigger>
                     <SelectContent>
@@ -563,101 +566,129 @@ export const TransactionReport = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Results</label>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      {totalItems} transactions
-                    </span>
-                    {(searchTerm || transactionTypeFilter !== "all" || statusFilter !== "all" || paymentMethodFilter !== "all") && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSearchTerm("");
-                          setTransactionTypeFilter("all");
-                          setStatusFilter("all");
-                          setPaymentMethodFilter("all");
-                          setCurrentPage(1);
-                        }}
-                        className="text-xs h-6 px-2"
-                      >
-                        Clear
-                      </Button>
-                    )}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Results</label>
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-2xl font-bold text-blue-600">{totalItems}</div>
+                        <div className="text-sm text-muted-foreground">transactions</div>
+                      </div>
+                      {(searchTerm || transactionTypeFilter !== "all" || statusFilter !== "all" || paymentMethodFilter !== "all") && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSearchTerm("");
+                            setTransactionTypeFilter("all");
+                            setStatusFilter("all");
+                            setPaymentMethodFilter("all");
+                            setCurrentPage(1);
+                          }}
+                          className="text-xs h-8 px-3 bg-white hover:bg-gray-50 shadow-sm"
+                        >
+                          Clear All
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Transactions Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Receipt className="w-5 h-5" />
+          {/* Enhanced Transactions Table */}
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                  <Receipt className="w-6 h-6 text-white" />
+                </div>
                 Transaction List
               </CardTitle>
+              <p className="text-sm text-muted-foreground">Detailed view of all financial transactions</p>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>User</TableHead>
-                      <TableHead>Payment Method</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Fee</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
+                    <TableRow className="border-b-2 border-gray-200 dark:border-gray-700">
+                      <TableHead className="font-semibold text-gray-700 dark:text-gray-300">ID</TableHead>
+                      <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Type</TableHead>
+                      <TableHead className="font-semibold text-gray-700 dark:text-gray-300">User</TableHead>
+                      <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Payment Method</TableHead>
+                      <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Amount</TableHead>
+                      <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Fee</TableHead>
+                      <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Status</TableHead>
+                      <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Date</TableHead>
+                      <TableHead className="w-[50px] font-semibold text-gray-700 dark:text-gray-300">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transactions.map((transaction) => (
-                      <TableRow key={transaction.id}>
-                        <TableCell className="font-medium">#{transaction.id}</TableCell>
+                    {transactions.map((transaction, index) => (
+                      <TableRow 
+                        key={transaction.id} 
+                        className={cn(
+                          "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors",
+                          index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50/50 dark:bg-gray-800/30"
+                        )}
+                      >
+                        <TableCell className="font-semibold text-gray-800 dark:text-gray-200">
+                          #{transaction.id}
+                        </TableCell>
                         <TableCell>{getTransactionTypeBadge(transaction.transaction_type)}</TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <div className="font-medium">User {transaction.user_id}</div>
+                            <div className="font-semibold text-gray-800 dark:text-gray-200">
+                              User {transaction.user_id}
+                            </div>
                             {transaction.phone_number && (
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
                                 {transaction.phone_number}
                               </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-3">
                             {getPaymentMethodIcon(transaction.payment_method)}
-                            <span className="text-sm">{transaction.payment_method}</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              {transaction.payment_method.replace('_', ' ')}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <div className="font-medium">XAF {parseFloat(transaction.amount).toLocaleString()}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="font-bold text-lg text-gray-800 dark:text-gray-200">
+                              XAF {parseFloat(transaction.amount).toLocaleString()}
+                            </div>
+                            <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
                               Final: XAF {parseFloat(transaction.final_amount).toLocaleString()}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm">XAF {parseFloat(transaction.fee).toLocaleString()}</div>
+                          <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            XAF {parseFloat(transaction.fee).toLocaleString()}
+                          </div>
                         </TableCell>
                         <TableCell>{getStatusBadge(transaction.status)}</TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <div>{format(new Date(transaction.created_at), "MMM dd, yyyy")}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="font-medium text-gray-800 dark:text-gray-200">
+                              {format(new Date(transaction.created_at), "MMM dd, yyyy")}
+                            </div>
+                            <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
                               {format(new Date(transaction.created_at), "HH:mm")}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          >
                             <MoreHorizontal className="w-4 h-4" />
                           </Button>
                         </TableCell>
@@ -669,35 +700,45 @@ export const TransactionReport = () => {
 
               {/* Enhanced Pagination */}
               {transactions.length > 0 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
-                  {/* Results Summary */}
-                  <div className="text-sm text-muted-foreground">
-                    Showing {((currentPageFromAPI - 1) * itemsPerPageFromAPI) + 1} to {Math.min(currentPageFromAPI * itemsPerPageFromAPI, totalItems)} of {totalItems} transactions
-                  </div>
+                <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                    {/* Results Summary */}
+                    <div className="flex items-center space-x-4">
+                      <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                        <div className="text-sm text-muted-foreground">Showing</div>
+                        <div className="text-lg font-bold text-blue-600">
+                          {((currentPageFromAPI - 1) * itemsPerPageFromAPI) + 1} - {Math.min(currentPageFromAPI * itemsPerPageFromAPI, totalItems)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">of {totalItems} transactions</div>
+                      </div>
+                    </div>
 
-                  {/* Pagination Controls */}
-                  {totalPages > 1 && (
-                    <div className="flex items-center space-x-2">
-                      {/* First Page */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(1)}
-                        disabled={currentPageFromAPI === 1}
-                        className="hidden sm:flex"
-                      >
-                        First
-                      </Button>
+                    {/* Enhanced Pagination Controls */}
+                    {totalPages > 1 && (
+                      <div className="flex items-center space-x-2">
+                        {/* First Page */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(1)}
+                          disabled={currentPageFromAPI === 1}
+                          className="hidden sm:flex border-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                        >
+                          <ArrowUp className="w-3 h-3 mr-1" />
+                          First
+                        </Button>
 
-                      {/* Previous Page */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        disabled={currentPageFromAPI === 1}
-                      >
-                        Previous
-                      </Button>
+                        {/* Previous Page */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                          disabled={currentPageFromAPI === 1}
+                          className="border-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                        >
+                          <ArrowDown className="w-3 h-3 mr-1" />
+                          Previous
+                        </Button>
 
                       {/* Page Numbers */}
                       <div className="flex items-center space-x-1">
@@ -715,15 +756,20 @@ export const TransactionReport = () => {
                           // Add first page and ellipsis if needed
                           if (startPage > 1) {
                             pages.push(
-                              <Button
-                                key={1}
-                                variant={currentPageFromAPI === 1 ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setCurrentPage(1)}
-                                className="w-8 h-8 p-0"
-                              >
-                                1
-                              </Button>
+                                                                  <Button
+                                      key={1}
+                                      variant={currentPageFromAPI === 1 ? "default" : "outline"}
+                                      size="sm"
+                                      onClick={() => setCurrentPage(1)}
+                                      className={cn(
+                                        "w-8 h-8 p-0 font-semibold transition-all duration-200",
+                                        currentPageFromAPI === 1 
+                                          ? "bg-blue-600 text-white shadow-lg" 
+                                          : "border-2 hover:bg-blue-50 hover:border-blue-300"
+                                      )}
+                                    >
+                                      1
+                                    </Button>
                             );
                             if (startPage > 2) {
                               pages.push(
@@ -737,15 +783,20 @@ export const TransactionReport = () => {
                           // Add visible page numbers
                           for (let i = startPage; i <= endPage; i++) {
                             pages.push(
-                              <Button
-                                key={i}
-                                variant={currentPageFromAPI === i ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setCurrentPage(i)}
-                                className="w-8 h-8 p-0"
-                              >
-                                {i}
-                              </Button>
+                                                                  <Button
+                                      key={i}
+                                      variant={currentPageFromAPI === i ? "default" : "outline"}
+                                      size="sm"
+                                      onClick={() => setCurrentPage(i)}
+                                      className={cn(
+                                        "w-8 h-8 p-0 font-semibold transition-all duration-200",
+                                        currentPageFromAPI === i 
+                                          ? "bg-blue-600 text-white shadow-lg" 
+                                          : "border-2 hover:bg-blue-50 hover:border-blue-300"
+                                      )}
+                                    >
+                                      {i}
+                                    </Button>
                             );
                           }
 
@@ -759,15 +810,20 @@ export const TransactionReport = () => {
                               );
                             }
                             pages.push(
-                              <Button
-                                key={totalPages}
-                                variant={currentPageFromAPI === totalPages ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setCurrentPage(totalPages)}
-                                className="w-8 h-8 p-0"
-                              >
-                                {totalPages}
-                              </Button>
+                                                                  <Button
+                                      key={totalPages}
+                                      variant={currentPageFromAPI === totalPages ? "default" : "outline"}
+                                      size="sm"
+                                      onClick={() => setCurrentPage(totalPages)}
+                                      className={cn(
+                                        "w-8 h-8 p-0 font-semibold transition-all duration-200",
+                                        currentPageFromAPI === totalPages 
+                                          ? "bg-blue-600 text-white shadow-lg" 
+                                          : "border-2 hover:bg-blue-50 hover:border-blue-300"
+                                      )}
+                                    >
+                                      {totalPages}
+                                    </Button>
                             );
                           }
 
@@ -775,81 +831,182 @@ export const TransactionReport = () => {
                         })()}
                       </div>
 
-                      {/* Next Page */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                        disabled={currentPageFromAPI === totalPages}
-                      >
-                        Next
-                      </Button>
+                                              {/* Next Page */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                          disabled={currentPageFromAPI === totalPages}
+                          className="border-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                        >
+                          Next
+                          <ArrowUp className="w-3 h-3 ml-1" />
+                        </Button>
 
-                      {/* Last Page */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(totalPages)}
-                        disabled={currentPageFromAPI === totalPages}
-                        className="hidden sm:flex"
-                      >
-                        Last
-                      </Button>
+                        {/* Last Page */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(totalPages)}
+                          disabled={currentPageFromAPI === totalPages}
+                          className="hidden sm:flex border-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                        >
+                          Last
+                          <ArrowUp className="w-3 h-3 ml-1" />
+                        </Button>
                     </div>
                   )}
 
-                  {/* Items Per Page Selector */}
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">Show:</span>
-                    <Select
-                      value={itemsPerPage.toString()}
-                      onValueChange={(value) => {
-                        setItemsPerPage(parseInt(value));
-                        setCurrentPage(1); // Reset to first page when changing page size
-                      }}
-                    >
-                      <SelectTrigger className="w-16 h-8">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="10">10</SelectItem>
-                        <SelectItem value="25">25</SelectItem>
-                        <SelectItem value="50">50</SelectItem>
-                        <SelectItem value="100">100</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {/* Enhanced Items Per Page Selector */}
+                    <div className="flex items-center space-x-3">
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Show:</span>
+                      <Select
+                        value={itemsPerPage.toString()}
+                        onValueChange={(value) => {
+                          setItemsPerPage(parseInt(value));
+                          setCurrentPage(1); // Reset to first page when changing page size
+                        }}
+                      >
+                        <SelectTrigger className="w-20 h-10 border-2 focus:border-blue-500 transition-colors">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="10">10</SelectItem>
+                          <SelectItem value="25">25</SelectItem>
+                          <SelectItem value="50">50</SelectItem>
+                          <SelectItem value="100">100</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <span className="text-sm text-muted-foreground">per page</span>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* No Results Message */}
+              {/* Enhanced No Results Message */}
               {transactions.length === 0 && (
-                <div className="text-center py-8">
-                  <div className="text-muted-foreground mb-2">No transactions found</div>
-                  <p className="text-sm text-muted-foreground">
-                    Try adjusting your search criteria or filters
-                  </p>
+                <div className="text-center py-16">
+                  <div className="p-6 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-2xl border border-gray-200 dark:border-gray-700 max-w-md mx-auto">
+                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <Receipt className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                      No transactions found
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Try adjusting your search criteria or filters to find what you're looking for.
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setSearchTerm("");
+                        setTransactionTypeFilter("all");
+                        setStatusFilter("all");
+                        setPaymentMethodFilter("all");
+                        setCurrentPage(1);
+                      }}
+                      className="border-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                    >
+                      Clear All Filters
+                    </Button>
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Transaction Analytics (Coming Soon)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Advanced charts and graphs for transaction trends will be available here.
-              </p>
-            </CardContent>
-          </Card>
+        {/* Enhanced Analytics Tab */}
+        <TabsContent value="analytics" className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Coming Soon Card */}
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
+                    <PieChart className="w-6 h-6 text-white" />
+                  </div>
+                  Transaction Analytics
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Advanced financial insights and trends</p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-xl border border-purple-200 dark:border-purple-700">
+                  <div className="text-center">
+                    <div className="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <LineChart className="w-8 h-8 text-purple-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-200 mb-2">
+                      Coming Soon
+                    </h3>
+                    <p className="text-sm text-purple-600 dark:text-purple-400 mb-4">
+                      Advanced charts and graphs for transaction trends will be available here.
+                    </p>
+                    <div className="space-y-2 text-xs text-purple-500 dark:text-purple-400">
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span>Revenue trends over time</span>
+                      </div>
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span>Payment method distribution</span>
+                      </div>
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span>Transaction volume analytics</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Feature Preview Card */}
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+                    <Target className="w-6 h-6 text-white" />
+                  </div>
+                  Upcoming Features
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">What's coming next in analytics</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <TrendingUpIcon className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-blue-800 dark:text-blue-200">Revenue Forecasting</div>
+                      <div className="text-xs text-blue-600 dark:text-blue-400">Predict future transaction volumes</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg">
+                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                      <Users className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-green-800 dark:text-green-200">User Behavior Analysis</div>
+                      <div className="text-xs text-green-600 dark:text-green-400">Understand transaction patterns</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-lg">
+                    <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                      <Award className="w-4 h-4 text-orange-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-orange-800 dark:text-orange-200">Performance Metrics</div>
+                      <div className="text-xs text-orange-600 dark:text-orange-400">Track key performance indicators</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </AdminLayout>
