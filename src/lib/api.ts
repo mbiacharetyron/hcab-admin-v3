@@ -486,6 +486,77 @@ export interface BookingReportRidesResponse {
   };
 }
 
+// Transaction Report Types
+export interface WalletStats {
+  total_balance: number;
+  current_week: {
+    withdrawals: number;
+    deposits: number;
+    pending: number;
+  };
+  previous_week: {
+    withdrawals: number;
+    deposits: number;
+    pending: number;
+  };
+  percentage_change: {
+    withdrawals: number;
+    deposits: number;
+    pending: number;
+  };
+}
+
+export interface WalletStatsResponse {
+  message: string;
+  data: WalletStats;
+  code: number;
+}
+
+export interface WalletTransaction {
+  id: number;
+  user_id: number;
+  booking_id: number | null;
+  transaction_type: 'deposit' | 'withdrawal';
+  message: string | null;
+  error_code: string | null;
+  transaction_id: string;
+  s3p_ptn: string | null;
+  payment_method: string;
+  phone_number: string | null;
+  fee: string;
+  revenue: string;
+  merchant_debit_amount: string | null;
+  amount: string;
+  final_amount: string;
+  s3p_receiptNumber: string | null;
+  stripe_payment_intent_id: string | null;
+  status: 'completed' | 'pending' | 'failed';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WalletTransactionsResponse {
+  message: string;
+  data: {
+    transactions: WalletTransaction[];
+    meta: {
+      current_page: number;
+      total_items: number;
+      total_pages: number;
+      limit: number;
+    };
+  };
+  code: number;
+}
+
+export interface S3PBalanceResponse {
+  message: string;
+  data: {
+    balance: number;
+  };
+  code: number;
+}
+
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -1008,6 +1079,63 @@ class ApiService {
     }
   }
 
+  // Transaction Report Management
+  async getWalletStats(): Promise<WalletStatsResponse> {
+    try {
+      console.log('API: Fetching wallet stats from:', `${this.baseURL}/admin/wallet-stats`);
+      const result = await this.request<WalletStatsResponse>('/admin/wallet-stats');
+      console.log('API: Wallet stats response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Wallet stats fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getWalletTransactions(params?: {
+    page?: number;
+    limit?: number;
+    transaction_type?: 'deposit' | 'withdrawal';
+    status?: 'completed' | 'pending' | 'failed';
+    payment_method?: string;
+    start_date?: string;
+    end_date?: string;
+  }): Promise<WalletTransactionsResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.transaction_type) queryParams.append('transaction_type', params.transaction_type);
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.payment_method) queryParams.append('payment_method', params.payment_method);
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+      
+      const url = `/admin/wallet-transactions${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      
+      console.log('API: Fetching wallet transactions from:', `${this.baseURL}${url}`);
+      const result = await this.request<WalletTransactionsResponse>(url);
+      console.log('API: Wallet transactions response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Wallet transactions fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getS3PBalance(): Promise<S3PBalanceResponse> {
+    try {
+      console.log('API: Fetching S3P balance from:', `${this.baseURL}/admin/s3p/balance`);
+      const result = await this.request<S3PBalanceResponse>('/admin/s3p/balance');
+      console.log('API: S3P balance response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: S3P balance fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -1065,3 +1193,8 @@ export const getDriverValidationStatus = (driverId: number, lang?: string) => ap
 
 // Booking Report API exports
 export const getWeeklyRideStats = () => apiService.getWeeklyRideStats();
+
+// Transaction Report API exports
+export const getWalletStats = () => apiService.getWalletStats();
+export const getWalletTransactions = (params?: Parameters<typeof apiService.getWalletTransactions>[0]) => apiService.getWalletTransactions(params);
+export const getS3PBalance = () => apiService.getS3PBalance();

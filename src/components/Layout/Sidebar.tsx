@@ -1,23 +1,24 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Car, 
-  Users, 
-  DollarSign, 
-  MessageSquare, 
-  FileText, 
-  CreditCard, 
-  BarChart3, 
-  AlertTriangle, 
-  DollarSign as PayOut, 
-  HeadphonesIcon, 
-  Bell, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Car,
+  Users,
+  DollarSign,
+  MessageSquare,
+  FileText,
+  CreditCard,
+  BarChart3,
+  AlertTriangle,
+  DollarSign as PayOut,
+  HeadphonesIcon,
+  Bell,
+  Settings,
   Menu,
   X,
   LogOut,
-  Settings2
+  Settings2,
+  Receipt
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,10 +32,10 @@ const menuItems = [
   { title: "Drivers", icon: Car, path: "/drivers" },
   { title: "Ride Options", icon: Settings2, path: "/ride-options" },
   { title: "Riders", icon: Users, path: "/riders" },
-  { title: "Ride Fare", icon: DollarSign, path: "/ride-fare" },
-  { title: "Support Messages", icon: MessageSquare, path: "/support" },
+  // { title: "Ride Fare", icon: DollarSign, path: "/ride-fare" },
+  // { title: "Support Messages", icon: MessageSquare, path: "/support" },
   { title: "Booking Report", icon: FileText, path: "/booking-report" },
-  { title: "Transaction Report", icon: CreditCard, path: "/transaction-report" },
+  { title: "Transaction Report", icon: Receipt, path: "/transaction-report" },
   { title: "Revenue Report", icon: BarChart3, path: "/revenue-report" },
   { title: "Panic Management", icon: AlertTriangle, path: "/panic" },
   { title: "Pay-outs", icon: PayOut, path: "/payouts" },

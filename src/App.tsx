@@ -13,6 +13,7 @@ import Riders from "./pages/Riders";
 import UserDetails from "./pages/UserDetails";
 import RideOptions from "./pages/RideOptions";
 import { BookingReport } from "./pages/BookingReport";
+import { TransactionReport } from "./pages/TransactionReport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -66,6 +67,11 @@ const App = () => (
             <Route path="/booking-report" element={
               <ProtectedRoute>
                 <BookingReport />
+              </ProtectedRoute>
+            } />
+            <Route path="/transaction-report" element={
+              <ProtectedRoute>
+                <TransactionReport />
               </ProtectedRoute>
             } />
             
