@@ -83,7 +83,7 @@ export const useNotificationLogs = (params?: {
   }, Error>({
     queryKey: ['admin/notification-logs', params],
     queryFn: () => getNotificationLogs(params),
-    refetchInterval: API_CONFIG.REQUEST_CONFIG.REFETCH_INTERVALS.RIDES,
+    refetchInterval: API_CONFIG.REQUEST_CONFIG.REFETCH_INTERVALS.NOTIFICATION_LOGS,
     staleTime: 30000,
     retry: 2,
     retryDelay: 1000,

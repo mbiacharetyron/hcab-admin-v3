@@ -15,7 +15,7 @@ import RideOptions from "./pages/RideOptions";
 import { BookingReport } from "./pages/BookingReport";
 import { TransactionReport } from "./pages/TransactionReport";
 import RevenueReport from "./pages/RevenueReport";
-import PanicManagement from "./pages/PanicManagement";
+import PanicManagement from "./pages/PanicManagementWorking";
 import NotificationManagement from "./pages/NotificationManagement";
 import NotFound from "./pages/NotFound";
 

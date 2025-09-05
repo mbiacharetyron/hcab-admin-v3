@@ -28,6 +28,8 @@ export const API_CONFIG = {
       RIDES: 60000, // 1 minute
       USER_DETAILS: 300000, // 5 minutes
       RIDE_OPTION_DETAILS: 300000, // 5 minutes
+      PANIC_REPORTS: 60000, // 1 minute
+      NOTIFICATION_LOGS: 60000, // 1 minute
     }
   }
 } as const;

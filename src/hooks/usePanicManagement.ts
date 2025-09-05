@@ -15,7 +15,7 @@ export const usePanicReports = (params?: {
   return useQuery<PanicReportsResponse, Error>({
     queryKey: ['admin/panic-reports', params],
     queryFn: () => getPanicReports(params),
-    refetchInterval: API_CONFIG.REQUEST_CONFIG.REFETCH_INTERVALS.RIDES,
+    refetchInterval: API_CONFIG.REQUEST_CONFIG.REFETCH_INTERVALS.PANIC_REPORTS,
     staleTime: 30000,
     retry: 2,
     retryDelay: 1000,
