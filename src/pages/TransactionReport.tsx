@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 import {
   CreditCard,
   TrendingUp,
@@ -27,7 +29,26 @@ import {
   Receipt,
   Eye,
   Download,
-  MoreHorizontal
+  MoreHorizontal,
+  Activity,
+  Zap,
+  Shield,
+  Star,
+  Calendar,
+  Users,
+  PieChart,
+  LineChart,
+  TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon,
+  ArrowUp,
+  ArrowDown,
+  Minus,
+  Target,
+  Award,
+  Coins,
+  Smartphone,
+  CreditCard as CreditCardIcon,
+  Globe
 } from "lucide-react";
 import { useTransactionReportData } from '@/hooks/useTransactionReport';
 import { format } from 'date-fns';
@@ -135,171 +156,340 @@ export const TransactionReport = () => {
 
   return (
     <AdminLayout>
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Transaction Report</h2>
-        <Button onClick={() => refetch()} variant="outline">
-          <RefreshCcw className="w-4 h-4 mr-2" /> Refresh Data
-        </Button>
+      {/* Enhanced Header Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 rounded-2xl"></div>
+        <div className="relative p-8">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-3">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                  <Receipt className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                    Transaction Report
+                  </h1>
+                  <p className="text-lg text-muted-foreground font-medium">
+                    Financial Analytics & Payment Insights
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Button 
+                onClick={() => refetch()} 
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                size="lg"
+              >
+                <RefreshCcw className="w-5 h-5 mr-2" /> 
+                Refresh Data
+              </Button>
+              <Button variant="outline" size="lg" className="border-2 hover:bg-gray-50">
+                <Download className="w-5 h-5 mr-2" /> 
+                Export
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
-      <p className="text-muted-foreground">
-        Overview of wallet transactions, financial statistics, and payment analytics.
-      </p>
 
-      {/* Wallet Stats Cards */}
+      {/* Enhanced Wallet Stats Cards */}
       {walletStats && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-              <Wallet className="h-4 w-4 text-muted-foreground" />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-8">
+          {/* Total Balance Card */}
+          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-200/20 to-teal-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Total Balance</CardTitle>
+              <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                <Wallet className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">XAF {walletStats.total_balance.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">Current wallet balance</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">S3P Balance</CardTitle>
-              <Banknote className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">XAF {s3pBalance?.toLocaleString() || '0'}</div>
-              <p className="text-xs text-muted-foreground">Payment processor balance</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">This Week Deposits</CardTitle>
-              <TrendingUp className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">XAF {walletStats.current_week.deposits.toLocaleString()}</div>
-              <div className="flex items-center text-xs">
-                {walletStats.percentage_change.deposits > 0 ? (
-                  <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
-                )}
-                <span className={cn(
-                  "text-xs",
-                  walletStats.percentage_change.deposits > 0 ? "text-green-600" : "text-red-600"
-                )}>
-                  {Math.abs(walletStats.percentage_change.deposits)}% from last week
-                </span>
+            <CardContent className="relative">
+              <div className="text-3xl font-bold text-emerald-800 dark:text-emerald-200 mb-1">
+                XAF {walletStats.total_balance.toLocaleString()}
+              </div>
+              <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">Current wallet balance</p>
+              <div className="mt-3 flex items-center">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
+                <span className="text-xs text-emerald-600 dark:text-emerald-400">Live</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">This Week Withdrawals</CardTitle>
-              <TrendingDown className="h-4 w-4 text-red-600" />
+          {/* S3P Balance Card */}
+          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-300">S3P Balance</CardTitle>
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <Banknote className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">XAF {walletStats.current_week.withdrawals.toLocaleString()}</div>
-              <div className="flex items-center text-xs">
-                {walletStats.percentage_change.withdrawals > 0 ? (
-                  <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
+            <CardContent className="relative">
+              <div className="text-3xl font-bold text-blue-800 dark:text-blue-200 mb-1">
+                XAF {s3pBalance?.toLocaleString() || '0'}
+              </div>
+              <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Payment processor balance</p>
+              <div className="mt-3 flex items-center">
+                <Shield className="w-3 h-3 text-blue-500 mr-2" />
+                <span className="text-xs text-blue-600 dark:text-blue-400">Secure</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Deposits Card */}
+          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-200/20 to-emerald-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-semibold text-green-700 dark:text-green-300">This Week Deposits</CardTitle>
+              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+            </CardHeader>
+            <CardContent className="relative">
+              <div className="text-3xl font-bold text-green-800 dark:text-green-200 mb-1">
+                XAF {walletStats.current_week.deposits.toLocaleString()}
+              </div>
+              <div className="flex items-center space-x-2">
+                {walletStats.percentage_change.deposits > 0 ? (
+                  <div className="flex items-center bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                    <ArrowUp className="h-3 w-3 text-green-600 mr-1" />
+                    <span className="text-xs font-semibold text-green-700 dark:text-green-300">
+                      +{Math.abs(walletStats.percentage_change.deposits)}%
+                    </span>
+                  </div>
                 ) : (
-                  <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
+                  <div className="flex items-center bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-full">
+                    <ArrowDown className="h-3 w-3 text-red-600 mr-1" />
+                    <span className="text-xs font-semibold text-red-700 dark:text-red-300">
+                      -{Math.abs(walletStats.percentage_change.deposits)}%
+                    </span>
+                  </div>
                 )}
-                <span className={cn(
-                  "text-xs",
-                  walletStats.percentage_change.withdrawals > 0 ? "text-green-600" : "text-red-600"
-                )}>
-                  {Math.abs(walletStats.percentage_change.withdrawals)}% from last week
-                </span>
+                <span className="text-xs text-green-600 dark:text-green-400">vs last week</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Withdrawals Card */}
+          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-200/20 to-rose-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-semibold text-red-700 dark:text-red-300">This Week Withdrawals</CardTitle>
+              <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
+              </div>
+            </CardHeader>
+            <CardContent className="relative">
+              <div className="text-3xl font-bold text-red-800 dark:text-red-200 mb-1">
+                XAF {walletStats.current_week.withdrawals.toLocaleString()}
+              </div>
+              <div className="flex items-center space-x-2">
+                {walletStats.percentage_change.withdrawals > 0 ? (
+                  <div className="flex items-center bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                    <ArrowUp className="h-3 w-3 text-green-600 mr-1" />
+                    <span className="text-xs font-semibold text-green-700 dark:text-green-300">
+                      +{Math.abs(walletStats.percentage_change.withdrawals)}%
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-full">
+                    <ArrowDown className="h-3 w-3 text-red-600 mr-1" />
+                    <span className="text-xs font-semibold text-red-700 dark:text-red-300">
+                      -{Math.abs(walletStats.percentage_change.withdrawals)}%
+                    </span>
+                  </div>
+                )}
+                <span className="text-xs text-red-600 dark:text-red-400">vs last week</span>
               </div>
             </CardContent>
           </Card>
         </div>
       )}
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        </TabsList>
+      {/* Enhanced Main Content Tabs */}
+      <Tabs defaultValue="overview" className="space-y-8 mt-8">
+        <div className="relative">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl shadow-inner">
+            <TabsTrigger 
+              value="overview" 
+              className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-600 font-semibold transition-all duration-200"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger 
+              value="transactions"
+              className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-600 font-semibold transition-all duration-200"
+            >
+              <Receipt className="w-4 h-4 mr-2" />
+              Transactions
+            </TabsTrigger>
+            <TabsTrigger 
+              value="analytics"
+              className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-600 font-semibold transition-all duration-200"
+            >
+              <PieChart className="w-4 h-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Enhanced Overview Tab */}
+        <TabsContent value="overview" className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Weekly Comparison */}
             {walletStats && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5" />
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+                      <BarChart3 className="w-6 h-6 text-white" />
+                    </div>
                     Weekly Comparison
                   </CardTitle>
+                  <p className="text-sm text-muted-foreground">Current vs Previous Week Performance</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
+                  {/* Deposits */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Deposits</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                          <TrendingUp className="w-4 h-4 text-green-600" />
+                        </div>
+                        <span className="font-semibold text-gray-700 dark:text-gray-300">Deposits</span>
+                      </div>
                       <div className="text-right">
-                        <div className="font-semibold">XAF {walletStats.current_week.deposits.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-2xl font-bold text-green-600">
+                          XAF {walletStats.current_week.deposits.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
                           vs XAF {walletStats.previous_week.deposits.toLocaleString()} last week
                         </div>
                       </div>
                     </div>
+                    <Progress 
+                      value={walletStats.previous_week.deposits > 0 ? (walletStats.current_week.deposits / walletStats.previous_week.deposits) * 100 : 100} 
+                      className="h-2"
+                    />
+                  </div>
+
+                  <Separator />
+
+                  {/* Withdrawals */}
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Withdrawals</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                          <TrendingDown className="w-4 h-4 text-red-600" />
+                        </div>
+                        <span className="font-semibold text-gray-700 dark:text-gray-300">Withdrawals</span>
+                      </div>
                       <div className="text-right">
-                        <div className="font-semibold">XAF {walletStats.current_week.withdrawals.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-2xl font-bold text-red-600">
+                          XAF {walletStats.current_week.withdrawals.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
                           vs XAF {walletStats.previous_week.withdrawals.toLocaleString()} last week
                         </div>
                       </div>
                     </div>
+                    <Progress 
+                      value={walletStats.previous_week.withdrawals > 0 ? (walletStats.current_week.withdrawals / walletStats.previous_week.withdrawals) * 100 : 100} 
+                      className="h-2"
+                    />
+                  </div>
+
+                  <Separator />
+
+                  {/* Pending */}
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Pending</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                          <Clock className="w-4 h-4 text-orange-600" />
+                        </div>
+                        <span className="font-semibold text-gray-700 dark:text-gray-300">Pending</span>
+                      </div>
                       <div className="text-right">
-                        <div className="font-semibold">XAF {walletStats.current_week.pending.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-2xl font-bold text-orange-600">
+                          XAF {walletStats.current_week.pending.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
                           vs XAF {walletStats.previous_week.pending.toLocaleString()} last week
                         </div>
                       </div>
                     </div>
+                    <Progress 
+                      value={walletStats.previous_week.pending > 0 ? (walletStats.current_week.pending / walletStats.previous_week.pending) * 100 : 100} 
+                      className="h-2"
+                    />
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Quick Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Receipt className="w-5 h-5" />
-                  Quick Stats
+            {/* Enhanced Quick Stats */}
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
+                    <Activity className="w-6 h-6 text-white" />
+                  </div>
+                  Transaction Stats
                 </CardTitle>
+                <p className="text-sm text-muted-foreground">Real-time transaction metrics</p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Total Transactions</span>
-                  <span className="font-semibold">{totalItems}</span>
+              <CardContent className="space-y-6">
+                {/* Total Transactions */}
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <Receipt className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">Total Transactions</span>
+                  </div>
+                  <span className="text-2xl font-bold text-blue-600">{totalItems}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Completed</span>
-                  <span className="font-semibold text-green-600">
+
+                {/* Completed */}
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    </div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">Completed</span>
+                  </div>
+                  <span className="text-2xl font-bold text-green-600">
                     {transactions.filter(t => t.status === 'completed').length}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Pending</span>
-                  <span className="font-semibold text-orange-600">
+
+                {/* Pending */}
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                      <Clock className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">Pending</span>
+                  </div>
+                  <span className="text-2xl font-bold text-orange-600">
                     {transactions.filter(t => t.status === 'pending').length}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Failed</span>
-                  <span className="font-semibold text-red-600">
+
+                {/* Failed */}
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20 rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                      <XCircle className="w-5 h-5 text-red-600" />
+                    </div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">Failed</span>
+                  </div>
+                  <span className="text-2xl font-bold text-red-600">
                     {transactions.filter(t => t.status === 'failed').length}
                   </span>
                 </div>
