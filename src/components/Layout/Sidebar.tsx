@@ -23,6 +23,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Try to import the logo, fallback to car icon if not available
+let logoImage: string;
+try {
+  logoImage = require('@/assets/images/logos/logo.png');
+} catch {
+  // Fallback to a simple car icon if logo is not available
+  logoImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iNCIgeT0iMTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSI4IiByeD0iMiIgZmlsbD0iIzEwQjk4MSIvPgo8cmVjdCB4PSI2IiB5PSIxNCIgd2lkdGg9IjYiIGhlaWdodD0iNCIgcng9IjEiIGZpbGw9IiNGRkZGRkYiLz4KPHJlY3QgeD0iMjAiIHk9IjE0IiB3aWR0aD0iNiIgaGVpZ2h0PSI0IiByeD0iMSIgZmlsbD0iI0ZGRkZGRiIvPgo8Y2lyY2xlIGN4PSI4IiBjeT0iMjIiIHI9IjIiIGZpbGw9IiMzNzQxNTEiLz4KPGNpcmNsZSBjeD0iMjQiIGN5PSIyMiIgcj0iMiIgZmlsbD0iIzM3NDE1MSIvPgo8Y2lyY2xlIGN4PSI2IiBjeT0iMTYiIHI9IjEiIGZpbGw9IiNGRUYzQzciLz4KPGNpcmNsZSBjeD0iMjYiIGN5PSIxNiIgcj0iMSIgZmlsbD0iI0ZFRjNDNyIvPgo8L3N2Zz4K';
+}
+
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { title: "Drivers", icon: Car, path: "/drivers" },
@@ -81,8 +90,18 @@ export const Sidebar = () => {
             <div className="flex items-center justify-between">
               {!collapsed && (
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                    <Car className="w-5 h-5 text-primary-foreground" />
+                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={logoImage} 
+                      alt="H-Cab Logo" 
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        // Fallback to car icon if image fails to load
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <Car className="w-5 h-5 text-primary-foreground hidden" />
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-primary">H-Cab</h2>

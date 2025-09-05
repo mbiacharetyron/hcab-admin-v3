@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
-import carIcon from '@/assets/icons/cars/locator_car.png';
+
+// Car icon - you can replace this with your actual locator_car.png
+const carIcon = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iNCIgeT0iMTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSI4IiByeD0iMiIgZmlsbD0iIzEwQjk4MSIvPgo8cmVjdCB4PSI2IiB5PSIxNCIgd2lkdGg9IjYiIGhlaWdodD0iNCIgcng9IjEiIGZpbGw9IiNGRkZGRkYiLz4KPHJlY3QgeD0iMjAiIHk9IjE0IiB3aWR0aD0iNiIgaGVpZ2h0PSI0IiByeD0iMSIgZmlsbD0iI0ZGRkZGRiIvPgo8Y2lyY2xlIGN4PSI4IiBjeT0iMjIiIHI9IjIiIGZpbGw9IiMzNzQxNTEiLz4KPGNpcmNsZSBjeD0iMjQiIGN5PSIyMiIgcj0iMiIgZmlsbD0iIzM3NDE1MSIvPgo8Y2lyY2xlIGN4PSI2IiBjeT0iMTYiIHI9IjEiIGZpbGw9IiNGRUYzQzciLz4KPGNpcmNsZSBjeD0iMjYiIGN5PSIxNiIgcj0iMSIgZmlsbD0iI0ZFRjNDNyIvPgo8L3N2Zz4K';
 
 interface GoogleMapProps {
   center?: google.maps.LatLngLiteral;

@@ -291,7 +291,7 @@ const RideOptions = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="base_price">Base Price</Label>
+                      <Label htmlFor="base_price">Base Price (XAF)</Label>
                       <Input
                         id="base_price"
                         type="number"
@@ -301,7 +301,7 @@ const RideOptions = () => {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="price_per_km">Price per KM</Label>
+                      <Label htmlFor="price_per_km">Price per KM (XAF)</Label>
                       <Input
                         id="price_per_km"
                         type="number"
@@ -364,8 +364,8 @@ const RideOptions = () => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Avg Base Price</p>
                   <p className="text-2xl font-bold">
-                    {rideOptions.length > 0 
-                      ? Math.round(rideOptions.reduce((sum, option) => sum + option.base_price, 0) / rideOptions.length)
+                    XAF {rideOptions.length > 0 
+                      ? Math.round(rideOptions.reduce((sum, option) => sum + option.base_price, 0) / rideOptions.length).toLocaleString()
                       : 0
                     }
                   </p>
@@ -453,13 +453,13 @@ const RideOptions = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <DollarSign className="w-3 h-3" />
+                        <span className="text-xs font-medium text-muted-foreground">XAF</span>
                         {option.base_price.toLocaleString()}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <DollarSign className="w-3 h-3" />
+                        <span className="text-xs font-medium text-muted-foreground">XAF</span>
                         {option.price_per_km}
                       </div>
                     </TableCell>
@@ -542,7 +542,7 @@ const RideOptions = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-base_price">Base Price</Label>
+                  <Label htmlFor="edit-base_price">Base Price (XAF)</Label>
                   <Input
                     id="edit-base_price"
                     type="number"
@@ -552,7 +552,7 @@ const RideOptions = () => {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-price_per_km">Price per KM</Label>
+                  <Label htmlFor="edit-price_per_km">Price per KM (XAF)</Label>
                   <Input
                     id="edit-price_per_km"
                     type="number"
