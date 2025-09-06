@@ -495,7 +495,7 @@ const PanicManagementEnhanced = () => {
                     <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2" />
                     <p>Loading panic reports...</p>
                   </div>
-                ) : panicReports.length === 0 ? (
+                ) : !panicReports || panicReports.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p>No panic reports found</p>
@@ -727,11 +727,11 @@ const PanicManagementEnhanced = () => {
 
           {/* Map View Tab */}
           <TabsContent value="map" className="space-y-8">
-            {panicReports.length > 0 ? (
+            {panicReports && panicReports.length > 0 ? (
               <PanicMap
                 reports={panicReports as PanicReport[]}
                 selectedReport={selectedReport}
-                onReportSelect={(report) => setSelectedReport(report)}
+                onReportSelect={setSelectedReport}
               />
             ) : (
               <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">

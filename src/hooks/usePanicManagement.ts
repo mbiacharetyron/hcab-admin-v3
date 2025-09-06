@@ -50,7 +50,7 @@ export const usePanicManagementData = (params?: {
   const resolvePanicMutation = useResolvePanicReport();
 
   return {
-    panicReports: panicReportsQuery.data?.panic_reports?.data || panicReportsQuery.data?.data || [],
+    panicReports: panicReportsQuery.data?.data || [],
     statistics: panicReportsQuery.data?.statistics,
     pagination: panicReportsQuery.data?.pagination,
     isLoading: panicReportsQuery.isLoading,

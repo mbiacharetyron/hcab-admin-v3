@@ -2,29 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, X, AlertTriangle } from "lucide-react";
-
-interface PanicReport {
-  id: number;
-  user: {
-    name: string;
-    role: 'driver' | 'rider';
-    phone: string;
-    email: string;
-  };
-  location: string;
-  latitude: number;
-  longitude: number;
-  description?: string;
-  is_resolved: boolean;
-  created_at: string;
-  booking?: {
-    id: number;
-    source_name: string;
-    destination_name: string;
-    status: string;
-    ride_fare: number;
-  };
-}
+import { PanicReport } from "@/lib/api";
 
 interface PanicMapProps {
   reports: PanicReport[];

@@ -1,5 +1,5 @@
 // Demo data for testing when API is not available
-import type { DashboardStats, Ride, User, RideOption } from './api';
+import type { DashboardStats, Ride, User, RideOption, PanicReport, PanicReportsResponse } from './api';
 
 export const demoDashboardStats: DashboardStats = {
   ongoing_trips: 12,
@@ -138,4 +138,153 @@ export const getDemoEnhancedRides = () => {
     user: demoUsers.find(user => user.id === ride.rider_id),
     rideOption: demoRideOptions.find(option => option.id === ride.ride_option_id)
   }));
+};
+
+// Demo panic reports data
+export const demoPanicReports: PanicReport[] = [
+  {
+    id: 1,
+    user_id: 1,
+    booking_id: 1001,
+    latitude: 4.0483,
+    longitude: 9.7043,
+    is_resolved: false,
+    description: "Driver is acting suspiciously and not following the route",
+    location: "Douala International Airport, Douala, Cameroon",
+    created_at: "2024-01-15T08:15:00Z",
+    updated_at: "2024-01-15T08:15:00Z",
+    user: {
+      id: 1,
+      name: "John Doe",
+      email: "john.doe@example.com",
+      phone: "+237 612 345 678",
+      role: "rider"
+    },
+    booking: {
+      id: 1001,
+      status: "in_progress",
+      source_name: "Douala International Airport",
+      destination_name: "Hilton Hotel Douala",
+      ride_fare: 2500
+    }
+  },
+  {
+    id: 2,
+    user_id: 2,
+    booking_id: 1002,
+    latitude: 4.1550,
+    longitude: 9.2370,
+    is_resolved: true,
+    description: "Vehicle breakdown in remote area",
+    location: "Buea Town, Buea, Cameroon",
+    created_at: "2024-01-15T09:20:00Z",
+    updated_at: "2024-01-15T09:45:00Z",
+    user: {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane.smith@example.com",
+      phone: "+237 623 456 789",
+      role: "rider"
+    },
+    booking: {
+      id: 1002,
+      status: "completed",
+      source_name: "Buea Town",
+      destination_name: "University of Buea",
+      ride_fare: 1800
+    }
+  },
+  {
+    id: 3,
+    user_id: 3,
+    booking_id: null,
+    latitude: 3.8480,
+    longitude: 11.5021,
+    is_resolved: false,
+    description: "Feeling unsafe with driver behavior",
+    location: "Yaounde Central Market, Yaounde, Cameroon",
+    created_at: "2024-01-15T10:05:00Z",
+    updated_at: "2024-01-15T10:05:00Z",
+    user: {
+      id: 3,
+      name: "Mike Johnson",
+      email: "mike.johnson@example.com",
+      phone: "+237 634 567 890",
+      role: "driver"
+    },
+    booking: null
+  },
+  {
+    id: 4,
+    user_id: 1,
+    booking_id: 1004,
+    latitude: 4.0097,
+    longitude: 9.2068,
+    is_resolved: true,
+    description: "Accident occurred during ride",
+    location: "Limbe Beach, Limbe, Cameroon",
+    created_at: "2024-01-15T07:35:00Z",
+    updated_at: "2024-01-15T08:00:00Z",
+    user: {
+      id: 1,
+      name: "John Doe",
+      email: "john.doe@example.com",
+      phone: "+237 612 345 678",
+      role: "rider"
+    },
+    booking: {
+      id: 1004,
+      status: "cancelled",
+      source_name: "Limbe Beach",
+      destination_name: "Limbe Wildlife Centre",
+      ride_fare: 1500
+    }
+  },
+  {
+    id: 5,
+    user_id: 2,
+    booking_id: 1005,
+    latitude: 2.9389,
+    longitude: 9.9103,
+    is_resolved: false,
+    description: "Driver is intoxicated and driving dangerously",
+    location: "Kribi Beach, Kribi, Cameroon",
+    created_at: "2024-01-15T06:10:00Z",
+    updated_at: "2024-01-15T06:10:00Z",
+    user: {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane.smith@example.com",
+      phone: "+237 623 456 789",
+      role: "rider"
+    },
+    booking: {
+      id: 1005,
+      status: "failed",
+      source_name: "Kribi Beach",
+      destination_name: "Kribi Port",
+      ride_fare: 2800
+    }
+  }
+];
+
+// Demo panic reports response
+export const demoPanicReportsResponse: PanicReportsResponse = {
+  success: true,
+  message: "Panic reports retrieved successfully",
+  data: demoPanicReports,
+  pagination: {
+    current_page: 1,
+    total_items: 5,
+    total_pages: 1,
+    limit: 10
+  },
+  statistics: {
+    total_reports: 5,
+    resolved_reports: 2,
+    unresolved_reports: 3,
+    driver_reports: 1,
+    rider_reports: 4,
+    recent_reports: 3
+  }
 };

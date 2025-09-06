@@ -702,7 +702,8 @@ import {
   demoRides, 
   demoUsers, 
   demoRideOptions,
-  getDemoEnhancedRides 
+  getDemoEnhancedRides,
+  demoPanicReportsResponse
 } from './demoData';
 
 // API Service Class
@@ -776,6 +777,10 @@ class ApiService {
         case '/ride-option/3':
           return demoRideOptions[2] as T;
         default:
+          // Handle panic reports endpoint with query parameters
+          if (endpoint.startsWith('/admin/panic-reports')) {
+            return demoPanicReportsResponse as T;
+          }
           throw new Error(`Demo endpoint not found: ${endpoint}`);
       }
     }
@@ -1333,9 +1338,7 @@ class ApiService {
 
       const url = `/admin/panic-reports${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
-      console.log('API: Fetching panic reports from:', `${this.baseURL}${url}`);
       const result = await this.request<PanicReportsResponse>(url);
-      console.log('API: Panic reports response:', result);
       return result;
     } catch (error) {
       console.error('API: Panic reports fetch error:', error);
@@ -1345,11 +1348,9 @@ class ApiService {
 
   async resolvePanicReport(panicId: number): Promise<PanicResolveResponse> {
     try {
-      console.log('API: Resolving panic report:', `${this.baseURL}/admin/panic-reports/${panicId}/resolve`);
       const result = await this.request<PanicResolveResponse>(`/admin/panic-reports/${panicId}/resolve`, {
         method: 'PUT',
       });
-      console.log('API: Panic report resolve response:', result);
       return result;
     } catch (error) {
       console.error('API: Panic report resolve error:', error);
