@@ -238,32 +238,6 @@ const NotificationManagement = () => {
 
       <div className="space-y-8 mt-8">
 
-        {/* Enhanced Error State */}
-        {error && (
-          <Card className="border-0 shadow-xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
-            <CardContent className="p-8">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-xl">
-                  <AlertTriangle className="w-8 h-8 text-red-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-red-800 dark:text-red-200">Failed to Load Notification Data</h3>
-                  <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-                    {error.message || "Unable to load notification data"}
-                  </p>
-                </div>
-                <Button 
-                  size="lg" 
-                  onClick={() => { refetchDevices(); refetchLogs(); }}
-                  className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Retry
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Device Statistics Cards */}
         {deviceStats && (
