@@ -32,66 +32,71 @@ export const MapSection = ({
   onRefresh 
 }: MapSectionProps) => {
   return (
-    <Card className="shadow-medium">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <MapPin className="w-5 h-5 text-primary" />
-            <span>Live Map</span>
-          </div>
-          <div className="flex items-center space-x-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <Users className="w-4 h-4 text-green-600" />
-              <span className="text-muted-foreground">Online:</span>
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                {onlineDrivers}
-              </Badge>
+    <Card className="shadow-large bg-white/80 backdrop-blur-sm border border-white/20 overflow-hidden">
+      <CardHeader className="pb-4 bg-gradient-to-r from-primary/5 via-transparent to-primary/5">
+        <CardTitle className="text-xl font-bold flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-medium">
+              <MapPin className="w-5 h-5 text-white" />
             </div>
-            <div className="flex items-center space-x-2">
-              <Car className="w-4 h-4 text-blue-600" />
-              <span className="text-muted-foreground">Active:</span>
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                {activeTrips}
-              </Badge>
+            <div>
+              <span className="text-foreground">Live Map</span>
+              <p className="text-sm text-muted-foreground font-normal">Real-time driver and ride locations</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 px-3 py-1.5 bg-success-light rounded-full">
+              <Users className="w-4 h-4 text-success" />
+              <span className="text-success font-medium text-sm">Online: {onlineDrivers}</span>
+            </div>
+            <div className="flex items-center space-x-2 px-3 py-1.5 bg-primary-light rounded-full">
+              <Car className="w-4 h-4 text-primary" />
+              <span className="text-primary font-medium text-sm">Active: {activeTrips}</span>
             </div>
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-96 rounded-lg border border-gray-200 overflow-hidden">
-          <GoogleMap
-            onlineDrivers={onlineDrivers}
-            activeTrips={activeTrips}
-            driverLocations={driverLocations}
-            rideLocations={rideLocations}
-          />
+      <CardContent className="p-0">
+        <div className="h-96 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5"></div>
+          <div className="relative h-full">
+            <GoogleMap
+              onlineDrivers={onlineDrivers}
+              activeTrips={activeTrips}
+              driverLocations={driverLocations}
+              rideLocations={rideLocations}
+            />
+          </div>
         </div>
         
-        {/* Map Controls */}
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1 text-sm text-gray-600">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span>Drivers ({driverLocations.length})</span>
+        {/* Enhanced Map Controls */}
+        <div className="p-6 bg-gradient-to-r from-slate-50/50 via-transparent to-slate-50/50">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-success rounded-full animate-pulse shadow-sm"></div>
+                <span className="text-sm font-medium text-foreground">Drivers ({driverLocations.length})</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-primary rounded-full animate-pulse shadow-sm"></div>
+                <span className="text-sm font-medium text-foreground">Rides ({rideLocations.length})</span>
+              </div>
+              {onRefresh && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onRefresh}
+                  className="ml-4 hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh Map
+                </Button>
+              )}
             </div>
-            <div className="flex items-center space-x-1 text-sm text-gray-600">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span>Rides ({rideLocations.length})</span>
+            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+              <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+              <span>Last updated: {new Date().toLocaleTimeString()}</span>
             </div>
-            {onRefresh && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onRefresh}
-                className="ml-4"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh Map
-              </Button>
-            )}
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Last updated: {new Date().toLocaleTimeString()}
           </div>
         </div>
       </CardContent>

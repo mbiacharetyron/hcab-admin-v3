@@ -149,11 +149,21 @@ export const DataTable = ({
   };
 
   return (
-    <Card className={cn("shadow-medium", className)}>
-      <CardHeader>
+    <Card className={cn("shadow-large bg-white/80 backdrop-blur-sm border border-white/20 overflow-hidden", className)}>
+      <CardHeader className="bg-gradient-to-r from-primary/5 via-transparent to-primary/5 border-b border-white/20">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center shadow-medium">
+              <div className="w-4 h-4 bg-white rounded-sm"></div>
+            </div>
+            <div>
+              <CardTitle className="text-xl font-bold text-foreground">{title}</CardTitle>
+              <p className="text-sm text-muted-foreground font-normal">
+                {filteredData.length} {filteredData.length === 1 ? 'item' : 'items'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
             {searchable && (
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -161,7 +171,7 @@ export const DataTable = ({
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64"
+                  className="pl-10 w-64 bg-white/50 border-white/20 focus:border-primary/40 focus:ring-primary/20"
                 />
               </div>
             )}
@@ -171,6 +181,7 @@ export const DataTable = ({
                 size="sm"
                 onClick={onRefresh}
                 disabled={isLoading}
+                className="hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40"
               >
                 <RefreshCw className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")} />
                 Refresh
@@ -179,21 +190,21 @@ export const DataTable = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-lg border border-border overflow-hidden">
+      <CardContent className="p-0">
+        <div className="overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
+              <TableRow className="bg-gradient-to-r from-slate-50/50 via-transparent to-slate-50/50 border-b border-white/20">
                 {columns.map((column) => (
                   <TableHead 
                     key={column.key} 
-                    className="font-medium text-muted-foreground"
+                    className="font-semibold text-foreground py-4 px-6"
                     style={{ width: column.width }}
                   >
                     {column.title}
                   </TableHead>
                 ))}
-                {actions && <TableHead className="w-16">Actions</TableHead>}
+                {actions && <TableHead className="w-16 py-4 px-6">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -204,38 +215,50 @@ export const DataTable = ({
                 ))
               ) : filteredData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length + (actions ? 1 : 0)} className="text-center py-8">
-                    <div className="text-muted-foreground">
-                      {searchTerm ? "No results found for your search." : "No data available."}
+                  <TableCell colSpan={columns.length + (actions ? 1 : 0)} className="text-center py-12">
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="w-12 h-12 bg-muted/20 rounded-2xl flex items-center justify-center">
+                        <div className="w-6 h-6 bg-muted/40 rounded"></div>
+                      </div>
+                      <div className="text-muted-foreground">
+                        {searchTerm ? "No results found for your search." : "No data available."}
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredData.map((row, index) => (
-                  <TableRow key={index} className="hover:bg-muted/50 transition-colors">
+                  <TableRow 
+                    key={index} 
+                    className="hover:bg-gradient-to-r hover:from-primary/5 hover:via-transparent hover:to-primary/5 transition-all duration-300 border-b border-white/10"
+                  >
                     {columns.map((column) => (
-                      <TableCell key={column.key} className="py-3">
+                      <TableCell key={column.key} className="py-4 px-6">
                         {renderCellValue(column, row)}
                       </TableCell>
                     ))}
                     {actions && (
-                      <TableCell>
+                      <TableCell className="py-4 px-6">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="hover:bg-primary/10 hover:scale-105 transition-all duration-300"
+                            >
                               <MoreHorizontal className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem>
+                          <DropdownMenuContent align="end" className="w-48 bg-white/95 backdrop-blur-sm border border-white/20">
+                            <DropdownMenuItem className="hover:bg-primary/10">
                               <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem className="hover:bg-primary/10">
                               <Edit className="w-4 h-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem className="text-destructive hover:bg-destructive/10">
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
                             </DropdownMenuItem>
@@ -250,8 +273,16 @@ export const DataTable = ({
           </Table>
         </div>
         {searchable && searchTerm && (
-          <div className="mt-4 text-sm text-muted-foreground">
-            Showing {filteredData.length} of {data.length} results
+          <div className="p-4 bg-gradient-to-r from-slate-50/50 via-transparent to-slate-50/50 border-t border-white/20">
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center space-x-2 text-muted-foreground">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                <span>Showing {filteredData.length} of {data.length} results</span>
+              </div>
+              <div className="text-muted-foreground">
+                Search: "{searchTerm}"
+              </div>
+            </div>
           </div>
         )}
       </CardContent>

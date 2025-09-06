@@ -45,8 +45,8 @@ const Dashboard = () => {
       ?.map(driver => ({
         id: driver.id,
         name: driver.username || `Driver ${driver.id}`,
-        lat: parseFloat(driver.latitude),
-        lng: parseFloat(driver.longitude),
+        lat: parseFloat(String(driver.latitude)),
+        lng: parseFloat(String(driver.longitude)),
         isOnline: true // All drivers from this endpoint are online
       })) || [];
 
@@ -55,12 +55,12 @@ const Dashboard = () => {
       id: ride.id,
       riderId: ride.rider_id,
       pickup: {
-        lat: parseFloat(ride.source_lat) || 4.0483,
-        lng: parseFloat(ride.source_lng) || 9.7043
+        lat: parseFloat(String(ride.source_lat)) || 4.0483,
+        lng: parseFloat(String(ride.source_lng)) || 9.7043
       },
       destination: {
-        lat: parseFloat(ride.destination_lat) || 4.0483,
-        lng: parseFloat(ride.destination_lng) || 9.7043
+        lat: parseFloat(String(ride.destination_lat)) || 4.0483,
+        lng: parseFloat(String(ride.destination_lng)) || 9.7043
       },
       status: ride.status
     })) || [];
@@ -171,37 +171,64 @@ const Dashboard = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome to H-Cab Admin Dashboard</p>
-          </div>
-            <div className="flex items-center space-x-4">
-              <ApiStatus 
-                isConnected={!!stats && !statsError}
-                isLoading={statsLoading}
-                lastUpdated={stats ? new Date() : undefined}
-                error={statsError?.message}
-                fallbackMode={!stats && !statsLoading}
-              />
-              <button
-                onClick={() => {
-                  refetchStats();
-                  refetch();
-                }}
-                className="flex items-center space-x-2 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                title="Refresh Dashboard Data"
-              >
-                <RefreshCw className="w-4 h-4" />
-                <span>Refresh</span>
-              </button>
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Calendar className="w-4 h-4" />
-            <span>{new Date().toLocaleDateString()}</span>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+        <div className="space-y-8 p-6">
+          {/* Enhanced Header */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-2xl"></div>
+            <div className="relative bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-large">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center shadow-medium">
+                      <TrendingUp className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                        Dashboard
+                      </h1>
+                      <p className="text-muted-foreground text-lg">Welcome to H-Cab Admin Dashboard</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4 text-sm">
+                    <div className="flex items-center space-x-2 px-3 py-1.5 bg-success-light rounded-full">
+                      <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                      <span className="text-success font-medium">System Online</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-muted-foreground">
+                      <Calendar className="w-4 h-4" />
+                      <span>{new Date().toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <ApiStatus 
+                    isConnected={!!stats && !statsError}
+                    isLoading={statsLoading}
+                    lastUpdated={stats ? new Date() : undefined}
+                    error={statsError?.message}
+                    fallbackMode={!stats && !statsLoading}
+                  />
+                  <Button
+                    onClick={() => {
+                      refetchStats();
+                      refetch();
+                    }}
+                    className="bg-gradient-primary hover:shadow-medium transition-all duration-300 hover:scale-105"
+                    title="Refresh Dashboard Data"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    <span>Refresh Data</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
 
         {/* Dashboard Status Summary */}
@@ -226,158 +253,224 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {statsError ? (
-            // Show error state for stats section only
-            <div className="col-span-full">
-              <Card className="border-destructive/50 bg-destructive/5">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-3">
-                    <AlertTriangle className="w-6 h-6 text-destructive" />
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-destructive">Stats Loading Failed</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {statsError.message || "Unable to load dashboard statistics"}
-                      </p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      onClick={() => refetchStats()}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Retry
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            // Show stats cards normally
-            statsData.map((stat, index) => (
-            <StatsCard key={index} {...stat} />
-            ))
-          )}
-        </div>
-
-        {/* Map and Recent Rides */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Map */}
-          <div className="xl:col-span-2">
-            {statsError ? (
-              <Card className="border-orange-200 bg-orange-50 h-full">
-                <CardContent className="p-6 flex items-center justify-center h-full">
-                  <div className="text-center">
-                    <AlertTriangle className="w-12 h-12 text-orange-600 mx-auto mb-3" />
-                    <h3 className="font-semibold text-orange-800 mb-2">Map Unavailable</h3>
-                    <p className="text-sm text-orange-700 mb-3">
-                      Map requires stats data to display driver and trip information
-                    </p>
-                    <Button 
-                      size="sm" 
-                      onClick={() => refetchStats()}
-                      className="bg-orange-600 text-white hover:bg-orange-700"
-                    >
-                      Retry Stats
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-            <MapSection 
-              onlineDrivers={displayStats?.online_drivers || 0}
-              activeTrips={displayStats?.ongoing_trips || 0}
-              driverLocations={driverLocations}
-              rideLocations={rideLocations}
-              onRefresh={() => {
-                refetchDriverLocations();
-                refetch();
-              }}
-            />
-            )}
-          </div>
-
-          {/* Recent Rides Table */}
-          <div className="xl:col-span-1">
-            {ridesError ? (
-              // Show error state for rides section only
-              <Card className="border-destructive/50 bg-destructive/5 h-fit">
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <AlertTriangle className="w-5 h-5 text-destructive" />
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-destructive text-sm">Rides Loading Failed</h3>
-                      <p className="text-xs text-muted-foreground">
-                        {ridesError.message || "Unable to load recent rides"}
-                      </p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      onClick={() => refetch()}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-xs px-2 py-1"
-                    >
-                      Retry
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-            <DataTable 
-              title="Recent Rides"
-              columns={recentRideColumns}
-              data={recentRides}
-              className="h-fit"
-              isLoading={ridesLoading}
-              actions={false}
-            />
-            )}
-          </div>
-        </div>
-
-        {/* Full Rides Table */}
-        {ridesError ? (
-          // Show error state for rides table section only
-          <Card className="border-destructive/50 bg-destructive/5">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <AlertTriangle className="w-6 h-6 text-destructive" />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-destructive">Rides Table Loading Failed</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {ridesError.message || "Unable to load rides data"}
-                  </p>
-                </div>
-                <Button 
-                  size="sm" 
-                  onClick={() => refetch()}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  Retry
-                </Button>
+          {/* Enhanced Stats Cards */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-2xl"></div>
+            <div className="relative">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground mb-2">Key Metrics</h2>
+                <p className="text-muted-foreground">Real-time overview of your H-Cab operations</p>
               </div>
-            </CardContent>
-          </Card>
-        ) : (
-        <DataTable 
-          title="All Rides"
-          columns={rideColumns}
-          data={rides || []}
-          isLoading={ridesLoading}
-          searchable={true}
-          onRefresh={refetch}
-          searchPlaceholder="Search rides..."
-        />
-        )}
-        
-        {/* Pagination Info */}
-        {!ridesError && rides && rides.length > 0 && (
-          <div className="text-sm text-muted-foreground text-center">
-            Showing {rides.length} rides
-            {meta && (
-              <span> • Page {String(meta.current_page)} of {String(meta.total_pages)} • Total: {String(meta.total_items)}</span>
-            )}
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {statsError ? (
+                  // Show error state for stats section only
+                  <div className="col-span-full">
+                    <Card className="border-destructive/50 bg-destructive/5 backdrop-blur-sm">
+                      <CardContent className="p-6">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-destructive/10 rounded-2xl flex items-center justify-center">
+                            <AlertTriangle className="w-6 h-6 text-destructive" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-destructive text-lg">Stats Loading Failed</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {statsError.message || "Unable to load dashboard statistics"}
+                            </p>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            onClick={() => refetchStats()}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:scale-105 transition-all duration-300"
+                          >
+                            Retry
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ) : (
+                  // Show stats cards normally with staggered animation
+                  statsData.map((stat, index) => (
+                    <div 
+                      key={index} 
+                      className="animate-in slide-in-from-bottom-4 fade-in duration-500"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <StatsCard {...stat} />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Enhanced Map and Recent Rides Section */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-2xl"></div>
+            <div className="relative">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground mb-2">Live Operations</h2>
+                <p className="text-muted-foreground">Real-time map view and recent ride activity</p>
+              </div>
+              
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                {/* Enhanced Map */}
+                <div className="xl:col-span-2">
+                  {statsError ? (
+                    <Card className="border-orange-200 bg-orange-50/80 backdrop-blur-sm h-full">
+                      <CardContent className="p-8 flex items-center justify-center h-full">
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <AlertTriangle className="w-8 h-8 text-orange-600" />
+                          </div>
+                          <h3 className="font-semibold text-orange-800 mb-2 text-lg">Map Unavailable</h3>
+                          <p className="text-sm text-orange-700 mb-4 max-w-sm">
+                            Map requires stats data to display driver and trip information
+                          </p>
+                          <Button 
+                            size="sm" 
+                            onClick={() => refetchStats()}
+                            className="bg-orange-600 text-white hover:bg-orange-700 hover:scale-105 transition-all duration-300"
+                          >
+                            Retry Stats
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="animate-in slide-in-from-left-4 fade-in duration-700">
+                      <MapSection 
+                        onlineDrivers={displayStats?.online_drivers || 0}
+                        activeTrips={displayStats?.ongoing_trips || 0}
+                        driverLocations={driverLocations}
+                        rideLocations={rideLocations}
+                        onRefresh={() => {
+                          refetchDriverLocations();
+                          refetch();
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Enhanced Recent Rides Table */}
+                <div className="xl:col-span-1">
+                  {ridesError ? (
+                    // Show error state for rides section only
+                    <Card className="border-destructive/50 bg-destructive/5/80 backdrop-blur-sm h-fit">
+                      <CardContent className="p-6">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-10 h-10 bg-destructive/10 rounded-xl flex items-center justify-center">
+                            <AlertTriangle className="w-5 h-5 text-destructive" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-destructive">Rides Loading Failed</h3>
+                            <p className="text-xs text-muted-foreground">
+                              {ridesError.message || "Unable to load recent rides"}
+                            </p>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            onClick={() => refetch()}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:scale-105 transition-all duration-300"
+                          >
+                            Retry
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="animate-in slide-in-from-right-4 fade-in duration-700" style={{ animationDelay: '200ms' }}>
+                      <DataTable 
+                        title="Recent Rides"
+                        columns={recentRideColumns}
+                        data={recentRides}
+                        className="h-fit"
+                        isLoading={ridesLoading}
+                        actions={false}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Enhanced Full Rides Table */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-2xl"></div>
+            <div className="relative">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground mb-2">All Rides</h2>
+                <p className="text-muted-foreground">Complete overview of all ride transactions</p>
+              </div>
+              
+              {ridesError ? (
+                // Show error state for rides table section only
+                <Card className="border-destructive/50 bg-destructive/5/80 backdrop-blur-sm">
+                  <CardContent className="p-8">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-destructive/10 rounded-2xl flex items-center justify-center">
+                        <AlertTriangle className="w-6 h-6 text-destructive" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-destructive text-lg">Rides Table Loading Failed</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {ridesError.message || "Unable to load rides data"}
+                        </p>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        onClick={() => refetch()}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:scale-105 transition-all duration-300"
+                      >
+                        Retry
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="animate-in slide-in-from-bottom-4 fade-in duration-700" style={{ animationDelay: '400ms' }}>
+                  <DataTable 
+                    title="All Rides"
+                    columns={rideColumns}
+                    data={rides || []}
+                    isLoading={ridesLoading}
+                    searchable={true}
+                    onRefresh={refetch}
+                    searchPlaceholder="Search rides..."
+                  />
+                </div>
+              )}
+              
+              {/* Enhanced Pagination Info */}
+              {!ridesError && rides && rides.length > 0 && (
+                <div className="mt-6 p-4 bg-white/50 backdrop-blur-sm rounded-xl border border-white/20">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                        <span>Showing {rides.length} rides</span>
+                      </div>
+                      {meta && (
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-success rounded-full"></div>
+                          <span>Page {String(meta.current_page)} of {String(meta.total_pages)}</span>
+                        </div>
+                      )}
+                    </div>
+                    {meta && (
+                      <div className="text-sm font-medium text-foreground">
+                        Total: {String(meta.total_items)} rides
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
       
     </AdminLayout>
