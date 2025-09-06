@@ -74,6 +74,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Update stored user data
       TokenStorage.saveUser(user);
+      
+      // Add a small delay to ensure state is fully updated before components render
+      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
       console.error('AuthContext: Token verification failed:', error);
       logout();
@@ -113,6 +116,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           isLoading: false,
         });
         console.log('AuthContext: State updated, isAuthenticated:', true);
+        
+        // Add a small delay to ensure state is fully updated before navigation
+        await new Promise(resolve => setTimeout(resolve, 100));
       } else {
         throw new Error(response.message || 'Login failed');
       }

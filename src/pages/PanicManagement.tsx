@@ -201,8 +201,8 @@ const PanicManagement = () => {
 
       <div className="space-y-8 mt-8">
 
-        {/* Enhanced Error State */}
-        {error && (
+        {/* Enhanced Error State - Only show if no data at all */}
+        {error && !panicReports.length && !statistics && (
           <Card className="border-0 shadow-xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
             <CardContent className="p-8">
               <div className="flex items-center space-x-4">
@@ -228,8 +228,35 @@ const PanicManagement = () => {
           </Card>
         )}
 
+        {/* Partial Error State - Show when there's an error but we have some data */}
+        {error && (panicReports.length > 0 || statistics) && (
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl">
+                  <AlertCircle className="w-6 h-6 text-yellow-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-yellow-800 dark:text-yellow-200">Partial Data Loaded</h3>
+                  <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">
+                    Some data may be outdated. {error.message || "Unable to refresh all data"}
+                  </p>
+                </div>
+                <Button 
+                  size="sm" 
+                  onClick={() => refetch()}
+                  className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Panic Statistics Cards */}
-        {statistics && (
+        {(statistics || isLoading) && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Total Reports Card */}
             <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
@@ -242,7 +269,7 @@ const PanicManagement = () => {
               </CardHeader>
               <CardContent className="relative">
                 <div className="text-3xl font-bold text-red-800 dark:text-red-200 mb-1">
-                  {statistics.total_reports}
+                  {isLoading ? "..." : (statistics?.total_reports || 0)}
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs text-red-600 dark:text-red-400">All time</span>
@@ -261,7 +288,7 @@ const PanicManagement = () => {
               </CardHeader>
               <CardContent className="relative">
                 <div className="text-3xl font-bold text-orange-800 dark:text-orange-200 mb-1">
-                  {statistics.unresolved_reports}
+                  {isLoading ? "..." : (statistics?.unresolved_reports || 0)}
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="flex items-center bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-full">
@@ -283,7 +310,7 @@ const PanicManagement = () => {
               </CardHeader>
               <CardContent className="relative">
                 <div className="text-3xl font-bold text-green-800 dark:text-green-200 mb-1">
-                  {statistics.resolved_reports}
+                  {isLoading ? "..." : (statistics?.resolved_reports || 0)}
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="flex items-center bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
@@ -305,7 +332,7 @@ const PanicManagement = () => {
               </CardHeader>
               <CardContent className="relative">
                 <div className="text-3xl font-bold text-blue-800 dark:text-blue-200 mb-1">
-                  {statistics.recent_reports}
+                  {isLoading ? "..." : (statistics?.recent_reports || 0)}
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs text-blue-600 dark:text-blue-400">Last 24h</span>
@@ -466,7 +493,36 @@ const PanicManagement = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {panicReports.map((report, index) => (
+                      {isLoading ? (
+                        // Loading state
+                        Array.from({ length: 3 }).map((_, index) => (
+                          <TableRow key={`loading-${index}`} className="animate-pulse">
+                            <TableCell><div className="h-4 bg-gray-200 rounded w-16"></div></TableCell>
+                            <TableCell><div className="h-4 bg-gray-200 rounded w-24"></div></TableCell>
+                            <TableCell><div className="h-4 bg-gray-200 rounded w-32"></div></TableCell>
+                            <TableCell><div className="h-4 bg-gray-200 rounded w-20"></div></TableCell>
+                            <TableCell><div className="h-6 bg-gray-200 rounded w-16"></div></TableCell>
+                            <TableCell><div className="h-4 bg-gray-200 rounded w-20"></div></TableCell>
+                            <TableCell><div className="h-8 bg-gray-200 rounded w-8"></div></TableCell>
+                          </TableRow>
+                        ))
+                      ) : panicReports.length === 0 ? (
+                        // Empty state
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-12">
+                            <div className="flex flex-col items-center space-y-4">
+                              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-full">
+                                <AlertTriangle className="w-8 h-8 text-gray-400" />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400">No Panic Reports</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-500">No panic reports found for the current filters.</p>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        panicReports.map((report, index) => (
                         <TableRow 
                           key={report.id}
                           className={cn(
@@ -556,7 +612,8 @@ const PanicManagement = () => {
                             </div>
                           </TableCell>
                         </TableRow>
-                      ))}
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -656,7 +713,7 @@ const PanicManagement = () => {
           <TabsContent value="overview" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* User Type Breakdown */}
-              {statistics && (
+              {(statistics || isLoading) && (
                 <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-3 text-xl">
@@ -677,7 +734,7 @@ const PanicManagement = () => {
                           <span className="font-semibold text-gray-700 dark:text-gray-300">Driver Reports</span>
                         </div>
                         <span className="text-2xl font-bold text-blue-600">
-                          {statistics.driver_reports}
+                          {isLoading ? "..." : (statistics?.driver_reports || 0)}
                         </span>
                       </div>
                     </div>
@@ -691,7 +748,7 @@ const PanicManagement = () => {
                           <span className="font-semibold text-gray-700 dark:text-gray-300">Rider Reports</span>
                         </div>
                         <span className="text-2xl font-bold text-purple-600">
-                          {statistics.rider_reports}
+                          {isLoading ? "..." : (statistics?.rider_reports || 0)}
                         </span>
                       </div>
                     </div>
@@ -700,7 +757,7 @@ const PanicManagement = () => {
               )}
 
               {/* Resolution Status */}
-              {statistics && (
+              {(statistics || isLoading) && (
                 <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-3 text-xl">
@@ -721,7 +778,7 @@ const PanicManagement = () => {
                           <span className="font-semibold text-gray-700 dark:text-gray-300">Resolved</span>
                         </div>
                         <span className="text-2xl font-bold text-green-600">
-                          {statistics.resolved_reports}
+                          {isLoading ? "..." : (statistics?.resolved_reports || 0)}
                         </span>
                       </div>
                     </div>
@@ -735,7 +792,7 @@ const PanicManagement = () => {
                           <span className="font-semibold text-gray-700 dark:text-gray-300">Unresolved</span>
                         </div>
                         <span className="text-2xl font-bold text-red-600">
-                          {statistics.unresolved_reports}
+                          {isLoading ? "..." : (statistics?.unresolved_reports || 0)}
                         </span>
                       </div>
                     </div>
@@ -749,7 +806,7 @@ const PanicManagement = () => {
           <TabsContent value="analytics" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Emergency Response Metrics */}
-              {statistics && (
+              {(statistics || isLoading) && (
                 <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-3 text-xl">
@@ -770,7 +827,7 @@ const PanicManagement = () => {
                           <span className="font-semibold text-gray-700 dark:text-gray-300">Recent Reports</span>
                         </div>
                         <span className="text-2xl font-bold text-blue-600">
-                          {statistics.recent_reports}
+                          {isLoading ? "..." : (statistics?.recent_reports || 0)}
                         </span>
                       </div>
                     </div>
@@ -784,7 +841,7 @@ const PanicManagement = () => {
                           <span className="font-semibold text-gray-700 dark:text-gray-300">Resolution Rate</span>
                         </div>
                         <span className="text-2xl font-bold text-purple-600">
-                          {statistics.total_reports > 0 ? Math.round((statistics.resolved_reports / statistics.total_reports) * 100) : 0}%
+                          {isLoading ? "..." : (statistics?.total_reports && statistics.total_reports > 0 ? Math.round((statistics.resolved_reports / statistics.total_reports) * 100) : 0)}%
                         </span>
                       </div>
                     </div>

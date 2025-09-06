@@ -703,7 +703,10 @@ import {
   demoUsers, 
   demoRideOptions,
   getDemoEnhancedRides,
-  demoPanicReportsResponse
+  demoPanicReportsResponse,
+  demoDevicesResponse,
+  demoNotificationLogsResponse,
+  demoDiscountsResponse
 } from './demoData';
 
 // API Service Class
@@ -780,6 +783,18 @@ class ApiService {
           // Handle panic reports endpoint with query parameters
           if (endpoint.startsWith('/admin/panic-reports')) {
             return demoPanicReportsResponse as T;
+          }
+          // Handle notification devices endpoint with query parameters
+          if (endpoint.startsWith('/admin/devices')) {
+            return demoDevicesResponse as T;
+          }
+          // Handle notification logs endpoint with query parameters
+          if (endpoint.startsWith('/admin/notification-logs')) {
+            return demoNotificationLogsResponse as T;
+          }
+          // Handle discount management endpoint with query parameters
+          if (endpoint.startsWith('/admin/discounts')) {
+            return demoDiscountsResponse as T;
           }
           throw new Error(`Demo endpoint not found: ${endpoint}`);
       }

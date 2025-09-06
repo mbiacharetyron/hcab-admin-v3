@@ -20,10 +20,12 @@ import { useDriverLocations } from "@/hooks/useDriverLocations";
 import { formatDistanceToNow } from "date-fns";
 
 const Dashboard = () => {
-
     const { data: statsResponse, isLoading: statsLoading, error: statsError, refetch: refetchStats } = useDashboardStats();
     const { rides, meta, isLoading: ridesLoading, error: ridesError, refetch } = useEnhancedRides();
     const { data: driverLocationsResponse, isLoading: driverLocationsLoading, refetch: refetchDriverLocations } = useDriverLocations();
+
+    // Show loading state if any critical data is loading
+    const isInitialLoading = statsLoading || ridesLoading || driverLocationsLoading;
 
     // Extract stats data from the response
     const stats = statsResponse?.data;
@@ -38,6 +40,27 @@ const Dashboard = () => {
 
     // Use fallback data if API fails
     const displayStats = stats || fallbackStats;
+
+    // Show loading state for initial load
+    if (isInitialLoading) {
+        return (
+            <AdminLayout>
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+                    <div className="flex items-center justify-center h-96">
+                        <div className="text-center space-y-6">
+                            <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto shadow-large">
+                                <RefreshCw className="w-8 h-8 text-white animate-spin" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-xl font-bold text-foreground">Loading Dashboard</h3>
+                                <p className="text-muted-foreground">Please wait while we fetch your dashboard data...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </AdminLayout>
+        );
+    }
 
     // Transform driver locations data
     const driverLocations = driverLocationsResponse?.data
