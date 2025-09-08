@@ -49,10 +49,28 @@ export const usePanicManagementData = (params?: {
   const panicReportsQuery = usePanicReports(params);
   const resolvePanicMutation = useResolvePanicReport();
 
+  // Safely extract data with proper validation
+  const response = panicReportsQuery.data;
+  const panicReports = Array.isArray(response?.data) ? response.data : [];
+  const statistics = response?.statistics || null;
+  const pagination = response?.pagination || null;
+
+  // Log data for debugging
+  console.log('Panic Management Data:', {
+    hasResponse: !!response,
+    hasData: !!response?.data,
+    dataType: Array.isArray(response?.data) ? 'array' : typeof response?.data,
+    dataLength: Array.isArray(response?.data) ? response.data.length : 'N/A',
+    hasStatistics: !!statistics,
+    hasPagination: !!pagination,
+    isLoading: panicReportsQuery.isLoading,
+    error: panicReportsQuery.error
+  });
+
   return {
-    panicReports: panicReportsQuery.data?.data || [],
-    statistics: panicReportsQuery.data?.statistics,
-    pagination: panicReportsQuery.data?.pagination,
+    panicReports,
+    statistics,
+    pagination,
     isLoading: panicReportsQuery.isLoading,
     error: panicReportsQuery.error,
     refetch: panicReportsQuery.refetch,

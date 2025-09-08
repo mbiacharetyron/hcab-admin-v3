@@ -10,7 +10,8 @@ const API_BASE_URL = 'https://api.hcab.tech/api/v1/admin';
 const API_BASE_URL_1 = 'https://api.hcab.tech/api/v1';
 
 // Demo mode flag - set to false to use real API calls
-const DEMO_MODE = false;
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
+
 
 // Demo user data for testing (only used when DEMO_MODE is true)
 const DEMO_USER: User = {

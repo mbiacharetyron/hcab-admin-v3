@@ -102,7 +102,24 @@ const PanicManagement = () => {
     user_type: userTypeFilter !== 'all' ? userTypeFilter as 'driver' | 'rider' : undefined,
   });
 
+  // Safely extract values with fallbacks
   const totalItems = pagination?.total_items || 0;
+  const hasData = Array.isArray(panicReports) && panicReports.length > 0;
+  const hasStatistics = statistics && typeof statistics === 'object';
+  const hasError = !!error;
+  const isInitialLoad = isLoading && !hasData && !hasStatistics;
+
+  // Log current state for debugging
+  console.log('PanicManagement Render State:', {
+    isLoading,
+    hasData,
+    hasStatistics,
+    hasError,
+    isInitialLoad,
+    panicReportsLength: Array.isArray(panicReports) ? panicReports.length : 'not array',
+    statisticsType: typeof statistics,
+    errorMessage: error?.message
+  });
 
   // Helper functions
   const getStatusBadge = (isResolved: boolean) => {
@@ -159,6 +176,27 @@ const PanicManagement = () => {
     }
   };
 
+  // Show loading state for initial load
+  if (isInitialLoad) {
+    return (
+      <AdminLayout>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50/30 to-orange-50/20">
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-large">
+                <RefreshCw className="w-8 h-8 text-white animate-spin" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-foreground">Loading Panic Reports</h3>
+                <p className="text-muted-foreground">Please wait while we fetch emergency data...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout>
       {/* Enhanced Header Section */}
@@ -202,7 +240,7 @@ const PanicManagement = () => {
       <div className="space-y-8 mt-8">
 
         {/* Enhanced Error State - Only show if no data at all */}
-        {error && !panicReports.length && !statistics && (
+        {hasError && !hasData && !hasStatistics && (
           <Card className="border-0 shadow-xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
             <CardContent className="p-8">
               <div className="flex items-center space-x-4">
@@ -229,7 +267,7 @@ const PanicManagement = () => {
         )}
 
         {/* Partial Error State - Show when there's an error but we have some data */}
-        {error && (panicReports.length > 0 || statistics) && (
+        {hasError && (hasData || hasStatistics) && (
           <Card className="border-0 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20">
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
@@ -256,7 +294,7 @@ const PanicManagement = () => {
         )}
 
         {/* Panic Statistics Cards */}
-        {(statistics || isLoading) && (
+        {(hasStatistics || isLoading) && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Total Reports Card */}
             <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
@@ -506,7 +544,7 @@ const PanicManagement = () => {
                             <TableCell><div className="h-8 bg-gray-200 rounded w-8"></div></TableCell>
                           </TableRow>
                         ))
-                      ) : panicReports.length === 0 ? (
+                      ) : !hasData ? (
                         // Empty state
                         <TableRow>
                           <TableCell colSpan={7} className="text-center py-12">
@@ -522,7 +560,14 @@ const PanicManagement = () => {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        panicReports.map((report, index) => (
+                        panicReports.map((report, index) => {
+                          // Add safety checks for report data
+                          if (!report || typeof report !== 'object') {
+                            console.warn('Invalid report data:', report);
+                            return null;
+                          }
+                          
+                          return (
                         <TableRow 
                           key={report.id}
                           className={cn(
@@ -535,11 +580,13 @@ const PanicManagement = () => {
                           </TableCell>
                           <TableCell>
                             <div className="space-y-1">
-                              <div className="font-semibold text-gray-800 dark:text-gray-200">{report.user.name}</div>
+                              <div className="font-semibold text-gray-800 dark:text-gray-200">
+                                {report.user?.name || 'Unknown User'}
+                              </div>
                               <div className="flex items-center space-x-2">
-                                {getUserTypeBadge(report.user.role)}
+                                {getUserTypeBadge(report.user?.role || 'rider')}
                                 <span className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
-                                  {report.user.phone}
+                                  {report.user?.phone || 'N/A'}
                                 </span>
                               </div>
                             </div>
@@ -553,7 +600,7 @@ const PanicManagement = () => {
                                 </span>
                               </div>
                               <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
-                                {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
+                                {report.latitude?.toFixed(6) || 'N/A'}, {report.longitude?.toFixed(6) || 'N/A'}
                               </div>
                             </div>
                           </TableCell>
@@ -561,13 +608,13 @@ const PanicManagement = () => {
                             {report.booking ? (
                               <div className="space-y-1">
                                 <div className="font-medium text-gray-800 dark:text-gray-200">
-                                  #{report.booking.id}
+                                  #{report.booking.id || 'N/A'}
                                 </div>
                                 <div className="text-xs text-muted-foreground">
-                                  {report.booking.source_name} → {report.booking.destination_name}
+                                  {report.booking.source_name || 'Unknown'} → {report.booking.destination_name || 'Unknown'}
                                 </div>
                                 <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
-                                  {report.booking.status}
+                                  {report.booking.status || 'Unknown'}
                                 </div>
                               </div>
                             ) : (
@@ -612,7 +659,8 @@ const PanicManagement = () => {
                             </div>
                           </TableCell>
                         </TableRow>
-                        ))
+                          );
+                        }).filter(Boolean) // Remove any null entries from invalid data
                       )}
                     </TableBody>
                   </Table>

@@ -15,7 +15,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   useEffect(() => {
     console.log('ProtectedRoute: Effect 1 - checking auth');
-    // Check authentication on mount and when dependencies change
+    // Only check authentication on mount, not when isAuthenticated changes
     if (!isAuthenticated && !isLoading) {
       console.log('ProtectedRoute: Calling checkAuth');
       checkAuth().catch(() => {
@@ -23,7 +23,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         navigate('/login');
       });
     }
-  }, [isAuthenticated, isLoading, checkAuth, navigate]);
+  }, [checkAuth, navigate]); // Removed isAuthenticated and isLoading from dependencies
 
   useEffect(() => {
     console.log('ProtectedRoute: Effect 2 - redirecting if not authenticated');
