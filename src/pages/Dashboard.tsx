@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { MapSection } from "@/components/Dashboard/MapSection";
 import { 
   Car, 
   Users, 
@@ -18,21 +19,55 @@ import {
   Shield
 } from "lucide-react";
 import { useDashboardStats } from "@/hooks/useDashboard";
+import { useDriverLocations } from "@/hooks/useDriverLocations";
 import { formatDistanceToNow } from "date-fns";
 
 const Dashboard = () => {
     const { data: statsResponse, isLoading: statsLoading, error: statsError, refetch: refetchStats } = useDashboardStats();
+    const { data: driverLocationsResponse, isLoading: driverLocationsLoading, refetch: refetchDriverLocations } = useDriverLocations();
 
     // Debug logging
     console.log('Dashboard Debug:', {
         statsResponse,
         statsLoading,
         statsError,
-        hasData: !!statsResponse?.data
+        hasData: !!statsResponse?.data,
+        driverLocationsResponse,
+        driverLocationsLoading
     });
 
     // Extract stats data from the response
     const stats = statsResponse?.data;
+
+    // Transform driver locations data
+    const driverLocations = driverLocationsResponse?.data
+      ?.filter(driver => driver.latitude && driver.longitude) // Only include drivers with valid coordinates
+      ?.map(driver => ({
+        id: driver.id,
+        name: driver.username || `Driver ${driver.id}`,
+        lat: parseFloat(String(driver.latitude)),
+        lng: parseFloat(String(driver.longitude)),
+        isOnline: true // All drivers from this endpoint are online
+      })) || [];
+
+    // Create sample ride locations for demonstration
+    // In a real app, this would come from an API endpoint with ride coordinates
+    const rideLocations = [
+      {
+        id: 1,
+        riderId: 101,
+        pickup: { lat: 4.0483, lng: 9.7043 }, // Douala center
+        destination: { lat: 4.0583, lng: 9.7143 }, // Nearby location
+        status: 'in_progress'
+      },
+      {
+        id: 2,
+        riderId: 102,
+        pickup: { lat: 4.0383, lng: 9.6943 }, // Another location
+        destination: { lat: 4.0683, lng: 9.7243 }, // Another destination
+        status: 'pending'
+      }
+    ];
 
     // Show loading state for initial load
     if (statsLoading) {
@@ -161,7 +196,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Debug Info */}
+          Debug Info
           <Card className="border-blue-200 bg-blue-50">
             <CardContent className="p-4">
               <div className="flex items-center space-x-3">
@@ -188,12 +223,12 @@ const Dashboard = () => {
                     <h3 className="font-semibold text-orange-800">Dashboard Status</h3>
                     <p className="text-sm text-orange-700">
                       Stats data failed to load: {statsError.message}
-                    </p>
-                  </div>
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
           {/* Stats Cards */}
           <div>
@@ -265,7 +300,7 @@ const Dashboard = () => {
                     </div>
                           <div className="text-right">
                             <p className="font-semibold text-gray-900">{activity.amount} XAF</p>
-                          </div>
+                </div>
               </div>
             </div>
                     ))}
@@ -307,7 +342,7 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Average Fare</span>
                     <span className="font-semibold">{stats?.trips?.average_fare?.toFixed(2) || "0.00"} XAF</span>
-                  </div>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -351,11 +386,11 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Today</span>
                     <span className="font-semibold">{stats?.revenue?.today_revenue?.toLocaleString() || "0"} XAF</span>
-                  </div>
+                    </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">This Month</span>
                     <span className="font-semibold">{parseFloat(stats?.revenue?.this_month_revenue || "0").toLocaleString()} XAF</span>
-                  </div>
+                      </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Avg Ride Value</span>
                     <span className="font-semibold">{parseFloat(stats?.revenue?.average_ride_value || "0").toFixed(2)} XAF</span>
@@ -363,10 +398,36 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Discounts Given</span>
                     <span className="font-semibold text-orange-600">{parseFloat(stats?.revenue?.total_discounts_given || "0").toLocaleString()} XAF</span>
-                  </div>
+                </div>
                 </CardContent>
               </Card>
             </div>
+          </div>
+
+          {/* Live Map Section */}
+          <div>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Live Operations Map</h2>
+              <p className="text-gray-600">Real-time view of drivers and active rides</p>
+              {!import.meta.env.VITE_GOOGLE_MAPS_API_KEY && (
+                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-700">
+                    <strong>Note:</strong> To enable the map, add your Google Maps API key to the environment variables as <code>VITE_GOOGLE_MAPS_API_KEY</code>
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            <MapSection 
+              onlineDrivers={stats?.drivers?.online_drivers || 0}
+              activeTrips={stats?.trips?.ongoing_trips || 0}
+              driverLocations={driverLocations}
+              rideLocations={rideLocations}
+              onRefresh={() => {
+                refetchDriverLocations();
+                refetchStats();
+              }}
+            />
           </div>
         </div>
       </div>
