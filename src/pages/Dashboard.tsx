@@ -150,7 +150,7 @@ const Dashboard = () => {
     <AdminLayout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
         <div className="space-y-8 p-6">
-          {/* Header */}
+        {/* Header */}
           <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div className="space-y-3">
@@ -158,7 +158,7 @@ const Dashboard = () => {
                   <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                       <TrendingUp className="w-6 h-6 text-white" />
                     </div>
-                    <div>
+          <div>
                     <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
                     <p className="text-gray-600 text-lg">Welcome to H-Cab Admin Dashboard</p>
                     </div>
@@ -167,9 +167,9 @@ const Dashboard = () => {
                   <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 rounded-full">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-green-700 font-medium">System Online</span>
-                    </div>
+          </div>
                   <div className="flex items-center space-x-2 text-gray-500">
-                      <Calendar className="w-4 h-4" />
+            <Calendar className="w-4 h-4" />
                       <span>{new Date().toLocaleDateString('en-US', { 
                         weekday: 'long', 
                         year: 'numeric', 
@@ -177,8 +177,8 @@ const Dashboard = () => {
                         day: 'numeric' 
                       })}</span>
                     </div>
-                  </div>
-                </div>
+          </div>
+        </div>
                 
                 <div className="flex items-center space-x-4">
                 <div className="text-sm text-gray-500">
@@ -230,14 +230,14 @@ const Dashboard = () => {
           </Card>
         )}
 
-          {/* Stats Cards */}
+        {/* Stats Cards */}
           <div>
               <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Key Metrics</h2>
               <p className="text-gray-600">Real-time overview of your H-Cab operations</p>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {primaryStatsData.map((stat, index) => (
                 <Card key={index} className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg">
                       <CardContent className="p-6">
@@ -269,9 +269,9 @@ const Dashboard = () => {
                   </p>
                 </div>
               )}
-              </div>
-              
-                      <MapSection 
+        </div>
+
+            <MapSection 
               onlineDrivers={stats?.drivers?.online_drivers || 0}
               activeTrips={stats?.trips?.ongoing_trips || 0}
                         driverLocations={driverLocations}
@@ -341,8 +341,8 @@ const Dashboard = () => {
               <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Additional Metrics</h2>
               <p className="text-gray-600">More detailed system information</p>
-              </div>
-              
+          </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {/* Trips Analytics */}
               <Card className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg">

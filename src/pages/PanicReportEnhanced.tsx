@@ -323,7 +323,7 @@ const PanicReportEnhanced = () => {
           )}
 
           {/* Debug Toggle Button */}
-          {!debugMode && (
+          {/* {!debugMode && (
             <div className="text-center">
               <Button 
                 variant="outline" 
@@ -334,7 +334,7 @@ const PanicReportEnhanced = () => {
                 Show Debug Info
               </Button>
             </div>
-          )}
+          )} */}
 
           {/* Enhanced Statistics Overview */}
           {(statistics || !isLoading) && (

@@ -52,6 +52,7 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import PanicMap from "@/components/PanicMap";
+import PanicMapModal from "@/components/PanicMapModal";
 import { PanicReport } from "@/lib/api";
 
 const PanicManagementEnhanced = () => {
@@ -65,6 +66,8 @@ const PanicManagementEnhanced = () => {
   const [showMap, setShowMap] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [pulseAnimation, setPulseAnimation] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
+  const [modalReport, setModalReport] = useState<PanicReport | null>(null);
 
   // API call with filters
   const { 
@@ -158,8 +161,13 @@ const PanicManagementEnhanced = () => {
   };
 
   const handleViewOnMap = (report: PanicReport) => {
-    setSelectedReport(report);
-    setShowMap(true);
+    setModalReport(report);
+    setShowMapModal(true);
+  };
+
+  const handleCloseMapModal = () => {
+    setShowMapModal(false);
+    setModalReport(null);
   };
 
   const renderPagination = () => {
@@ -918,6 +926,13 @@ const PanicManagementEnhanced = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Map Modal */}
+      <PanicMapModal
+        isOpen={showMapModal}
+        onClose={handleCloseMapModal}
+        report={modalReport}
+      />
     </AdminLayout>
   );
 };
