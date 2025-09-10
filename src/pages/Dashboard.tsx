@@ -196,7 +196,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          Debug Info
+          {/* Debug Info
           <Card className="border-blue-200 bg-blue-50">
             <CardContent className="p-4">
               <div className="flex items-center space-x-3">
@@ -211,7 +211,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Error Status */}
           {statsError && (
@@ -219,9 +219,9 @@ const Dashboard = () => {
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
                   <AlertTriangle className="w-5 h-5 text-orange-600" />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-orange-800">Dashboard Status</h3>
-                    <p className="text-sm text-orange-700">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-orange-800">Dashboard Status</h3>
+                  <p className="text-sm text-orange-700">
                       Stats data failed to load: {statsError.message}
                   </p>
                 </div>
@@ -257,16 +257,42 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Live Map Section */}
+          <div>
+              <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Live Operations Map</h2>
+              <p className="text-gray-600">Real-time view of drivers and active rides</p>
+              {!import.meta.env.VITE_GOOGLE_MAPS_API_KEY && (
+                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-700">
+                    <strong>Note:</strong> To enable the map, add your Google Maps API key to the environment variables as <code>VITE_GOOGLE_MAPS_API_KEY</code>
+                  </p>
+                </div>
+              )}
+              </div>
+              
+                      <MapSection 
+              onlineDrivers={stats?.drivers?.online_drivers || 0}
+              activeTrips={stats?.trips?.ongoing_trips || 0}
+                        driverLocations={driverLocations}
+                        rideLocations={rideLocations}
+                        onRefresh={() => {
+                          refetchDriverLocations();
+                refetchStats();
+                        }}
+                      />
+                    </div>
+
           {/* Recent Activities Section */}
           {stats?.recent_activities && stats.recent_activities.length > 0 && (
             <div>
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Recent Activity</h2>
                 <p className="text-gray-600">Latest system activities and transactions</p>
-              </div>
-              
+                </div>
+
               <Card className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg">
-                <CardContent className="p-6">
+                      <CardContent className="p-6">
                   <div className="space-y-4">
                     {stats.recent_activities.slice(0, 5).map((activity, index) => (
                       <div 
@@ -402,32 +428,6 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
-
-          {/* Live Map Section */}
-          <div>
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Live Operations Map</h2>
-              <p className="text-gray-600">Real-time view of drivers and active rides</p>
-              {!import.meta.env.VITE_GOOGLE_MAPS_API_KEY && (
-                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm text-yellow-700">
-                    <strong>Note:</strong> To enable the map, add your Google Maps API key to the environment variables as <code>VITE_GOOGLE_MAPS_API_KEY</code>
-                  </p>
-                </div>
-              )}
-            </div>
-            
-            <MapSection 
-              onlineDrivers={stats?.drivers?.online_drivers || 0}
-              activeTrips={stats?.trips?.ongoing_trips || 0}
-              driverLocations={driverLocations}
-              rideLocations={rideLocations}
-              onRefresh={() => {
-                refetchDriverLocations();
-                refetchStats();
-              }}
-            />
           </div>
         </div>
       </div>
