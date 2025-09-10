@@ -216,9 +216,9 @@ const Dashboard = () => {
           {/* Error Status */}
           {statsError && (
             <Card className="border-orange-200 bg-orange-50">
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <AlertTriangle className="w-5 h-5 text-orange-600" />
                 <div className="flex-1">
                   <h3 className="font-semibold text-orange-800">Dashboard Status</h3>
                   <p className="text-sm text-orange-700">

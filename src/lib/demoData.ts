@@ -3,7 +3,7 @@ import type { DashboardStats, Ride, User, RideOption, PanicReport, PanicReportsR
 
 export const demoDashboardStats: DashboardStats = {
   trips: {
-    ongoing_trips: 12,
+  ongoing_trips: 12,
     pending_trips: 8,
     completed_today: 45,
     completed_yesterday: 52,
@@ -22,7 +22,7 @@ export const demoDashboardStats: DashboardStats = {
     new_users_this_month: 320
   },
   drivers: {
-    online_drivers: 45,
+  online_drivers: 45,
     offline_drivers: 105,
     total_drivers: 150,
     active_drivers_today: 42,
@@ -421,12 +421,67 @@ export const demoPanicReportsResponse: PanicReportsResponse = {
     limit: 10
   },
   statistics: {
+    // Basic Statistics
     total_reports: 5,
     resolved_reports: 2,
     unresolved_reports: 3,
     driver_reports: 1,
     rider_reports: 4,
-    recent_reports: 3
+    recent_reports: 3,
+
+    // Time-Based Statistics
+    reports_today: 2,
+    reports_yesterday: 1,
+    reports_this_week: 4,
+    reports_last_week: 3,
+    reports_this_month: 5,
+    reports_last_month: 4,
+
+    // Resolution Statistics
+    resolved_today: 1,
+    resolved_this_week: 2,
+    resolved_this_month: 2,
+    average_resolution_time_hours: 2.5,
+    resolution_rate_percentage: 40.0,
+
+    // Trend Analysis
+    weekly_trend: 33.3,
+    monthly_trend: 25.0,
+    resolution_trend: 5.0,
+    trend_direction: {
+      weekly: 'increasing' as const,
+      monthly: 'increasing' as const,
+      resolution: 'improving' as const
+    },
+
+    // Geographic Distribution
+    top_locations: [
+      { location: "Douala International Airport", count: 2 },
+      { location: "Hilton Hotel Douala", count: 1 },
+      { location: "Bonanjo Business District", count: 1 },
+      { location: "Akwa Shopping Center", count: 1 }
+    ],
+
+    // Peak Hours Analysis
+    peak_hours: [
+      { hour: 8, count: 2, time_period: "8:00 AM - 9:00 AM" },
+      { hour: 14, count: 1, time_period: "2:00 PM - 3:00 PM" },
+      { hour: 18, count: 1, time_period: "6:00 PM - 7:00 PM" },
+      { hour: 20, count: 1, time_period: "8:00 PM - 9:00 PM" }
+    ],
+
+    // Context Analysis
+    reports_with_booking: 4,
+    reports_without_booking: 1,
+    booking_context_percentage: 80.0,
+
+    // Summary Insights
+    insights: {
+      most_active_period: "This week",
+      resolution_efficiency: "Good",
+      primary_source: "Riders",
+      urgency_level: "Medium"
+    }
   }
 };
 

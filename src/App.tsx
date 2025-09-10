@@ -15,7 +15,7 @@ import RideOptions from "./pages/RideOptions";
 import { BookingReport } from "./pages/BookingReport";
 import { TransactionReport } from "./pages/TransactionReport";
 import RevenueReport from "./pages/RevenueReport";
-import PanicManagement from "./pages/PanicReportSimple";
+import PanicManagement from "./pages/PanicReportEnhanced";
 import NotificationManagement from "./pages/NotificationManagement";
 import DiscountManagement from "./pages/DiscountManagementDebug";
 import NotFound from "./pages/NotFound";
@@ -30,13 +30,16 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+const App = () => {
+  // console.log('🚨 APP DEBUG: App component rendering');
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
@@ -101,11 +104,12 @@ const App = () => (
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </AuthProvider>
+</QueryClientProvider>
+  );
+};
 
 export default App;

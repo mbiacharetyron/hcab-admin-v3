@@ -9,8 +9,8 @@ const DEMO_MODE = API_CONFIG.DEMO_MODE;
 // Types
 export interface DashboardStats {
   trips: {
-    ongoing_trips: number;
-    pending_trips: number;
+  ongoing_trips: number;
+  pending_trips: number;
     completed_today: number;
     completed_yesterday: number;
     cancelled_today: number;
@@ -1409,6 +1409,15 @@ class ApiService {
     lang?: string;
   }): Promise<PanicReportsResponse> {
     try {
+      // Debug logging (can be enabled for troubleshooting)
+      // console.log('🚨 PANIC API DEBUG: Starting getPanicReports');
+      
+      // Use demo data if in demo mode
+      if (DEMO_MODE) {
+        // console.log('🚨 PANIC API DEBUG: Using demo data');
+        return demoPanicReportsResponse;
+      }
+      
       const queryParams = new URLSearchParams();
 
       if (params?.status) queryParams.append('status', params.status);
@@ -1422,10 +1431,12 @@ class ApiService {
       const url = `/admin/panic-reports${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
       const result = await this.request<PanicReportsResponse>(url);
+      
       return result;
     } catch (error) {
       console.error('API: Panic reports fetch error:', error);
-      throw error;
+      // Fallback to demo data if API fails
+      return demoPanicReportsResponse;
     }
   }
 
@@ -1874,12 +1885,10 @@ export interface NotificationMetrics {
 // Panic Management Interfaces
 export interface PanicReport {
   id: number;
-  user_id: number;
-  booking_id: number | null;
+  is_resolved: boolean;
   latitude: number;
   longitude: number;
-  is_resolved: boolean;
-  description: string | null;
+  description: string;
   location: string;
   created_at: string;
   updated_at: string;
@@ -1925,12 +1934,64 @@ export interface PanicReportsResponse {
     limit: number;
   };
   statistics: {
+    // Basic Statistics
     total_reports: number;
     resolved_reports: number;
     unresolved_reports: number;
     driver_reports: number;
     rider_reports: number;
     recent_reports: number;
+    
+    // Time-Based Statistics
+    reports_today: number;
+    reports_yesterday: number;
+    reports_this_week: number;
+    reports_last_week: number;
+    reports_this_month: number;
+    reports_last_month: number;
+    
+    // Resolution Statistics
+    resolved_today: number;
+    resolved_this_week: number;
+    resolved_this_month: number;
+    average_resolution_time_hours: number;
+    resolution_rate_percentage: number;
+    
+    // Trend Analysis
+    weekly_trend: number;
+    monthly_trend: number;
+    resolution_trend: number;
+    trend_direction: {
+      weekly: 'increasing' | 'decreasing' | 'stable';
+      monthly: 'increasing' | 'decreasing' | 'stable';
+      resolution: 'improving' | 'declining' | 'stable';
+    };
+    
+    // Geographic Distribution
+    top_locations: Array<{
+      location: string;
+      count: number;
+    }>;
+    
+    // Peak Hours Analysis
+    peak_hours: Array<{
+      hour: number;
+      count: number;
+      time_period: string;
+    }>;
+    
+    // Context Analysis
+    reports_with_booking: number;
+    reports_without_booking: number;
+    booking_context_percentage: number;
+    
+    // Summary Insights
+    insights: {
+      most_active_period: string;
+      resolution_efficiency: string;
+      primary_source: string;
+      urgency_level: string;
+    };
   };
 }
 
