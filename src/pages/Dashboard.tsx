@@ -104,9 +104,9 @@ const Dashboard = () => {
     },
     {
       title: "Total Revenue",
-      value: `$${parseFloat(stats?.revenue?.total_revenue || "0").toLocaleString()}`,
+      value: `${parseFloat(stats?.revenue?.total_revenue || "0").toLocaleString()} XAF`,
       icon: <DollarSign className="w-6 h-6" />,
-      change: `$${parseFloat(stats?.revenue?.this_month_revenue || "0").toLocaleString()} this month`,
+      change: `${parseFloat(stats?.revenue?.this_month_revenue || "0").toLocaleString()} XAF this month`,
       color: "bg-purple-100 text-purple-600"
     }
   ];
@@ -264,8 +264,8 @@ const Dashboard = () => {
                             {activity.status}
                     </div>
                           <div className="text-right">
-                            <p className="font-semibold text-gray-900">${activity.amount}</p>
-                </div>
+                            <p className="font-semibold text-gray-900">{activity.amount} XAF</p>
+                          </div>
               </div>
             </div>
                     ))}
@@ -306,8 +306,8 @@ const Dashboard = () => {
                       </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Average Fare</span>
-                    <span className="font-semibold">${stats?.trips?.average_fare?.toFixed(2) || "0.00"}</span>
-                    </div>
+                    <span className="font-semibold">{stats?.trips?.average_fare?.toFixed(2) || "0.00"} XAF</span>
+                  </div>
                   </CardContent>
                 </Card>
 
@@ -350,20 +350,20 @@ const Dashboard = () => {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Today</span>
-                    <span className="font-semibold">${stats?.revenue?.today_revenue?.toLocaleString() || "0"}</span>
-                    </div>
+                    <span className="font-semibold">{stats?.revenue?.today_revenue?.toLocaleString() || "0"} XAF</span>
+                  </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">This Month</span>
-                    <span className="font-semibold">${parseFloat(stats?.revenue?.this_month_revenue || "0").toLocaleString()}</span>
-                      </div>
+                    <span className="font-semibold">{parseFloat(stats?.revenue?.this_month_revenue || "0").toLocaleString()} XAF</span>
+                  </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Avg Ride Value</span>
-                    <span className="font-semibold">${parseFloat(stats?.revenue?.average_ride_value || "0").toFixed(2)}</span>
+                    <span className="font-semibold">{parseFloat(stats?.revenue?.average_ride_value || "0").toFixed(2)} XAF</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Discounts Given</span>
-                    <span className="font-semibold text-orange-600">${parseFloat(stats?.revenue?.total_discounts_given || "0").toLocaleString()}</span>
-                </div>
+                    <span className="font-semibold text-orange-600">{parseFloat(stats?.revenue?.total_discounts_given || "0").toLocaleString()} XAF</span>
+                  </div>
                 </CardContent>
               </Card>
             </div>
