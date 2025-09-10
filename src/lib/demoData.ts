@@ -2,10 +2,87 @@
 import type { DashboardStats, Ride, User, RideOption, PanicReport, PanicReportsResponse } from './api';
 
 export const demoDashboardStats: DashboardStats = {
-  ongoing_trips: 12,
-  online_drivers: 45,
-  pending_trips: 8,
-  panics: 3
+  trips: {
+    ongoing_trips: 12,
+    pending_trips: 8,
+    completed_today: 45,
+    completed_yesterday: 52,
+    cancelled_today: 3,
+    total_this_month: 1250,
+    total_last_month: 1180,
+    completion_rate: 85.5,
+    average_fare: 1250.75
+  },
+  users: {
+    total_users: 2500,
+    total_drivers: 150,
+    new_users_today: 12,
+    new_drivers_today: 2,
+    active_users_today: 180,
+    new_users_this_month: 320
+  },
+  drivers: {
+    online_drivers: 45,
+    offline_drivers: 105,
+    total_drivers: 150,
+    active_drivers_today: 42,
+    drivers_with_cars: 120,
+    drivers_with_documents: 135
+  },
+  revenue: {
+    total_revenue: "1250000.50",
+    today_revenue: 8500.25,
+    yesterday_revenue: 9200.75,
+    this_month_revenue: "125000.00",
+    last_month_revenue: "118000.00",
+    average_ride_value: "1250.75",
+    total_discounts_given: "15000.25"
+  },
+  wallet: {
+    total_wallet_balance: "250000.75",
+    total_locked_balance: "15000.00",
+    total_transactions_today: 45,
+    total_deposits_today: 25,
+    total_withdrawals_today: 20,
+    pending_withdrawals: 5
+  },
+  discounts: {
+    total_discounts: 8,
+    active_discounts: 5,
+    total_discount_usage: 1250,
+    discount_usage_today: 45,
+    total_discount_savings: "15000.25",
+    discount_savings_today: 850.50
+  },
+  alerts: {
+    unresolved_panics: 3,
+    pending_driver_verifications: 15,
+    pending_withdrawals: 5,
+    low_balance_users: 25
+  },
+  recent_activities: [
+    {
+      type: "booking",
+      message: "New booking #1250 from John Doe",
+      timestamp: new Date().toISOString(),
+      status: "completed",
+      amount: "1250.00"
+    },
+    {
+      type: "booking",
+      message: "New booking #1249 from Jane Smith",
+      timestamp: new Date(Date.now() - 300000).toISOString(),
+      status: "in_progress",
+      amount: "850.00"
+    },
+    {
+      type: "booking",
+      message: "New booking #1248 from Mike Johnson",
+      timestamp: new Date(Date.now() - 600000).toISOString(),
+      status: "cancelled",
+      amount: "650.00"
+    }
+  ]
 };
 
 export const demoUsers: User[] = [

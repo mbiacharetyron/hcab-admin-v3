@@ -1,10 +1,10 @@
 // API Configuration
 export const API_CONFIG = {
   // Base URL for the H-Cab Admin API
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.hcab.tech/api/v1',
+  BASE_URL: 'https://api.hcab.tech/api/v1',
   
   // Demo mode - set to true to use demo data instead of real API calls
-  DEMO_MODE: import.meta.env.VITE_DEMO_MODE === 'true',
+  DEMO_MODE: false,
   
   // API Endpoints
   ENDPOINTS: {

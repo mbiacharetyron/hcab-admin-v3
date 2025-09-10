@@ -8,10 +8,71 @@ const DEMO_MODE = API_CONFIG.DEMO_MODE;
 
 // Types
 export interface DashboardStats {
-  ongoing_trips: number;
-  online_drivers: number;
-  pending_trips: number;
-  panics: number;
+  trips: {
+    ongoing_trips: number;
+    pending_trips: number;
+    completed_today: number;
+    completed_yesterday: number;
+    cancelled_today: number;
+    total_this_month: number;
+    total_last_month: number;
+    completion_rate: number;
+    average_fare: number;
+  };
+  users: {
+    total_users: number;
+    total_drivers: number;
+    new_users_today: number;
+    new_drivers_today: number;
+    active_users_today: number;
+    new_users_this_month: number;
+  };
+  drivers: {
+    online_drivers: number;
+    offline_drivers: number;
+    total_drivers: number;
+    active_drivers_today: number;
+    drivers_with_cars: number;
+    drivers_with_documents: number;
+  };
+  revenue: {
+    total_revenue: string;
+    today_revenue: number;
+    yesterday_revenue: number;
+    this_month_revenue: string;
+    last_month_revenue: string;
+    average_ride_value: string;
+    total_discounts_given: string;
+  };
+  wallet: {
+    total_wallet_balance: string;
+    total_locked_balance: string;
+    total_transactions_today: number;
+    total_deposits_today: number;
+    total_withdrawals_today: number;
+    pending_withdrawals: number;
+  };
+  discounts: {
+    total_discounts: number;
+    active_discounts: number;
+    total_discount_usage: number;
+    discount_usage_today: number;
+    total_discount_savings: string;
+    discount_savings_today: number;
+  };
+  alerts: {
+    unresolved_panics: number;
+    pending_driver_verifications: number;
+    pending_withdrawals: number;
+    low_balance_users: number;
+  };
+  recent_activities: Array<{
+    type: string;
+    message: string;
+    timestamp: string;
+    status: string;
+    amount: string;
+  }>;
 }
 
 export interface Ride {
@@ -763,8 +824,13 @@ class ApiService {
       await new Promise(resolve => setTimeout(resolve, 500));
       
       switch (endpoint) {
+        case '/admin/dashboard/stats':
         case '/dashboard/stats':
-          return demoDashboardStats as T;
+          return {
+            data: demoDashboardStats,
+            message: "Dashboard statistics retrieved successfully.",
+            code: 200
+          } as T;
         case '/rides':
           return demoRides as T;
         case '/user/1':
@@ -873,10 +939,12 @@ class ApiService {
   // Dashboard Stats
   async getDashboardStats(): Promise<{ data: DashboardStats; message: string; code: number }> {
     try {
+      console.log('API: getDashboardStats called, DEMO_MODE:', DEMO_MODE, 'BASE_URL:', API_BASE_URL);
+      
       // Try different possible endpoints
       const endpoints = [
-        '/admin/dashboard/stats'
-        // '/dashboard/stats',
+        '/admin/dashboard/stats',
+        '/dashboard/stats'
         // '/admin/stats'
       ];
       
@@ -886,10 +954,10 @@ class ApiService {
         try {
           console.log('API: Trying endpoint:', endpoint);
           const result = await this.request<{ data: DashboardStats; message: string; code: number }>(endpoint);
-          console.log('API: Dashboard stats response from', endpoint, ':', result);
+          console.log('API: Success with endpoint:', endpoint, result);
           return result;
         } catch (error) {
-          console.log('API: Endpoint', endpoint, 'failed:', error);
+          console.log('API: Failed with endpoint:', endpoint, error);
           lastError = error;
           continue;
         }
