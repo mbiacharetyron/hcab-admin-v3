@@ -1000,10 +1000,39 @@ export const demoDiscountStats = {
 
 // Demo discounts response
 export const demoDiscountsResponse = {
-  current_page: 1,
-  data: demoDiscounts,
-  total: demoDiscounts.length,
-  per_page: 15
+  message: "Discounts retrieved successfully.",
+  data: {
+    current_page: 1,
+    data: demoDiscounts,
+    total: demoDiscounts.length,
+    per_page: 15,
+    first_page_url: "http://localhost:8080/admin/discounts?page=1",
+    from: 1,
+    last_page: 1,
+    last_page_url: "http://localhost:8080/admin/discounts?page=1",
+    links: [
+      {
+        url: null,
+        label: "&laquo; Previous",
+        active: false
+      },
+      {
+        url: "http://localhost:8080/admin/discounts?page=1",
+        label: "1",
+        active: true
+      },
+      {
+        url: null,
+        label: "Next &raquo;",
+        active: false
+      }
+    ],
+    next_page_url: null,
+    path: "http://localhost:8080/admin/discounts",
+    prev_page_url: null,
+    to: demoDiscounts.length
+  },
+  code: 200
 };
 
 // Demo discount stats response

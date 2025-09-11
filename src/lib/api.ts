@@ -2351,10 +2351,27 @@ export interface DiscountCreateRequest {
 export type DiscountUpdateRequest = Partial<DiscountCreateRequest>;
 
 export interface DiscountsResponse {
-  current_page: number;
-  data: Discount[];
-  total: number;
-  per_page: number;
+  message: string;
+  data: {
+    current_page: number;
+    data: Discount[];
+    total: number;
+    per_page: number;
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    links: Array<{
+      url: string | null;
+      label: string;
+      active: boolean;
+    }>;
+    next_page_url: string | null;
+    path: string;
+    prev_page_url: string | null;
+    to: number;
+  };
+  code: number;
 }
 
 export interface DiscountUsageResponse {
