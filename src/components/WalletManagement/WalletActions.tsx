@@ -61,7 +61,11 @@ export const WalletActions = ({ user }: WalletActionsProps) => {
   const transferBalanceMutation = useTransferLockedBalance();
 
   const isWalletLocked = user.wallet.is_locked;
-  const hasLockedBalance = user.wallet.locked_balance > 0;
+  const hasLockedBalance = Number(user.wallet.locked_balance || 0) > 0;
+  
+  // Debug logging to help identify data type issues
+  console.log('WalletActions - user.wallet:', user.wallet);
+  console.log('WalletActions - locked_balance type:', typeof user.wallet.locked_balance, 'value:', user.wallet.locked_balance);
 
   const handleLockWallet = async () => {
     if (!lockReason.trim()) {
@@ -104,7 +108,7 @@ export const WalletActions = ({ user }: WalletActionsProps) => {
   const handleTransferBalance = async () => {
     const amount = transferAmount ? parseFloat(transferAmount) : undefined;
     
-    if (amount !== undefined && (amount <= 0 || amount > user.wallet.locked_balance)) {
+    if (amount !== undefined && (amount <= 0 || amount > Number(user.wallet.locked_balance || 0))) {
       toast.error("Invalid transfer amount");
       return;
     }
@@ -127,12 +131,13 @@ export const WalletActions = ({ user }: WalletActionsProps) => {
     }
   };
 
-  const formatBalance = (amount: number) => {
+  const formatBalance = (amount: number | string | undefined) => {
+    const numAmount = Number(amount || 0);
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'XAF',
       minimumFractionDigits: 2,
-    }).format(amount);
+    }).format(numAmount);
   };
 
   return (
@@ -331,11 +336,11 @@ export const WalletActions = ({ user }: WalletActionsProps) => {
                     <Input
                       id="transfer-amount"
                       type="number"
-                      placeholder={`Max: ${user.wallet.locked_balance.toFixed(2)} XAF`}
+                      placeholder={`Max: ${Number(user.wallet.locked_balance || 0).toFixed(2)} XAF`}
                       value={transferAmount}
                       onChange={(e) => setTransferAmount(e.target.value)}
                       min="0"
-                      max={user.wallet.locked_balance}
+                      max={Number(user.wallet.locked_balance || 0)}
                       step="0.01"
                     />
                     <p className="text-xs text-gray-500">

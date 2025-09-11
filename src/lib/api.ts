@@ -2490,6 +2490,10 @@ export interface WalletBalance {
   available_balance: number;
   locked_balance: number;
   total_balance: number;
+  is_locked?: boolean;
+  lock_reason?: string;
+  locked_at?: string;
+  locked_by?: number;
 }
 
 export interface WalletBalanceUser {

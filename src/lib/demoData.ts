@@ -1058,7 +1058,11 @@ export const demoWalletBalanceUsers: WalletBalanceUser[] = [
     wallet: {
       available_balance: 150.50,
       locked_balance: 25.00,
-      total_balance: 175.50
+      total_balance: 175.50,
+      is_locked: false,
+      lock_reason: undefined,
+      locked_at: undefined,
+      locked_by: undefined
     },
     created_at: "2025-01-15T10:30:00.000000Z"
   },
@@ -1074,7 +1078,11 @@ export const demoWalletBalanceUsers: WalletBalanceUser[] = [
     wallet: {
       available_balance: 2500.75,
       locked_balance: 100.00,
-      total_balance: 2600.75
+      total_balance: 2600.75,
+      is_locked: true,
+      lock_reason: "Suspicious activity detected",
+      locked_at: "2025-01-14T15:30:00.000000Z",
+      locked_by: 1
     },
     created_at: "2025-01-10T08:15:00.000000Z"
   },
@@ -1090,7 +1098,11 @@ export const demoWalletBalanceUsers: WalletBalanceUser[] = [
     wallet: {
       available_balance: 75.25,
       locked_balance: 0.00,
-      total_balance: 75.25
+      total_balance: 75.25,
+      is_locked: false,
+      lock_reason: undefined,
+      locked_at: undefined,
+      locked_by: undefined
     },
     created_at: "2025-01-20T14:45:00.000000Z"
   },
@@ -1106,7 +1118,11 @@ export const demoWalletBalanceUsers: WalletBalanceUser[] = [
     wallet: {
       available_balance: 500.00,
       locked_balance: 50.00,
-      total_balance: 550.00
+      total_balance: 550.00,
+      is_locked: true,
+      lock_reason: "Account under review",
+      locked_at: "2025-01-12T09:15:00.000000Z",
+      locked_by: 1
     },
     created_at: "2025-01-05T16:20:00.000000Z"
   },
