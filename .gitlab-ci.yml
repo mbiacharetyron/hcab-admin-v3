@@ -78,10 +78,10 @@ deploy:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$IP_ADDRESS "
         cd /home/ubuntu/admin-deployment &&
         echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY &&
-        docker-compose down || true &&
+        docker compose down || true &&
         docker system prune -f &&
-        docker-compose pull &&
-        docker-compose up -d &&
+        docker compose pull &&
+        docker compose up -d &&
         echo 'Deployment completed successfully'"
 
   rules:
