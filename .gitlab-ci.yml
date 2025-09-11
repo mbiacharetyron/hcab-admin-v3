@@ -51,37 +51,24 @@ deploy:
   before_script:
     - chmod 400 $SSH_KEY
     - export VERSION=$(date +%y.%m.%d.%H)
-    # - echo "Deploying version: $VERSION"
-    # - echo "Image: $IMAGE_NAME:$VERSION"
+    - echo "Deploying version: $VERSION"
+    - echo "Image: $IMAGE_NAME:$VERSION"
 
   script:
     - echo "Starting deployment..."
 
-    # Create deployment folder if it does not exist
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$IP_ADDRESS "mkdir -p /home/ubuntu/admin-deployment/"
-
-    # Copy deployment files to the server
-    - scp -o StrictHostKeyChecking=no -i $SSH_KEY docker-compose.yml ubuntu@$IP_ADDRESS:/home/ubuntu/admin-deployment/
-    - scp -o StrictHostKeyChecking=no -i $SSH_KEY nginx.conf ubuntu@$IP_ADDRESS:/home/ubuntu/admin-deployment/
-    - scp -o StrictHostKeyChecking=no -i $SSH_KEY nginx-proxy.conf ubuntu@$IP_ADDRESS:/home/ubuntu/admin-deployment/
-    
-    # Create environment file on server
+    # Deploy using direct Docker commands
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$IP_ADDRESS "
-        cd /home/ubuntu/admin-deployment &&
-        echo 'VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY' > .env &&
-        echo 'VITE_API_BASE_URL=$VITE_API_BASE_URL' >> .env &&
-        echo 'VITE_DEMO_MODE=$VITE_DEMO_MODE' >> .env &&
-        echo 'IMAGE_NAME=$IMAGE_NAME' >> .env &&
-        echo 'VERSION=$VERSION' >> .env"
-    
-    # Deploy using Docker Compose
-    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$IP_ADDRESS "
-        cd /home/ubuntu/admin-deployment &&
         echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY &&
-        docker compose down || true &&
+        docker stop hcab-admin || true &&
+        docker rm hcab-admin || true &&
         docker system prune -f &&
-        docker compose pull &&
-        docker compose up -d &&
+        docker run -d 
+          --name hcab-admin 
+          --restart=always 
+          -p 3200:3200 
+          -e NODE_ENV=production
+          $IMAGE_NAME:$VERSION &&
         echo 'Deployment completed successfully'"
 
   rules:

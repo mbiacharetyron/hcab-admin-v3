@@ -1,12 +1,12 @@
 # GitLab CI Deployment Guide
 
-This guide explains how to deploy your H-Cab Admin Dashboard using GitLab CI with Docker Compose.
+This guide explains how to deploy your H-Cab Admin Dashboard using GitLab CI with direct Docker commands.
 
 ## 🚀 **GitLab CI Configuration**
 
 Your `.gitlab-ci.yml` has been updated to:
 - Build Docker images with environment variables
-- Deploy using Docker Compose
+- Deploy using direct Docker commands
 - Handle environment variables securely
 - Use GitLab Container Registry
 
@@ -122,10 +122,9 @@ When you push to the `main` branch:
 
 2. **Deploy Stage**:
    - Connects to your server via SSH
-   - Copies deployment files
-   - Creates environment file on server
-   - Deploys using Docker Compose
-   - Starts the application
+   - Stops and removes existing container
+   - Pulls new image from GitLab Container Registry
+   - Starts new container with proper configuration
 
 ### **Manual Deployment**
 You can also trigger deployment manually:
@@ -180,17 +179,17 @@ Error: Permission denied (publickey)
 - Verify public key is on the server
 - Test SSH connection manually
 
-#### **3. Docker Compose Not Found**
+#### **3. Docker Not Found**
 ```
-Error: docker-compose: command not found
+Error: docker: command not found
 ```
 **Solution**: 
-- The GitLab CI now automatically installs Docker Compose on your server
-- If you want to install it manually, run the server setup script:
+- Install Docker on your server:
   ```bash
-  # Copy server-setup.sh to your server and run:
-  chmod +x server-setup.sh
-  ./server-setup.sh
+  # Install Docker
+  curl -fsSL https://get.docker.com -o get-docker.sh
+  sudo sh get-docker.sh
+  sudo usermod -aG docker $USER
   ```
 
 #### **4. Application Not Accessible**
@@ -213,14 +212,17 @@ Error: Google Maps API key required
 
 ### **Debug Commands**
 ```bash
-# Check environment variables on server
-ssh ubuntu@your_server_ip "cd /home/ubuntu/admin-deployment && cat .env"
+# Check container status
+ssh ubuntu@your_server_ip "docker ps"
 
 # Check container environment
 ssh ubuntu@your_server_ip "docker exec hcab-admin env | grep VITE"
 
-# View deployment logs
-ssh ubuntu@your_server_ip "cd /home/ubuntu/admin-deployment && docker-compose logs"
+# View container logs
+ssh ubuntu@your_server_ip "docker logs hcab-admin"
+
+# Check container details
+ssh ubuntu@your_server_ip "docker inspect hcab-admin"
 ```
 
 ## 📊 **Deployment Status**
@@ -238,15 +240,12 @@ If deployment fails:
 # SSH into server
 ssh ubuntu@your_server_ip
 
-# Go to deployment directory
-cd /home/ubuntu/admin-deployment
+# Stop current container
+docker stop hcab-admin
+docker rm hcab-admin
 
-# Stop current deployment
-docker-compose down
-
-# Pull previous version (if available)
-# Update VERSION in .env file to previous version
-docker-compose up -d
+# Run previous version (replace with actual previous version)
+docker run -d --name hcab-admin --restart=always -p 3200:3200 -e NODE_ENV=production registry.gitlab.com/hebron-global-llc/hcab-admin-v3/h-cab:YY.MM.DD.HH
 ```
 
 ## 🎯 **Next Steps**
