@@ -26,7 +26,7 @@ build:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
 
     - export VERSION=$(date +%y.%m.%d.%H)
-    - echo "Building version: $VERSION"
+    - echo $VERSION
 
   script:
     # Build Docker image with environment variables
@@ -51,8 +51,8 @@ deploy:
   before_script:
     - chmod 400 $SSH_KEY
     - export VERSION=$(date +%y.%m.%d.%H)
-    - echo "Deploying version: $VERSION"
-    - echo "Image: $IMAGE_NAME:$VERSION"
+    # - echo "Deploying version: $VERSION"
+    # - echo "Image: $IMAGE_NAME:$VERSION"
 
   script:
     - echo "Starting deployment..."
