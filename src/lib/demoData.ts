@@ -1138,7 +1138,11 @@ export const demoWalletBalanceUsers: WalletBalanceUser[] = [
     wallet: {
       available_balance: 1200.00,
       locked_balance: 200.00,
-      total_balance: 1400.00
+      total_balance: 1400.00,
+      is_locked: false,
+      lock_reason: undefined,
+      locked_at: undefined,
+      locked_by: undefined
     },
     created_at: "2025-01-12T11:30:00.000000Z"
   },
@@ -1154,7 +1158,11 @@ export const demoWalletBalanceUsers: WalletBalanceUser[] = [
     wallet: {
       available_balance: 3200.50,
       locked_balance: 150.00,
-      total_balance: 3350.50
+      total_balance: 3350.50,
+      is_locked: false,
+      lock_reason: undefined,
+      locked_at: undefined,
+      locked_by: undefined
     },
     created_at: "2025-01-08T09:15:00.000000Z"
   },
@@ -1170,7 +1178,11 @@ export const demoWalletBalanceUsers: WalletBalanceUser[] = [
     wallet: {
       available_balance: 45.75,
       locked_balance: 0.00,
-      total_balance: 45.75
+      total_balance: 45.75,
+      is_locked: false,
+      lock_reason: undefined,
+      locked_at: undefined,
+      locked_by: undefined
     },
     created_at: "2025-01-25T13:20:00.000000Z"
   },
@@ -1186,7 +1198,11 @@ export const demoWalletBalanceUsers: WalletBalanceUser[] = [
     wallet: {
       available_balance: 1800.25,
       locked_balance: 75.00,
-      total_balance: 1875.25
+      total_balance: 1875.25,
+      is_locked: false,
+      lock_reason: undefined,
+      locked_at: undefined,
+      locked_by: undefined
     },
     created_at: "2025-01-18T15:45:00.000000Z"
   }
@@ -1197,7 +1213,9 @@ export const demoWalletBalanceSummary: WalletBalanceSummary = {
   total_available_balance: 9522.00,
   total_locked_balance: 600.00,
   total_balance: 10122.00,
-  average_balance: 1265.25
+  average_balance: 1265.25,
+  locked_wallets_count: 2,
+  unlocked_wallets_count: 6
 };
 
 export const demoWalletBalancePagination: WalletBalancePagination = {

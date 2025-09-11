@@ -2522,6 +2522,8 @@ export interface WalletBalanceSummary {
   total_locked_balance: number;
   total_balance: number;
   average_balance: number;
+  locked_wallets_count: number;
+  unlocked_wallets_count: number;
 }
 
 export interface WalletBalancesResponse {

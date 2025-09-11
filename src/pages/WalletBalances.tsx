@@ -457,7 +457,7 @@ const WalletBalances = () => {
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-800 dark:text-green-200">
-                      {users.filter(user => !user.wallet.is_locked).length}
+                      {summary.unlocked_wallets_count}
                     </div>
                     <div className="text-sm text-green-600 dark:text-green-400">Unlocked Wallets</div>
                   </div>
@@ -468,7 +468,7 @@ const WalletBalances = () => {
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-red-800 dark:text-red-200">
-                      {users.filter(user => user.wallet.is_locked).length}
+                      {summary.locked_wallets_count}
                     </div>
                     <div className="text-sm text-red-600 dark:text-red-400">Locked Wallets</div>
                   </div>

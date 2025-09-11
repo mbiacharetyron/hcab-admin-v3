@@ -62,10 +62,6 @@ export const WalletActions = ({ user }: WalletActionsProps) => {
 
   const isWalletLocked = user.wallet.is_locked;
   const hasLockedBalance = Number(user.wallet.locked_balance || 0) > 0;
-  
-  // Debug logging to help identify data type issues
-  console.log('WalletActions - user.wallet:', user.wallet);
-  console.log('WalletActions - locked_balance type:', typeof user.wallet.locked_balance, 'value:', user.wallet.locked_balance);
 
   const handleLockWallet = async () => {
     if (!lockReason.trim()) {

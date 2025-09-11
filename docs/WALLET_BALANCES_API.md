@@ -36,6 +36,7 @@ The Wallet Balances API allows administrators to view all users' wallet balances
 | `is_active` | boolean | Filter by user active status | `true`, `false` |
 | `is_online` | boolean | Filter by user online status | `true`, `false` |
 | `has_passcode` | boolean | Filter by wallet passcode status | `true`, `false` |
+| `wallet_locked` | boolean | Filter by wallet lock status | `true`, `false` |
 | `search` | string | Search by name, email, or phone | `john@example.com` |
 
 ### Sorting Parameters
@@ -82,7 +83,11 @@ The Wallet Balances API allows administrators to view all users' wallet balances
         "wallet": {
           "available_balance": 150.50,
           "locked_balance": 25.00,
-          "total_balance": 175.50
+          "total_balance": 175.50,
+          "is_locked": false,
+          "lock_reason": null,
+          "locked_at": null,
+          "locked_by": null
         },
         "created_at": "2025-01-15T10:30:00.000000Z"
       }
@@ -98,7 +103,9 @@ The Wallet Balances API allows administrators to view all users' wallet balances
       "total_available_balance": 15000.50,
       "total_locked_balance": 2500.00,
       "total_balance": 17500.50,
-      "average_balance": 233.34
+      "average_balance": 233.34,
+      "locked_wallets_count": 5,
+      "unlocked_wallets_count": 70
     }
   }
 }
@@ -184,15 +191,31 @@ curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?page=2&p
   -H "Accept: application/json"
 ```
 
-### 8. Complex Filtering
+### 8. Filter by Wallet Lock Status
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?role=rider&min_balance=50&is_active=true&sort_by=total_balance&sort_order=desc&per_page=25" \
+# Get only locked wallets
+curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?wallet_locked=true" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 9. French Language Response
+```bash
+# Get only unlocked wallets
+curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?wallet_locked=false" \
+  -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
+  -H "Accept: application/json"
+```
+
+### 9. Complex Filtering
+
+```bash
+curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?role=rider&min_balance=50&is_active=true&wallet_locked=false&sort_by=total_balance&sort_order=desc&per_page=25" \
+  -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
+  -H "Accept: application/json"
+```
+
+### 10. French Language Response
 
 ```bash
 curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?lang=fr" \
@@ -251,6 +274,10 @@ The `search` parameter searches across:
 | `available_balance` | number | Available wallet balance |
 | `locked_balance` | number | Locked wallet balance |
 | `total_balance` | number | Total wallet balance (available + locked) |
+| `is_locked` | boolean | Whether the wallet is locked |
+| `lock_reason` | string | Reason for wallet lock (null if not locked) |
+| `locked_at` | string | Timestamp when wallet was locked (null if not locked) |
+| `locked_by` | integer | Admin user ID who locked the wallet (null if not locked) |
 
 ### Pagination Object
 
@@ -270,6 +297,8 @@ The `search` parameter searches across:
 | `total_locked_balance` | number | Sum of all locked balances |
 | `total_balance` | number | Sum of all total balances |
 | `average_balance` | number | Average balance per user |
+| `locked_wallets_count` | integer | Number of locked wallets |
+| `unlocked_wallets_count` | integer | Number of unlocked wallets |
 
 ---
 
