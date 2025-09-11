@@ -25,8 +25,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 3300 (matching your GitLab CI reference)
-EXPOSE 3300
+# Expose port 3200 (matching your GitLab CI reference)
+EXPOSE 3200
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
