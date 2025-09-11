@@ -1,21 +1,23 @@
-# Wallet Balances API Documentation
+# Users with Devices API Documentation
 
 ## Overview
 
-The Wallet Balances API allows administrators to view all users' wallet balances with comprehensive filtering and sorting capabilities. This API provides detailed information about user wallets including available balance, locked balance, and total balance, along with user profile information.
+The Users with Devices API allows administrators to view all users along with their associated device information. This API provides comprehensive device management capabilities including device details, status tracking, and activity monitoring.
 
 ## Features
 
-- **Comprehensive Filtering**: Filter by user role, balance range, activity status, and more
-- **Advanced Search**: Search by name, email, or phone number
-- **Flexible Sorting**: Sort by various fields including balance amounts
+- **Comprehensive User Data**: View user information with associated devices
+- **Device Information**: Detailed device specifications and status
+- **Advanced Filtering**: Filter by user role, device type, activity status
+- **Search Functionality**: Search across users and device names
+- **Flexible Sorting**: Sort by various fields including device count
 - **Pagination**: Efficient pagination for large datasets
-- **Summary Statistics**: Overall wallet statistics and totals
+- **Summary Statistics**: Overall device and user statistics
 - **Bilingual Support**: Response messages in English and French
 
 ## API Endpoint
 
-**GET** `/api/v1/admin/users/wallet-balances`
+**GET** `/api/v1/admin/users/devices`
 
 ### Authentication
 - **Required**: Bearer token
@@ -30,20 +32,16 @@ The Wallet Balances API allows administrators to view all users' wallet balances
 | Parameter | Type | Description | Example |
 |-----------|------|-------------|---------|
 | `role` | string | Filter by user role | `rider`, `driver`, `admin` |
-| `min_balance` | number | Minimum wallet balance | `100.50` |
-| `max_balance` | number | Maximum wallet balance | `1000.00` |
-| `balance_type` | string | Filter by balance type | `available`, `locked`, `total` |
+| `device_type` | string | Filter by device type | `ios`, `android`, `web` |
 | `is_active` | boolean | Filter by user active status | `true`, `false` |
-| `is_online` | boolean | Filter by user online status | `true`, `false` |
-| `has_passcode` | boolean | Filter by wallet passcode status | `true`, `false` |
-| `wallet_locked` | boolean | Filter by wallet lock status | `true`, `false` |
-| `search` | string | Search by name, email, or phone | `john@example.com` |
+| `device_active` | boolean | Filter by device active status | `true`, `false` |
+| `search` | string | Search by name, email, phone, or device name | `john@example.com` |
 
 ### Sorting Parameters
 
 | Parameter | Type | Description | Options | Default |
 |-----------|------|-------------|---------|---------|
-| `sort_by` | string | Sort by field | `name`, `email`, `available_balance`, `locked_balance`, `total_balance`, `created_at` | `total_balance` |
+| `sort_by` | string | Sort by field | `name`, `email`, `created_at`, `last_active_at`, `device_count` | `created_at` |
 | `sort_order` | string | Sort order | `asc`, `desc` | `desc` |
 
 ### Pagination Parameters
@@ -68,7 +66,7 @@ The Wallet Balances API allows administrators to view all users' wallet balances
 ```json
 {
   "success": true,
-  "message": "Wallet balances retrieved successfully",
+  "message": "Users with devices retrieved successfully",
   "data": {
     "users": [
       {
@@ -79,17 +77,22 @@ The Wallet Balances API allows administrators to view all users' wallet balances
         "role": "rider",
         "is_active": true,
         "is_online": false,
-        "has_active_passcode": true,
-        "wallet": {
-          "available_balance": 150.50,
-          "locked_balance": 25.00,
-          "total_balance": 175.50,
-          "is_locked": false,
-          "lock_reason": null,
-          "locked_at": null,
-          "locked_by": null
-        },
-        "created_at": "2025-01-15T10:30:00.000000Z"
+        "created_at": "2025-01-15T10:30:00.000000Z",
+        "devices": [
+          {
+            "id": 1,
+            "device_name": "John's iPhone",
+            "device_type": "ios",
+            "device_model": "iPhone 12",
+            "os_version": "15.0",
+            "app_version": "1.2.3",
+            "is_active": true,
+            "last_active_at": "2025-01-15T10:30:00.000000Z",
+            "created_at": "2025-01-15T10:30:00.000000Z"
+          }
+        ],
+        "device_count": 1,
+        "active_device_count": 1
       }
     ],
     "pagination": {
@@ -100,12 +103,14 @@ The Wallet Balances API allows administrators to view all users' wallet balances
     },
     "summary": {
       "total_users": 75,
-      "total_available_balance": 15000.50,
-      "total_locked_balance": 2500.00,
-      "total_balance": 17500.50,
-      "average_balance": 233.34,
-      "locked_wallets_count": 5,
-      "unlocked_wallets_count": 70
+      "users_with_devices": 60,
+      "total_devices": 120,
+      "active_devices": 95,
+      "device_types": {
+        "ios": 45,
+        "android": 50,
+        "web": 25
+      }
     }
   }
 }
@@ -126,7 +131,7 @@ The Wallet Balances API allows administrators to view all users' wallet balances
 ```json
 {
   "success": false,
-  "message": "An error occurred while retrieving wallet balances",
+  "message": "An error occurred while retrieving users with devices",
   "code": 500
 }
 ```
@@ -135,10 +140,10 @@ The Wallet Balances API allows administrators to view all users' wallet balances
 
 ## Usage Examples
 
-### 1. Get All Users' Wallet Balances
+### 1. Get All Users with Devices
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
@@ -146,79 +151,63 @@ curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances" \
 ### 2. Filter by User Role
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?role=driver" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices?role=driver" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 3. Filter by Balance Range
+### 3. Filter by Device Type
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?min_balance=100&max_balance=1000&balance_type=total" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices?device_type=ios" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 4. Search by User Information
+### 4. Filter by Active Devices Only
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?search=john" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices?device_active=true" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 5. Filter by User Status
+### 5. Search Users and Devices
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?is_active=true&is_online=false" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices?search=iPhone" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 6. Sort by Balance (Highest First)
+### 6. Sort by Device Count
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?sort_by=total_balance&sort_order=desc" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices?sort_by=device_count&sort_order=desc" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 7. Pagination
+### 7. Complex Filtering
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?page=2&per_page=20" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices?role=rider&device_type=android&device_active=true&sort_by=last_active_at&sort_order=desc" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 8. Filter by Wallet Lock Status
+### 8. Pagination
 
 ```bash
-# Get only locked wallets
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?wallet_locked=true" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices?page=2&per_page=20" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
 
-```bash
-# Get only unlocked wallets
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?wallet_locked=false" \
-  -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
-  -H "Accept: application/json"
-```
-
-### 9. Complex Filtering
+### 9. French Language Response
 
 ```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?role=rider&min_balance=50&is_active=true&wallet_locked=false&sort_by=total_balance&sort_order=desc&per_page=25" \
-  -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
-  -H "Accept: application/json"
-```
-
-### 10. French Language Response
-
-```bash
-curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?lang=fr" \
+curl -X GET "https://api.example.com/api/v1/admin/users/devices?lang=fr" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Accept: application/json"
 ```
@@ -227,26 +216,31 @@ curl -X GET "https://api.example.com/api/v1/admin/users/wallet-balances?lang=fr"
 
 ## Filtering Logic
 
-### Balance Type Filtering
+### User Filters
 
-When using `balance_type` parameter:
+- **`role`**: Filter users by their role (rider, driver, admin)
+- **`is_active`**: Filter by user account status (active/inactive)
 
-- **`available`**: Filters based on `available_balance` only
-- **`locked`**: Filters based on `locked_balance` only  
-- **`total`**: Filters based on `available_balance + locked_balance` (default)
+### Device Filters
+
+- **`device_type`**: Filter by device type (ios, android, web)
+- **`device_active`**: Filter by device active status
 
 ### Search Functionality
 
 The `search` parameter searches across:
 - User name (partial match)
-- Email address (partial match)
-- Phone number (partial match)
+- User email address (partial match)
+- User phone number (partial match)
+- Device name (partial match)
 
-### Status Filtering
+### Sorting Options
 
-- **`is_active`**: User account status (active/inactive)
-- **`is_online`**: Current online status
-- **`has_passcode`**: Whether user has set up wallet passcode
+- **`name`**: Sort by user name
+- **`email`**: Sort by user email
+- **`created_at`**: Sort by user creation date
+- **`last_active_at`**: Sort by device last activity
+- **`device_count`**: Sort by number of devices per user
 
 ---
 
@@ -263,21 +257,24 @@ The `search` parameter searches across:
 | `role` | string | User role (`rider`, `driver`, `admin`) |
 | `is_active` | boolean | Account active status |
 | `is_online` | boolean | Current online status |
-| `has_active_passcode` | boolean | Wallet passcode status |
-| `wallet` | object | Wallet balance information |
 | `created_at` | string | Account creation timestamp |
+| `devices` | array | Array of device objects |
+| `device_count` | integer | Total number of devices |
+| `active_device_count` | integer | Number of active devices |
 
-### Wallet Object
+### Device Object
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `available_balance` | number | Available wallet balance |
-| `locked_balance` | number | Locked wallet balance |
-| `total_balance` | number | Total wallet balance (available + locked) |
-| `is_locked` | boolean | Whether the wallet is locked |
-| `lock_reason` | string | Reason for wallet lock (null if not locked) |
-| `locked_at` | string | Timestamp when wallet was locked (null if not locked) |
-| `locked_by` | integer | Admin user ID who locked the wallet (null if not locked) |
+| `id` | integer | Device ID |
+| `device_name` | string | Device name |
+| `device_type` | string | Device type (`ios`, `android`, `web`) |
+| `device_model` | string | Device model |
+| `os_version` | string | Operating system version |
+| `app_version` | string | Application version |
+| `is_active` | boolean | Device active status |
+| `last_active_at` | string | Last activity timestamp |
+| `created_at` | string | Device registration timestamp |
 
 ### Pagination Object
 
@@ -292,13 +289,11 @@ The `search` parameter searches across:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `total_users` | integer | Total number of users in result |
-| `total_available_balance` | number | Sum of all available balances |
-| `total_locked_balance` | number | Sum of all locked balances |
-| `total_balance` | number | Sum of all total balances |
-| `average_balance` | number | Average balance per user |
-| `locked_wallets_count` | integer | Number of locked wallets |
-| `unlocked_wallets_count` | integer | Number of unlocked wallets |
+| `total_users` | integer | Total number of users |
+| `users_with_devices` | integer | Users who have registered devices |
+| `total_devices` | integer | Total number of devices |
+| `active_devices` | integer | Number of active devices |
+| `device_types` | object | Device count by type |
 
 ---
 
@@ -306,7 +301,7 @@ The `search` parameter searches across:
 
 ### Database Optimization
 
-- Uses efficient joins for wallet data
+- Uses efficient joins for device relationships
 - Implements proper indexing on filterable fields
 - Pagination prevents memory issues with large datasets
 
@@ -334,8 +329,8 @@ The `search` parameter searches across:
 
 ### Data Privacy
 
-- Sensitive information is properly handled
-- Wallet passcode information is not exposed
+- Sensitive device information is properly handled
+- Device tokens are not exposed in the response
 - User authentication details are protected
 
 ### Rate Limiting
@@ -375,9 +370,9 @@ All errors follow a consistent format:
 ```javascript
 const axios = require('axios');
 
-async function getWalletBalances(filters = {}) {
+async function getUsersWithDevices(filters = {}) {
   try {
-    const response = await axios.get('/api/v1/admin/users/wallet-balances', {
+    const response = await axios.get('/api/v1/admin/users/devices', {
       headers: {
         'Authorization': `Bearer ${adminToken}`,
         'Accept': 'application/json'
@@ -387,17 +382,17 @@ async function getWalletBalances(filters = {}) {
     
     return response.data;
   } catch (error) {
-    console.error('Error fetching wallet balances:', error.response.data);
+    console.error('Error fetching users with devices:', error.response.data);
     throw error;
   }
 }
 
 // Usage examples
-const allBalances = await getWalletBalances();
-const driverBalances = await getWalletBalances({ role: 'driver' });
-const highBalanceUsers = await getWalletBalances({ 
-  min_balance: 1000, 
-  sort_by: 'total_balance', 
+const allUsers = await getUsersWithDevices();
+const iosUsers = await getUsersWithDevices({ device_type: 'ios' });
+const activeDevices = await getUsersWithDevices({ 
+  device_active: true, 
+  sort_by: 'device_count', 
   sort_order: 'desc' 
 });
 ```
@@ -407,8 +402,8 @@ const highBalanceUsers = await getWalletBalances({
 ```php
 <?php
 
-function getWalletBalances($filters = []) {
-    $url = 'https://api.example.com/api/v1/admin/users/wallet-balances';
+function getUsersWithDevices($filters = []) {
+    $url = 'https://api.example.com/api/v1/admin/users/devices';
     $queryString = http_build_query($filters);
     
     $ch = curl_init();
@@ -431,11 +426,11 @@ function getWalletBalances($filters = []) {
 }
 
 // Usage examples
-$allBalances = getWalletBalances();
-$driverBalances = getWalletBalances(['role' => 'driver']);
-$highBalanceUsers = getWalletBalances([
-    'min_balance' => 1000,
-    'sort_by' => 'total_balance',
+$allUsers = getUsersWithDevices();
+$iosUsers = getUsersWithDevices(['device_type' => 'ios']);
+$activeDevices = getUsersWithDevices([
+    'device_active' => true,
+    'sort_by' => 'device_count',
     'sort_order' => 'desc'
 ]);
 ?>
@@ -443,16 +438,41 @@ $highBalanceUsers = getWalletBalances([
 
 ---
 
+## Use Cases
+
+### Device Management
+
+- **Device Monitoring**: Track device usage and activity
+- **Device Analytics**: Analyze device type distribution
+- **Device Status**: Monitor active/inactive devices
+- **User Device Mapping**: Understand user-device relationships
+
+### User Analytics
+
+- **User Behavior**: Analyze user device preferences
+- **Platform Usage**: Track iOS vs Android usage
+- **Activity Patterns**: Monitor user activity through devices
+- **Device Adoption**: Track new device registrations
+
+### Administrative Tasks
+
+- **User Support**: Help users with device-related issues
+- **Security Monitoring**: Track suspicious device activity
+- **Platform Optimization**: Optimize for popular device types
+- **User Engagement**: Monitor user engagement through devices
+
+---
+
 ## Future Enhancements
 
 ### Planned Features
 
-1. **Export Functionality**: CSV/Excel export of wallet balance data
-2. **Advanced Analytics**: Trend analysis and reporting
-3. **Real-time Updates**: WebSocket support for live balance updates
-4. **Bulk Operations**: Mass wallet operations for admin users
-5. **Custom Filters**: User-defined filter combinations
-6. **Data Visualization**: Charts and graphs for balance distribution
+1. **Device Management**: Add/remove devices for users
+2. **Device Analytics**: Advanced device usage analytics
+3. **Push Notification Management**: Manage device tokens
+4. **Device Security**: Device authentication and validation
+5. **Bulk Operations**: Mass device operations for admin users
+6. **Device History**: Track device registration history
 
 ### API Versioning
 
@@ -468,7 +488,7 @@ $highBalanceUsers = getWalletBalances([
 ### Additional Resources
 
 - [Admin Dashboard API Documentation](./ENHANCED_DASHBOARD_API.md)
-- [Wallet Transactions API Documentation](./WALLET_TRANSACTIONS_API.md)
+- [Wallet Balances API Documentation](./WALLET_BALANCES_API.md)
 - [User Management API Documentation](./USER_MANAGEMENT_API.md)
 
 ### Contact Information

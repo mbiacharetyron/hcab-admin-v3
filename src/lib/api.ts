@@ -810,6 +810,14 @@ class ApiService {
         const response = await fetch(url, config);
         
         if (!response.ok) {
+          // Check for authentication errors
+          if (response.status === 401) {
+            const errorData = await response.json().catch(() => ({}));
+            if (errorData.message === 'Unauthenticated.') {
+              // Trigger global authentication error handler
+              this.handleAuthenticationError();
+            }
+          }
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -910,6 +918,15 @@ class ApiService {
       clearTimeout(timeoutId);
       
       if (!response.ok) {
+        // Check for authentication errors
+        if (response.status === 401) {
+          const errorData = await response.json().catch(() => ({}));
+          if (errorData.message === 'Unauthenticated.') {
+            // Trigger global authentication error handler
+            this.handleAuthenticationError();
+          }
+        }
+        
         const errorMessage = response.status === 401 
           ? 'Unauthorized - Please login again'
           : response.status === 403 
@@ -1880,10 +1897,47 @@ class ApiService {
   isDemoMode(): boolean {
     return DEMO_MODE;
   }
+
+  // Handle authentication errors globally
+  private handleAuthenticationError(): void {
+    console.log('API: Authentication error detected, triggering logout');
+    
+    // Clear the token immediately
+    this.clearToken();
+    
+    // Store current location for redirect after login
+    const currentPath = window.location.pathname + window.location.search;
+    if (currentPath !== '/login' && currentPath !== '/') {
+      localStorage.setItem('auth_redirect_path', currentPath);
+    }
+    
+    // Dispatch custom event to notify auth context
+    window.dispatchEvent(new CustomEvent('auth:unauthorized', {
+      detail: { message: 'Session expired. Please login again.' }
+    }));
+    
+    // Redirect to login page
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 1000); // Small delay to allow notification to show
+  }
+
+  // Public method to manually trigger authentication error (for testing)
+  public triggerAuthError(): void {
+    this.handleAuthenticationError();
+  }
 }
 
 // Export singleton instance
 export const apiService = new ApiService();
+
+// Add global method for testing authentication error handling
+if (typeof window !== 'undefined') {
+  (window as Window & { testAuthError?: () => void }).testAuthError = () => {
+    console.log('Testing authentication error handling...');
+    apiService.triggerAuthError();
+  };
+}
 
 // Export individual functions for convenience
 export const getDashboardStats = () => apiService.getDashboardStats();
@@ -2436,6 +2490,10 @@ export interface WalletBalance {
   available_balance: number;
   locked_balance: number;
   total_balance: number;
+  is_locked?: boolean;
+  lock_reason?: string;
+  locked_at?: string;
+  locked_by?: number;
 }
 
 export interface WalletBalanceUser {
@@ -2464,6 +2522,8 @@ export interface WalletBalanceSummary {
   total_locked_balance: number;
   total_balance: number;
   average_balance: number;
+  locked_wallets_count: number;
+  unlocked_wallets_count: number;
 }
 
 export interface WalletBalancesResponse {

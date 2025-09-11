@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
 
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (redirectToLogin = true) => {
     try {
       if (state.token) {
         await AuthService.logout(state.token);
@@ -66,6 +66,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isAuthenticated: false,
         isLoading: false,
       });
+      
+      // Redirect to login if requested
+      if (redirectToLogin) {
+        window.location.href = '/login';
+      }
     }
   }, [state.token]);
 
@@ -156,6 +161,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  // Listen for authentication errors from API service
+  useEffect(() => {
+    const handleAuthError = (event: CustomEvent) => {
+      console.log('AuthContext: Received authentication error event:', event.detail);
+      
+      // Show user-friendly notification
+      const message = event.detail?.message || 'Your session has expired. Please login again.';
+      
+      // Create a simple notification
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // Remove notification after 5 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 5000);
+      
+      logout(false); // Don't redirect immediately, let the API service handle it
+    };
+
+    window.addEventListener('auth:unauthorized', handleAuthError as EventListener);
+    
+    return () => {
+      window.removeEventListener('auth:unauthorized', handleAuthError as EventListener);
+    };
+  }, [logout]);
 
   // Auto-logout on token expiration
   useEffect(() => {

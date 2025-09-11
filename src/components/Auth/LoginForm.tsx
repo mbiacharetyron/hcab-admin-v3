@@ -127,8 +127,16 @@ export const LoginForm = () => {
       // Save remember me preference
       TokenStorage.setRememberMe(formData.rememberMe);
       
-      // Navigate to dashboard
-      navigate('/dashboard', { replace: true });
+      // Check if there's a stored redirect path
+      const redirectPath = localStorage.getItem('auth_redirect_path');
+      if (redirectPath && redirectPath !== '/login') {
+        console.log('Redirecting to stored path:', redirectPath);
+        localStorage.removeItem('auth_redirect_path');
+        navigate(redirectPath, { replace: true });
+      } else {
+        // Navigate to dashboard as default
+        navigate('/dashboard', { replace: true });
+      }
     } catch (error) {
       console.error('Login error:', error);
       

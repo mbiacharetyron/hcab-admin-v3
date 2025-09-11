@@ -20,7 +20,8 @@ import {
   Settings2,
   Receipt,
   Percent,
-  Wallet
+  Wallet,
+  Smartphone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ const menuItems = [
   { title: "Drivers", icon: Car, path: "/drivers" },
   { title: "Ride Options", icon: Settings2, path: "/ride-options" },
   { title: "Riders", icon: Users, path: "/riders" },
+  { title: "User Devices", icon: Smartphone, path: "/user-devices" },
   // { title: "Ride Fare", icon: DollarSign, path: "/ride-fare" },
   // { title: "Support Messages", icon: MessageSquare, path: "/support" },
   { title: "Booking Report", icon: FileText, path: "/booking-report" },
@@ -42,7 +44,7 @@ const menuItems = [
   { title: "Panic Management", icon: AlertTriangle, path: "/panic-management" },
   { title: "Notifications", icon: Bell, path: "/notifications" },
   { title: "Discount Management", icon: Percent, path: "/discounts" },
-  { title: "Wallet Balances", icon: Wallet, path: "/wallet-balances" },
+  { title: "Wallets", icon: Wallet, path: "/wallet-balances" },
   // { title: "Pay-outs", icon: PayOut, path: "/payouts" },
   // { title: "Supports", icon: HeadphonesIcon, path: "/supports" },
   { title: "Settings", icon: Settings, path: "/settings" },

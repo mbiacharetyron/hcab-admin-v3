@@ -40,8 +40,13 @@ interface DataTableProps {
   searchPlaceholder?: string;
 }
 
-const StatusBadge = ({ status }: { status: string }) => {
-  const getVariant = (status: string) => {
+const StatusBadge = ({ status }: { status: string | null | undefined }) => {
+  const getVariant = (status: string | null | undefined) => {
+    // Handle null, undefined, or non-string values
+    if (!status || typeof status !== 'string') {
+      return "bg-secondary text-secondary-foreground";
+    }
+    
     switch (status.toLowerCase()) {
       case "active":
       case "completed":
@@ -64,7 +69,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 
   return (
     <Badge variant="outline" className={cn("font-medium", getVariant(status))}>
-      {status}
+      {status || "Unknown"}
     </Badge>
   );
 };
@@ -116,12 +121,17 @@ export const DataTable = ({
     
     // Handle status columns
     if (column.key.toLowerCase().includes("status")) {
-      return <StatusBadge status={value} />;
+      return <StatusBadge status={String(value || "")} />;
     }
 
     // Handle date columns
     if (column.key.toLowerCase().includes("date") || column.key.toLowerCase().includes("created_at")) {
-      return new Date(value).toLocaleDateString();
+      if (!value) return "N/A";
+      try {
+        return new Date(value).toLocaleDateString();
+      } catch (error) {
+        return "Invalid Date";
+      }
     }
 
     // Handle location columns (truncate long addresses)

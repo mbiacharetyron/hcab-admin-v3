@@ -53,9 +53,12 @@ import {
   Crown,
   Sparkles,
   Award,
-  Trophy
+  Trophy,
+  Lock,
+  Unlock
 } from "lucide-react";
-import { useWalletBalanceManagement } from "@/hooks/useWalletBalances";
+import { useWalletBalanceManagement, useLockWallet, useUnlockWallet, useTransferLockedBalance } from "@/hooks/useWalletBalances";
+import { WalletActions } from "@/components/WalletManagement/WalletActions";
 import { useState } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -66,6 +69,7 @@ const WalletBalances = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [walletLockFilter, setWalletLockFilter] = useState<string>('all');
   const [balanceTypeFilter, setBalanceTypeFilter] = useState<string>('total');
   const [minBalance, setMinBalance] = useState<string>('');
   const [maxBalance, setMaxBalance] = useState<string>('');
@@ -158,6 +162,24 @@ const WalletBalances = () => {
     }
   };
 
+  const getWalletLockBadge = (isLocked: boolean, lockReason?: string) => {
+    if (isLocked) {
+      return (
+        <Badge variant="destructive" className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
+          <Lock className="w-3 h-3 mr-1" />
+          Locked
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+          <Unlock className="w-3 h-3 mr-1" />
+          Unlocked
+        </Badge>
+      );
+    }
+  };
+
   const formatBalance = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -170,6 +192,7 @@ const WalletBalances = () => {
     setSearchTerm('');
     setRoleFilter('all');
     setStatusFilter('all');
+    setWalletLockFilter('all');
     setBalanceTypeFilter('total');
     setMinBalance('');
     setMaxBalance('');
@@ -405,6 +428,67 @@ const WalletBalances = () => {
           </div>
         )}
 
+        {/* Wallet Lock Statistics */}
+        {summary && (
+          <Card className="border-2 border-gray-100 dark:border-gray-800 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
+              <CardTitle className="flex items-center space-x-3">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-600 rounded-lg blur-sm opacity-30"></div>
+                  <div className="relative bg-gradient-to-r from-red-500 to-orange-600 p-2 rounded-lg">
+                    <Lock className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
+                    Wallet Security Overview
+                  </span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    Wallet lock status and security statistics
+                  </p>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-xl border border-green-200 dark:border-green-800">
+                  <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                    <Unlock className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-green-800 dark:text-green-200">
+                      {summary.unlocked_wallets_count}
+                    </div>
+                    <div className="text-sm text-green-600 dark:text-green-400">Unlocked Wallets</div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20 rounded-xl border border-red-200 dark:border-red-800">
+                  <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                    <Lock className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-red-800 dark:text-red-200">
+                      {summary.locked_wallets_count}
+                    </div>
+                    <div className="text-sm text-red-600 dark:text-red-400">Locked Wallets</div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <Shield className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">
+                      {users.filter(user => user.has_active_passcode).length}
+                    </div>
+                    <div className="text-sm text-blue-600 dark:text-blue-400">Protected Wallets</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Enhanced Filters */}
         <Card className="border-2 border-gray-100 dark:border-gray-800 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
@@ -472,6 +556,23 @@ const WalletBalances = () => {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center">
+                  <Lock className="w-4 h-4 mr-2 text-red-600" />
+                  Wallet Status
+                </label>
+                <Select value={walletLockFilter} onValueChange={setWalletLockFilter}>
+                  <SelectTrigger className="border-2 border-gray-200 dark:border-gray-700 focus:border-red-500 dark:focus:border-red-400 transition-all duration-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Wallets</SelectItem>
+                    <SelectItem value="locked">Locked</SelectItem>
+                    <SelectItem value="unlocked">Unlocked</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -673,12 +774,18 @@ const WalletBalances = () => {
                         {getSortIcon('created_at')}
                       </div>
                     </TableHead>
+                    <TableHead className="font-bold text-gray-800 dark:text-gray-200 py-4">
+                      <div className="flex items-center space-x-2">
+                        <Settings className="w-4 h-4 text-purple-600" />
+                        <span>Actions</span>
+                      </div>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={8} className="text-center py-8">
                         <div className="flex items-center justify-center space-x-2">
                           <RefreshCw className="w-4 h-4 animate-spin" />
                           <span>Loading wallet balances...</span>
@@ -687,7 +794,7 @@ const WalletBalances = () => {
                     </TableRow>
                   ) : !users || users.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={8} className="text-center py-8">
                         <div className="text-gray-500">
                           <Wallet className="w-8 h-8 mx-auto mb-2 opacity-50" />
                           <p>No wallet balances found</p>
@@ -789,8 +896,13 @@ const WalletBalances = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-4">
-                          <div className="flex justify-center">
-                            {getPasscodeBadge(user.has_active_passcode)}
+                          <div className="space-y-2">
+                            <div className="flex justify-center">
+                              {getPasscodeBadge(user.has_active_passcode)}
+                            </div>
+                            <div className="flex justify-center">
+                              {getWalletLockBadge(user.wallet.is_locked || false, user.wallet.lock_reason)}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="py-4">
@@ -807,6 +919,9 @@ const WalletBalances = () => {
                               </div>
                             </div>
                           </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <WalletActions user={user} />
                         </TableCell>
                       </TableRow>
                     ))
