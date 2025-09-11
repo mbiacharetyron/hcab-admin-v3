@@ -48,15 +48,17 @@ import {
   Tablet,
   Laptop,
   Apple,
-  Smartphone as AndroidIcon,
+  Smartphone as Android,
   Globe,
   Battery,
   Wifi,
   WifiOff,
   AlertCircle,
-  Info
+  Info,
+  User
 } from "lucide-react";
 import { useEnhancedUserDevices } from "@/hooks/useUserDevices";
+import { UserDeviceDetails } from "@/components/UserDevices/UserDeviceDetails";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User, Device } from "@/hooks/useUserDevices";
@@ -67,7 +69,7 @@ const getDeviceTypeIcon = (deviceType: string) => {
     case 'ios':
       return <Apple className="w-4 h-4 text-gray-600" />;
     case 'android':
-      return <AndroidIcon className="w-4 h-4 text-green-600" />;
+      return <Android className="w-4 h-4 text-green-600" />;
     case 'web':
       return <Globe className="w-4 h-4 text-blue-600" />;
     default:
@@ -208,8 +210,9 @@ const UserDevices = () => {
           </div>
         ))}
         {(user.devices || []).length > 2 && (
-          <div className="text-xs text-muted-foreground">
-            +{(user.devices || []).length - 2} more devices
+          <div className="flex items-center space-x-2 text-xs text-blue-600 dark:text-blue-400">
+            <Eye className="w-3 h-3" />
+            <span>+{(user.devices || []).length - 2} more devices</span>
           </div>
         )}
         {(user.devices || []).length === 0 && (
@@ -218,15 +221,31 @@ const UserDevices = () => {
       </div>
     ),
     device_count: (
-      <div className="flex items-center space-x-2">
-        <div className="text-center">
-          <div className="text-lg font-bold text-blue-600">{user.device_count || 0}</div>
-          <div className="text-xs text-muted-foreground">total</div>
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <div className="text-center">
+            <div className="text-lg font-bold text-blue-600">{user.device_count || 0}</div>
+            <div className="text-xs text-muted-foreground">total</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-green-600">{user.active_device_count || 0}</div>
+            <div className="text-xs text-muted-foreground">active</div>
+          </div>
         </div>
-        <div className="text-center">
-          <div className="text-lg font-bold text-green-600">{user.active_device_count || 0}</div>
-          <div className="text-xs text-muted-foreground">active</div>
-        </div>
+        {(user.devices || []).length > 0 && (
+          <div className="flex items-center space-x-1 text-xs">
+            {['ios', 'android', 'web'].map((type) => {
+              const count = (user.devices || []).filter(d => d.device_type === type).length;
+              if (count === 0) return null;
+              return (
+                <div key={type} className="flex items-center space-x-1">
+                  {getDeviceTypeIcon(type, "w-3 h-3")}
+                  <span className="text-muted-foreground">{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     ),
     last_active: (
@@ -254,21 +273,24 @@ const UserDevices = () => {
     ),
     actions: (
       <div className="flex items-center space-x-2">
+        <UserDeviceDetails user={user}>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="h-8 px-3"
+          >
+            <Eye className="w-4 h-4 mr-1" />
+            View Details
+          </Button>
+        </UserDeviceDetails>
         <Button 
           variant="outline" 
           size="sm"
           onClick={() => navigate(`/user/${user.id}`)}
           className="h-8 px-3"
         >
-          <Eye className="w-4 h-4 mr-1" />
-          View
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="h-8 px-3"
-        >
-          <MoreHorizontal className="w-4 h-4" />
+          <User className="w-4 h-4 mr-1" />
+          User Profile
         </Button>
       </div>
     )
@@ -432,7 +454,7 @@ const UserDevices = () => {
                 </div>
                 <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 rounded-xl">
                   <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                    <AndroidIcon className="w-6 h-6 text-green-600" />
+                    <Android className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-800 dark:text-green-200">

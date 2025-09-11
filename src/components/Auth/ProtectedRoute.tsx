@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 
@@ -10,6 +10,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading, checkAuth } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   console.log('ProtectedRoute: Render state:', { isAuthenticated, isLoading });
 
@@ -30,9 +31,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     // Redirect to login if not authenticated after loading
     if (!isLoading && !isAuthenticated) {
       console.log('ProtectedRoute: Redirecting to login');
+      
+      // Store the current path for redirect after login
+      const currentPath = location.pathname + location.search;
+      if (currentPath !== '/login') {
+        localStorage.setItem('auth_redirect_path', currentPath);
+      }
+      
       navigate('/login', { replace: true });
     }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, [isAuthenticated, isLoading, navigate, location]);
 
   // Show loading while checking authentication
   if (isLoading) {
