@@ -10,7 +10,7 @@ build:
 
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
-    IMAGE_NAME: registry.gitlab.com/hebron-global-llc/hcab_admin_v3/h-cab
+    IMAGE_NAME: registry.gitlab.com/hebron-global-llc/hcab-admin-v3/h-cab
     
   before_script:
     - apk add --no-cache apt
@@ -41,7 +41,7 @@ deploy:
   stage: deploy
   environment: production
   variables:
-    IMAGE_NAME: registry.gitlab.com/hebron-global-llc/hcab_admin_v3/h-cab
+    IMAGE_NAME: registry.gitlab.com/hebron-global-llc/hcab-admin-v3/h-cab
   before_script:
     - chmod 400 $SSH_KEY
     - export VERSION=$(date +%y.%m.%d.%H)
