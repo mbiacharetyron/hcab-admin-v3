@@ -19,6 +19,7 @@ import PanicManagement from "./pages/PanicReportEnhanced";
 import NotificationManagement from "./pages/NotificationManagement";
 import DiscountManagement from "./pages/DiscountManagement";
 import WalletBalances from "./pages/WalletBalances";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -105,6 +106,11 @@ const App = () => {
         <Route path="/wallet-balances" element={
           <ProtectedRoute>
             <WalletBalances />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <Settings />
           </ProtectedRoute>
         } />
             
