@@ -63,7 +63,7 @@ deploy:
         docker stop hcab-admin || true &&
         docker rm hcab-admin || true &&
         docker system prune -a --volumes -f &&
-        docker run -d --user root --name hcab-admin -p 3300:3300 --restart=always $IMAGE_NAME:$VERSION"
+        docker run -d --user root --name hcab-admin -p 3200:3200 --restart=always $IMAGE_NAME:$VERSION"
 
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
