@@ -18,6 +18,7 @@ import RevenueReport from "./pages/RevenueReport";
 import PanicManagement from "./pages/PanicReportEnhanced";
 import NotificationManagement from "./pages/NotificationManagement";
 import DiscountManagement from "./pages/DiscountManagement";
+import WalletBalances from "./pages/WalletBalances";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -99,6 +100,11 @@ const App = () => {
         <Route path="/discounts" element={
           <ProtectedRoute>
             <DiscountManagement />
+          </ProtectedRoute>
+        } />
+        <Route path="/wallet-balances" element={
+          <ProtectedRoute>
+            <WalletBalances />
           </ProtectedRoute>
         } />
             

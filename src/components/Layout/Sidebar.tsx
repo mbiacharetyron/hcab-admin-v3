@@ -19,7 +19,8 @@ import {
   LogOut,
   Settings2,
   Receipt,
-  Percent
+  Percent,
+  Wallet
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,7 @@ const menuItems = [
   { title: "Panic Management", icon: AlertTriangle, path: "/panic-management" },
   { title: "Notifications", icon: Bell, path: "/notifications" },
   { title: "Discount Management", icon: Percent, path: "/discounts" },
+  { title: "Wallet Balances", icon: Wallet, path: "/wallet-balances" },
   { title: "Pay-outs", icon: PayOut, path: "/payouts" },
   { title: "Supports", icon: HeadphonesIcon, path: "/supports" },
   { title: "Settings", icon: Settings, path: "/settings" },

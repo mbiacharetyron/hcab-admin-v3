@@ -769,6 +769,7 @@ import {
   demoNotificationLogsResponse,
   demoDiscountsResponse,
   demoDiscountStatsResponse,
+  demoWalletBalancesResponse,
   demoScheduledNotificationsResponse
 } from './demoData';
 
@@ -866,6 +867,10 @@ class ApiService {
               return demoDiscountStatsResponse as T;
             }
             return demoDiscountsResponse as T;
+          }
+          // Handle wallet balances endpoint with query parameters
+          if (endpoint.startsWith('/admin/users/wallet-balances')) {
+            return demoWalletBalancesResponse as T;
           }
           // Handle scheduled notifications endpoint with query parameters
           if (endpoint.startsWith('/admin/scheduled-notifications')) {
@@ -1809,6 +1814,48 @@ class ApiService {
     }
   }
 
+  // Wallet Balance Management
+  async getWalletBalances(params?: {
+    role?: 'rider' | 'driver' | 'admin';
+    min_balance?: number;
+    max_balance?: number;
+    balance_type?: 'available' | 'locked' | 'total';
+    is_active?: boolean;
+    is_online?: boolean;
+    has_passcode?: boolean;
+    search?: string;
+    sort_by?: 'name' | 'email' | 'available_balance' | 'locked_balance' | 'total_balance' | 'created_at';
+    sort_order?: 'asc' | 'desc';
+    page?: number;
+    per_page?: number;
+    lang?: 'en' | 'fr';
+  }): Promise<WalletBalancesResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.role) queryParams.append('role', params.role);
+      if (params?.min_balance !== undefined) queryParams.append('min_balance', params.min_balance.toString());
+      if (params?.max_balance !== undefined) queryParams.append('max_balance', params.max_balance.toString());
+      if (params?.balance_type) queryParams.append('balance_type', params.balance_type);
+      if (params?.is_active !== undefined) queryParams.append('is_active', params.is_active.toString());
+      if (params?.is_online !== undefined) queryParams.append('is_online', params.is_online.toString());
+      if (params?.has_passcode !== undefined) queryParams.append('has_passcode', params.has_passcode.toString());
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+      if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const url = `/admin/users/wallet-balances${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const result = await this.request<WalletBalancesResponse>(url);
+      return result;
+    } catch (error) {
+      console.error('API: Wallet balances fetch error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -1903,6 +1950,9 @@ export const createScheduledNotification = (data: ScheduledNotificationCreateReq
 export const cancelScheduledNotification = (id: number) => apiService.cancelScheduledNotification(id);
 export const rescheduleNotification = (id: number, data: ScheduledNotificationRescheduleRequest) => apiService.rescheduleNotification(id, data);
 export const getScheduledNotificationStats = () => apiService.getScheduledNotificationStats();
+
+// Wallet Balance API exports
+export const getWalletBalances = (params?: Parameters<typeof apiService.getWalletBalances>[0]) => apiService.getWalletBalances(params);
 
 // Firebase Notifications Interfaces
 export interface NotificationRequest {
@@ -2353,10 +2403,10 @@ export type DiscountUpdateRequest = Partial<DiscountCreateRequest>;
 export interface DiscountsResponse {
   message: string;
   data: {
-    current_page: number;
-    data: Discount[];
-    total: number;
-    per_page: number;
+  current_page: number;
+  data: Discount[];
+  total: number;
+  per_page: number;
     first_page_url: string;
     from: number;
     last_page: number;
@@ -2379,4 +2429,50 @@ export interface DiscountUsageResponse {
   data: DiscountUsage[];
   total: number;
   per_page: number;
+}
+
+// Wallet Balance API interfaces
+export interface WalletBalance {
+  available_balance: number;
+  locked_balance: number;
+  total_balance: number;
+}
+
+export interface WalletBalanceUser {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: 'rider' | 'driver' | 'admin';
+  is_active: boolean;
+  is_online: boolean;
+  has_active_passcode: boolean;
+  wallet: WalletBalance;
+  created_at: string;
+}
+
+export interface WalletBalancePagination {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export interface WalletBalanceSummary {
+  total_users: number;
+  total_available_balance: number;
+  total_locked_balance: number;
+  total_balance: number;
+  average_balance: number;
+}
+
+export interface WalletBalancesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    users: WalletBalanceUser[];
+    pagination: WalletBalancePagination;
+    summary: WalletBalanceSummary;
+  };
+  code: number;
 }

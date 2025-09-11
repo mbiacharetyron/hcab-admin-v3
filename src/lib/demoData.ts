@@ -8,7 +8,11 @@ import type {
   PanicReportsResponse,
   ScheduledNotification,
   ScheduledNotificationsResponse,
-  ScheduledNotificationStats
+  ScheduledNotificationStats,
+  WalletBalanceUser,
+  WalletBalanceSummary,
+  WalletBalancePagination,
+  WalletBalancesResponse
 } from './api';
 
 export const demoDashboardStats: DashboardStats = {
@@ -1038,6 +1042,164 @@ export const demoDiscountsResponse = {
 // Demo discount stats response
 export const demoDiscountStatsResponse = {
   data: demoDiscountStats
+};
+
+// Demo Wallet Balance Data
+export const demoWalletBalanceUsers: WalletBalanceUser[] = [
+  {
+    id: 1,
+    name: "John Doe",
+    email: "john@example.com",
+    phone: "+1234567890",
+    role: "rider",
+    is_active: true,
+    is_online: false,
+    has_active_passcode: true,
+    wallet: {
+      available_balance: 150.50,
+      locked_balance: 25.00,
+      total_balance: 175.50
+    },
+    created_at: "2025-01-15T10:30:00.000000Z"
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    email: "jane@example.com",
+    phone: "+1234567891",
+    role: "driver",
+    is_active: true,
+    is_online: true,
+    has_active_passcode: true,
+    wallet: {
+      available_balance: 2500.75,
+      locked_balance: 100.00,
+      total_balance: 2600.75
+    },
+    created_at: "2025-01-10T08:15:00.000000Z"
+  },
+  {
+    id: 3,
+    name: "Mike Johnson",
+    email: "mike@example.com",
+    phone: "+1234567892",
+    role: "rider",
+    is_active: true,
+    is_online: true,
+    has_active_passcode: false,
+    wallet: {
+      available_balance: 75.25,
+      locked_balance: 0.00,
+      total_balance: 75.25
+    },
+    created_at: "2025-01-20T14:45:00.000000Z"
+  },
+  {
+    id: 4,
+    name: "Sarah Wilson",
+    email: "sarah@example.com",
+    phone: "+1234567893",
+    role: "driver",
+    is_active: false,
+    is_online: false,
+    has_active_passcode: true,
+    wallet: {
+      available_balance: 500.00,
+      locked_balance: 50.00,
+      total_balance: 550.00
+    },
+    created_at: "2025-01-05T16:20:00.000000Z"
+  },
+  {
+    id: 5,
+    name: "David Brown",
+    email: "david@example.com",
+    phone: "+1234567894",
+    role: "rider",
+    is_active: true,
+    is_online: false,
+    has_active_passcode: true,
+    wallet: {
+      available_balance: 1200.00,
+      locked_balance: 200.00,
+      total_balance: 1400.00
+    },
+    created_at: "2025-01-12T11:30:00.000000Z"
+  },
+  {
+    id: 6,
+    name: "Lisa Garcia",
+    email: "lisa@example.com",
+    phone: "+1234567895",
+    role: "driver",
+    is_active: true,
+    is_online: true,
+    has_active_passcode: true,
+    wallet: {
+      available_balance: 3200.50,
+      locked_balance: 150.00,
+      total_balance: 3350.50
+    },
+    created_at: "2025-01-08T09:15:00.000000Z"
+  },
+  {
+    id: 7,
+    name: "Robert Taylor",
+    email: "robert@example.com",
+    phone: "+1234567896",
+    role: "rider",
+    is_active: true,
+    is_online: false,
+    has_active_passcode: false,
+    wallet: {
+      available_balance: 45.75,
+      locked_balance: 0.00,
+      total_balance: 45.75
+    },
+    created_at: "2025-01-25T13:20:00.000000Z"
+  },
+  {
+    id: 8,
+    name: "Emily Davis",
+    email: "emily@example.com",
+    phone: "+1234567897",
+    role: "driver",
+    is_active: true,
+    is_online: false,
+    has_active_passcode: true,
+    wallet: {
+      available_balance: 1800.25,
+      locked_balance: 75.00,
+      total_balance: 1875.25
+    },
+    created_at: "2025-01-18T15:45:00.000000Z"
+  }
+];
+
+export const demoWalletBalanceSummary: WalletBalanceSummary = {
+  total_users: 8,
+  total_available_balance: 9522.00,
+  total_locked_balance: 600.00,
+  total_balance: 10122.00,
+  average_balance: 1265.25
+};
+
+export const demoWalletBalancePagination: WalletBalancePagination = {
+  current_page: 1,
+  last_page: 1,
+  per_page: 15,
+  total: 8
+};
+
+export const demoWalletBalancesResponse: WalletBalancesResponse = {
+  success: true,
+  message: "Wallet balances retrieved successfully",
+  data: {
+    users: demoWalletBalanceUsers,
+    pagination: demoWalletBalancePagination,
+    summary: demoWalletBalanceSummary
+  },
+  code: 200
 };
 
 // Demo Scheduled Notifications Data
