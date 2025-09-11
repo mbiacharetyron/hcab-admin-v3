@@ -191,49 +191,49 @@ const Settings = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Enhanced Header */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 rounded-2xl"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-200/20 to-transparent dark:from-blue-800/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-gradient-to-bl from-blue-200/20 to-transparent dark:from-blue-800/20 rounded-full blur-3xl"></div>
           
-          <div className="relative p-8">
-            <div className="flex items-center justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
+          <div className="relative p-4 sm:p-6 lg:p-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-30"></div>
-                    <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-4 rounded-2xl shadow-lg">
-                      <SettingsIcon className="w-8 h-8 text-white" />
+                    <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-3 sm:p-4 rounded-2xl shadow-lg">
+                      <SettingsIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                   </div>
                   <div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-gray-100 dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-gray-100 dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent">
                       System Settings
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-400 text-lg mt-2">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base lg:text-lg mt-1 sm:mt-2">
                       Configure and manage your application settings
                     </p>
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-6">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 lg:gap-6">
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span>System Online</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                    <Shield className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Secure Configuration</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                    <Activity className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <Activity className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Real-time Updates</span>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                 <Button 
                   variant="outline" 
                   size="lg"

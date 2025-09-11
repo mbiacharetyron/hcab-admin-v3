@@ -243,52 +243,52 @@ const WalletBalances = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Enhanced Header */}
         <div className="relative overflow-hidden">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 rounded-2xl"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-200/20 to-transparent dark:from-blue-800/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-purple-200/20 to-transparent dark:from-purple-800/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-gradient-to-bl from-blue-200/20 to-transparent dark:from-blue-800/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-48 sm:h-48 bg-gradient-to-tr from-purple-200/20 to-transparent dark:from-purple-800/20 rounded-full blur-3xl"></div>
           
-          <div className="relative p-8">
-            <div className="flex items-center justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
+          <div className="relative p-4 sm:p-6 lg:p-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-30"></div>
-                    <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-4 rounded-2xl shadow-lg">
-                      <Wallet className="w-8 h-8 text-white" />
+                    <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-3 sm:p-4 rounded-2xl shadow-lg">
+                      <Wallet className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                   </div>
                   <div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-gray-100 dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-gray-100 dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent">
                       Wallet Balances
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-400 text-lg mt-2">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base lg:text-lg mt-1 sm:mt-2">
                       Comprehensive wallet management and monitoring dashboard
                     </p>
                   </div>
                 </div>
                 
                 {/* Quick Stats */}
-                <div className="flex items-center space-x-6">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 lg:gap-6">
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span>Live Data</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                    <Activity className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <Activity className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Real-time Updates</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                    <Shield className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Secure Access</span>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                 <Button 
                   onClick={() => refetch()} 
                   variant="outline" 
@@ -492,23 +492,23 @@ const WalletBalances = () => {
         {/* Enhanced Filters */}
         <Card className="border-2 border-gray-100 dark:border-gray-800 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
-            <CardTitle className="flex items-center text-xl">
+            <CardTitle className="flex items-center text-lg sm:text-xl">
               <div className="relative">
                 <div className="absolute inset-0 bg-blue-500/20 rounded-lg blur-sm"></div>
                 <div className="relative bg-blue-500 p-2 rounded-lg">
-                  <Filter className="w-5 h-5 text-white" />
+                  <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
               </div>
               <span className="ml-3 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                 Advanced Filters & Search
               </span>
             </CardTitle>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
               Refine your search with powerful filtering options
             </p>
           </CardHeader>
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center">
                   <Search className="w-4 h-4 mr-2 text-blue-600" />
@@ -675,25 +675,25 @@ const WalletBalances = () => {
         {/* Enhanced Wallet Balances Table */}
         <Card className="border-2 border-gray-100 dark:border-gray-800 shadow-xl">
           <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center space-x-3">
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg blur-sm opacity-30"></div>
                   <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
-                    <BarChart3 className="w-5 h-5 text-white" />
+                    <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                 </div>
                 <div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
+                  <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                     Wallet Balances
                   </span>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Comprehensive user wallet overview
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
+              <div className="flex items-center justify-between sm:justify-end space-x-4">
+                <div className="text-left sm:text-right">
                   <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                     {totalItems.toLocaleString()} users
                   </div>
@@ -701,83 +701,83 @@ const WalletBalances = () => {
                     Page {currentPage} of {totalPages}
                   </div>
                 </div>
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                  <Users className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                  <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="max-h-[600px] overflow-y-auto">
+            <div className="max-h-[400px] sm:max-h-[600px] overflow-x-auto overflow-y-auto">
               <Table>
                 <TableHeader className="sticky top-0 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 z-10 border-b-2 border-gray-200 dark:border-gray-700">
                   <TableRow className="hover:bg-transparent">
                     <TableHead 
-                      className="font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 py-4"
+                      className="font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 py-3 sm:py-4"
                       onClick={() => handleSort('name')}
                     >
-                      <div className="flex items-center space-x-2">
-                        <User className="w-4 h-4 text-blue-600" />
-                        <span>User Information</span>
+                      <div className="flex items-center space-x-1 sm:space-x-2">
+                        <User className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                        <span className="text-xs sm:text-sm">User Information</span>
                         {getSortIcon('name')}
                       </div>
                     </TableHead>
-                    <TableHead className="font-bold text-gray-800 dark:text-gray-200 py-4">
-                      <div className="flex items-center space-x-2">
-                        <Target className="w-4 h-4 text-green-600" />
-                        <span>Role & Status</span>
+                    <TableHead className="hidden sm:table-cell font-bold text-gray-800 dark:text-gray-200 py-3 sm:py-4">
+                      <div className="flex items-center space-x-1 sm:space-x-2">
+                        <Target className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                        <span className="text-xs sm:text-sm">Role & Status</span>
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 py-4"
+                      className="font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 py-3 sm:py-4"
                       onClick={() => handleSort('available_balance')}
                     >
-                      <div className="flex items-center space-x-2">
-                        <Coins className="w-4 h-4 text-green-600" />
-                        <span>Available Balance</span>
+                      <div className="flex items-center space-x-1 sm:space-x-2">
+                        <Coins className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                        <span className="text-xs sm:text-sm">Available Balance</span>
                         {getSortIcon('available_balance')}
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200 py-4"
+                      className="hidden md:table-cell font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200 py-3 sm:py-4"
                       onClick={() => handleSort('locked_balance')}
                     >
-                      <div className="flex items-center space-x-2">
-                        <Shield className="w-4 h-4 text-orange-600" />
-                        <span>Locked Balance</span>
+                      <div className="flex items-center space-x-1 sm:space-x-2">
+                        <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
+                        <span className="text-xs sm:text-sm">Locked Balance</span>
                         {getSortIcon('locked_balance')}
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 py-4"
+                      className="font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 py-3 sm:py-4"
                       onClick={() => handleSort('total_balance')}
                     >
-                      <div className="flex items-center space-x-2">
-                        <Gem className="w-4 h-4 text-purple-600" />
-                        <span>Total Balance</span>
+                      <div className="flex items-center space-x-1 sm:space-x-2">
+                        <Gem className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+                        <span className="text-xs sm:text-sm">Total Balance</span>
                         {getSortIcon('total_balance')}
                       </div>
                     </TableHead>
-                    <TableHead className="font-bold text-gray-800 dark:text-gray-200 py-4">
-                      <div className="flex items-center space-x-2">
-                        <ShieldCheck className="w-4 h-4 text-cyan-600" />
-                        <span>Security</span>
+                    <TableHead className="hidden lg:table-cell font-bold text-gray-800 dark:text-gray-200 py-3 sm:py-4">
+                      <div className="flex items-center space-x-1 sm:space-x-2">
+                        <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-cyan-600" />
+                        <span className="text-xs sm:text-sm">Security</span>
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200 py-4"
+                      className="hidden xl:table-cell font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200 py-3 sm:py-4"
                       onClick={() => handleSort('created_at')}
                     >
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="w-4 h-4 text-indigo-600" />
-                        <span>Created Date</span>
+                      <div className="flex items-center space-x-1 sm:space-x-2">
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
+                        <span className="text-xs sm:text-sm">Created Date</span>
                         {getSortIcon('created_at')}
                       </div>
                     </TableHead>
-                    <TableHead className="font-bold text-gray-800 dark:text-gray-200 py-4">
-                      <div className="flex items-center space-x-2">
-                        <Settings className="w-4 h-4 text-purple-600" />
-                        <span>Actions</span>
+                    <TableHead className="font-bold text-gray-800 dark:text-gray-200 py-3 sm:py-4">
+                      <div className="flex items-center space-x-1 sm:space-x-2">
+                        <Settings className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+                        <span className="text-xs sm:text-sm">Actions</span>
                       </div>
                     </TableHead>
                   </TableRow>
@@ -810,21 +810,21 @@ const WalletBalances = () => {
                           index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50/30 dark:bg-gray-800/20"
                         )}
                       >
-                        <TableCell className="py-4">
-                          <div className="space-y-3">
-                            <div className="flex items-center space-x-3">
+                        <TableCell className="py-3 sm:py-4">
+                          <div className="space-y-2 sm:space-y-3">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
                               <div className="relative">
-                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                                  <span className="text-white font-bold text-sm">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                                  <span className="text-white font-bold text-xs sm:text-sm">
                                     {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                                   </span>
                                 </div>
                                 {user.is_online && (
-                                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
+                                  <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
                                 )}
                               </div>
-                              <div>
-                                <div className="font-bold text-gray-900 dark:text-gray-100 text-lg">
+                              <div className="min-w-0 flex-1">
+                                <div className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base lg:text-lg truncate">
                                   {user.name}
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -832,30 +832,30 @@ const WalletBalances = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="space-y-2">
-                              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg px-3 py-2">
-                                <Mail className="w-4 h-4 text-blue-500" />
+                            <div className="space-y-1 sm:space-y-2">
+                              <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg px-2 sm:px-3 py-1 sm:py-2">
+                                <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
                                 <span className="truncate">{user.email}</span>
                               </div>
-                              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg px-3 py-2">
-                                <Phone className="w-4 h-4 text-green-500" />
-                                <span>{user.phone}</span>
+                              <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg px-2 sm:px-3 py-1 sm:py-2">
+                                <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
+                                <span className="truncate">{user.phone}</span>
                               </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden sm:table-cell py-3 sm:py-4">
                           <div className="space-y-2">
                             {getRoleBadge(user.role)}
                             {getStatusBadge(user.is_active, user.is_online)}
                           </div>
                         </TableCell>
-                        <TableCell className="py-4">
-                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg p-3 border border-green-200 dark:border-green-800">
-                            <div className="flex items-center space-x-2">
-                              <Coins className="w-4 h-4 text-green-600" />
-                              <div>
-                                <div className="font-bold text-green-700 dark:text-green-300 text-lg">
+                        <TableCell className="py-3 sm:py-4">
+                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg p-2 sm:p-3 border border-green-200 dark:border-green-800">
+                            <div className="flex items-center space-x-1 sm:space-x-2">
+                              <Coins className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 flex-shrink-0" />
+                              <div className="min-w-0">
+                                <div className="font-bold text-green-700 dark:text-green-300 text-sm sm:text-base lg:text-lg truncate">
                                   {formatBalance(user.wallet.available_balance)}
                                 </div>
                                 <div className="text-xs text-green-600 dark:text-green-400">
@@ -865,12 +865,12 @@ const WalletBalances = () => {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="py-4">
-                          <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-lg p-3 border border-orange-200 dark:border-orange-800">
-                            <div className="flex items-center space-x-2">
-                              <Shield className="w-4 h-4 text-orange-600" />
-                              <div>
-                                <div className="font-bold text-orange-700 dark:text-orange-300 text-lg">
+                        <TableCell className="hidden md:table-cell py-3 sm:py-4">
+                          <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-lg p-2 sm:p-3 border border-orange-200 dark:border-orange-800">
+                            <div className="flex items-center space-x-1 sm:space-x-2">
+                              <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600 flex-shrink-0" />
+                              <div className="min-w-0">
+                                <div className="font-bold text-orange-700 dark:text-orange-300 text-sm sm:text-base lg:text-lg truncate">
                                   {formatBalance(user.wallet.locked_balance)}
                                 </div>
                                 <div className="text-xs text-orange-600 dark:text-orange-400">
@@ -880,12 +880,12 @@ const WalletBalances = () => {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="py-4">
-                          <div className="bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-950/20 dark:to-violet-950/20 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
-                            <div className="flex items-center space-x-2">
-                              <Gem className="w-4 h-4 text-purple-600" />
-                              <div>
-                                <div className="font-bold text-purple-700 dark:text-purple-300 text-lg">
+                        <TableCell className="py-3 sm:py-4">
+                          <div className="bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-950/20 dark:to-violet-950/20 rounded-lg p-2 sm:p-3 border border-purple-200 dark:border-purple-800">
+                            <div className="flex items-center space-x-1 sm:space-x-2">
+                              <Gem className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0" />
+                              <div className="min-w-0">
+                                <div className="font-bold text-purple-700 dark:text-purple-300 text-sm sm:text-base lg:text-lg truncate">
                                   {formatBalance(user.wallet.total_balance)}
                                 </div>
                                 <div className="text-xs text-purple-600 dark:text-purple-400">
@@ -895,8 +895,8 @@ const WalletBalances = () => {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="py-4">
-                          <div className="space-y-2">
+                        <TableCell className="hidden lg:table-cell py-3 sm:py-4">
+                          <div className="space-y-1 sm:space-y-2">
                             <div className="flex justify-center">
                               {getPasscodeBadge(user.has_active_passcode)}
                             </div>
@@ -905,22 +905,22 @@ const WalletBalances = () => {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="py-4">
-                          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 rounded-lg p-3 border border-indigo-200 dark:border-indigo-800">
-                            <div className="flex items-center space-x-2">
-                              <Calendar className="w-4 h-4 text-indigo-600" />
-                              <div>
-                                <div className="font-semibold text-indigo-700 dark:text-indigo-300">
+                        <TableCell className="hidden xl:table-cell py-3 sm:py-4">
+                          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 rounded-lg p-2 sm:p-3 border border-indigo-200 dark:border-indigo-800">
+                            <div className="flex items-center space-x-1 sm:space-x-2">
+                              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600 flex-shrink-0" />
+                              <div className="min-w-0">
+                                <div className="font-semibold text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm">
                                   {format(new Date(user.created_at), "MMM dd, yyyy")}
                                 </div>
-                                <div className="text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 px-2 py-1 rounded-full inline-block">
+                                <div className="text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 px-1 sm:px-2 py-0.5 sm:py-1 rounded-full inline-block">
                                   {format(new Date(user.created_at), "HH:mm")}
                                 </div>
                               </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="py-4">
+                        <TableCell className="py-3 sm:py-4">
                           <WalletActions user={user} />
                         </TableCell>
                       </TableRow>

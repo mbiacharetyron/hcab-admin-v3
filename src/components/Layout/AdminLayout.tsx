@@ -12,7 +12,7 @@ export const AdminLayout = ({ children, className }: AdminLayoutProps) => {
     <div className="min-h-screen bg-background">
       <Sidebar />
       <main className={cn(
-        "lg:ml-64 transition-all duration-300",
+        "lg:ml-72 transition-all duration-500 ease-in-out",
         "pt-16 lg:pt-0", // Account for mobile header
         className
       )}>

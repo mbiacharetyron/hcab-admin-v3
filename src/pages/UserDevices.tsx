@@ -325,49 +325,52 @@ const UserDevices = () => {
       {/* Enhanced Header Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 rounded-2xl"></div>
-        <div className="relative p-8">
-          <div className="flex items-center justify-between">
+        <div className="relative p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
             <div className="space-y-2">
               <div className="flex items-center space-x-3">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
-                  <Smartphone className="w-8 h-8 text-white" />
+                <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                  <Smartphone className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                     User Devices
                   </h1>
-                  <p className="text-lg text-muted-foreground font-medium">
+                  <p className="text-sm sm:text-base lg:text-lg text-muted-foreground font-medium">
                     Manage and monitor user devices across all platforms
                   </p>
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <Button
                 onClick={() => refetch()}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
                 size="lg"
               >
-                <RefreshCw className="w-5 h-5 mr-2" />
-                Refresh Data
+                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Refresh Data</span>
+                <span className="sm:hidden">Refresh</span>
               </Button>
               <Button 
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
                 size="lg"
               >
-                <Plus className="w-5 h-5 mr-2" />
-                Add Device
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Add Device</span>
+                <span className="sm:hidden">Add</span>
               </Button>
-              <Button variant="outline" size="lg" className="border-2 hover:bg-gray-50">
-                <Download className="w-5 h-5 mr-2" />
-                Export
+              <Button variant="outline" size="lg" className="border-2 hover:bg-gray-50 w-full sm:w-auto">
+                <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Export</span>
+                <span className="sm:hidden">Export</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-8 mt-8">
+      <div className="space-y-6 sm:space-y-8 mt-6 sm:mt-8">
 
         {/* Enhanced Error State */}
         {error && (
@@ -435,43 +438,43 @@ const UserDevices = () => {
           <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Monitor className="w-5 h-5" />
-                <span>Device Type Distribution</span>
+                <Monitor className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-lg sm:text-xl">Device Type Distribution</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl">
-                  <div className="p-3 bg-gray-100 dark:bg-gray-600 rounded-lg">
-                    <Apple className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl">
+                  <div className="p-2 sm:p-3 bg-gray-100 dark:bg-gray-600 rounded-lg">
+                    <Apple className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-300" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                    <div className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">
                       {summary.device_types.ios}
                     </div>
-                    <div className="text-sm text-muted-foreground">iOS Devices</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">iOS Devices</div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 rounded-xl">
-                  <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                    <Android className="w-6 h-6 text-green-600" />
+                <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 rounded-xl">
+                  <div className="p-2 sm:p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                    <Android className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-green-800 dark:text-green-200">
+                    <div className="text-xl sm:text-2xl font-bold text-green-800 dark:text-green-200">
                       {summary.device_types.android}
                     </div>
-                    <div className="text-sm text-muted-foreground">Android Devices</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">Android Devices</div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 rounded-xl">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <Globe className="w-6 h-6 text-blue-600" />
+                <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 rounded-xl">
+                  <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">
+                    <div className="text-xl sm:text-2xl font-bold text-blue-800 dark:text-blue-200">
                       {summary.device_types.web}
                     </div>
-                    <div className="text-sm text-muted-foreground">Web Devices</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">Web Devices</div>
                   </div>
                 </div>
               </div>
@@ -481,18 +484,18 @@ const UserDevices = () => {
 
         {/* Enhanced Filters */}
         <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-6">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
-                <Filter className="w-6 h-6 text-white" />
+                <Filter className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Advanced Filters</h3>
-                <p className="text-sm text-muted-foreground">Filter and search through user devices data</p>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">Advanced Filters</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Filter and search through user devices data</p>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Search</label>
                 <div className="relative">
@@ -619,13 +622,13 @@ const UserDevices = () => {
         {/* Enhanced Users Table */}
         <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
           <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
-                <Smartphone className="w-6 h-6 text-white" />
+                <Smartphone className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Users with Devices</h3>
-                <p className="text-sm text-muted-foreground">Comprehensive user and device information ({pagination?.total || 0} total)</p>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">Users with Devices</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Comprehensive user and device information ({pagination?.total || 0} total)</p>
               </div>
             </div>
             <DataTable
@@ -641,17 +644,17 @@ const UserDevices = () => {
         {/* Enhanced Pagination */}
         {pagination && (
           <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
-                    <Activity className="w-5 h-5 text-white" />
+                    <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    <div className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-200">
                       Showing {users.length} of {pagination.total} users
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs sm:text-sm text-muted-foreground">
                       Page {pagination.current_page} of {pagination.last_page}
                     </div>
                   </div>
