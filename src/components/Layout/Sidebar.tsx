@@ -43,8 +43,8 @@ const menuItems = [
   { title: "Notifications", icon: Bell, path: "/notifications" },
   { title: "Discount Management", icon: Percent, path: "/discounts" },
   { title: "Wallet Balances", icon: Wallet, path: "/wallet-balances" },
-  { title: "Pay-outs", icon: PayOut, path: "/payouts" },
-  { title: "Supports", icon: HeadphonesIcon, path: "/supports" },
+  // { title: "Pay-outs", icon: PayOut, path: "/payouts" },
+  // { title: "Supports", icon: HeadphonesIcon, path: "/supports" },
   { title: "Settings", icon: Settings, path: "/settings" },
 ];
 
