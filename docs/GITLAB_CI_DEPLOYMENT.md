@@ -180,7 +180,20 @@ Error: Permission denied (publickey)
 - Verify public key is on the server
 - Test SSH connection manually
 
-#### **3. Application Not Accessible**
+#### **3. Docker Compose Not Found**
+```
+Error: docker-compose: command not found
+```
+**Solution**: 
+- The GitLab CI now automatically installs Docker Compose on your server
+- If you want to install it manually, run the server setup script:
+  ```bash
+  # Copy server-setup.sh to your server and run:
+  chmod +x server-setup.sh
+  ./server-setup.sh
+  ```
+
+#### **4. Application Not Accessible**
 ```
 Error: Connection refused on port 3200
 ```
@@ -189,7 +202,7 @@ Error: Connection refused on port 3200
 - Check container logs: `docker logs hcab-admin`
 - Verify firewall settings
 
-#### **4. Map Not Loading**
+#### **5. Map Not Loading**
 ```
 Error: Google Maps API key required
 ```
