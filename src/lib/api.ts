@@ -1992,7 +1992,9 @@ export interface NotificationMetrics {
 export interface ScheduledNotification {
   id: number;
   title: string;
+  title_fr?: string;
   message: string;
+  message_fr?: string;
   target_type: 'all' | 'specific_users' | 'user_type' | 'custom_query';
   user_type?: 'rider' | 'driver' | 'admin';
   target_users?: number[];
@@ -2051,7 +2053,9 @@ export interface ScheduledNotificationResponse {
 
 export interface ScheduledNotificationCreateRequest {
   title: string;
+  title_fr?: string;
   message: string;
+  message_fr?: string;
   target_type: 'all' | 'specific_users' | 'user_type' | 'custom_query';
   user_type?: 'rider' | 'driver' | 'admin';
   target_users?: number[];

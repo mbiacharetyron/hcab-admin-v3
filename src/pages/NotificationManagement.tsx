@@ -106,7 +106,9 @@ const NotificationManagement = () => {
   // Scheduled notification form state
   const [scheduledNotificationForm, setScheduledNotificationForm] = useState({
     title: '',
+    title_fr: '',
     message: '',
+    message_fr: '',
     target_type: 'all' as 'all' | 'specific_users' | 'user_type' | 'custom_query',
     user_type: 'rider' as 'rider' | 'driver' | 'admin',
     notification_type: 'push' as 'push' | 'email' | 'sms' | 'all',
@@ -317,6 +319,8 @@ const NotificationManagement = () => {
       target_type: scheduledNotificationForm.target_type,
       notification_type: scheduledNotificationForm.notification_type,
       scheduled_at: scheduledNotificationForm.scheduled_at,
+      ...(scheduledNotificationForm.title_fr && { title_fr: scheduledNotificationForm.title_fr }),
+      ...(scheduledNotificationForm.message_fr && { message_fr: scheduledNotificationForm.message_fr }),
       ...(scheduledNotificationForm.target_type === 'user_type' && { user_type: scheduledNotificationForm.user_type }),
       ...(scheduledNotificationForm.target_type === 'specific_users' && { target_users: scheduledNotificationForm.target_users }),
       ...(scheduledNotificationForm.target_type === 'custom_query' && { custom_query: scheduledNotificationForm.custom_query }),
@@ -723,13 +727,22 @@ const NotificationManagement = () => {
                     Schedule Notification
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">Schedule notifications to be sent at specific times</p>
+                  <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-start gap-2">
+                      <div className="text-blue-600 dark:text-blue-400 mt-0.5">🌐</div>
+                      <div className="text-sm">
+                        <p className="font-medium text-blue-800 dark:text-blue-200">Bilingual Support</p>
+                        <p className="text-blue-600 dark:text-blue-400">Users will receive notifications in their preferred language. French translations are optional but recommended for better user experience.</p>
+                      </div>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="scheduled-title" className="text-sm font-semibold">Title *</Label>
+                    <Label htmlFor="scheduled-title" className="text-sm font-semibold">Title (English) *</Label>
                     <Input
                       id="scheduled-title"
-                      placeholder="Notification title"
+                      placeholder="Notification title in English"
                       value={scheduledNotificationForm.title}
                       onChange={(e) => setScheduledNotificationForm(prev => ({ ...prev, title: e.target.value }))}
                       className="border-2 focus:border-blue-500 transition-colors"
@@ -737,12 +750,34 @@ const NotificationManagement = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="scheduled-message" className="text-sm font-semibold">Message *</Label>
+                    <Label htmlFor="scheduled-title-fr" className="text-sm font-semibold">Title (French)</Label>
+                    <Input
+                      id="scheduled-title-fr"
+                      placeholder="Titre de la notification en français"
+                      value={scheduledNotificationForm.title_fr}
+                      onChange={(e) => setScheduledNotificationForm(prev => ({ ...prev, title_fr: e.target.value }))}
+                      className="border-2 focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduled-message" className="text-sm font-semibold">Message (English) *</Label>
                     <Textarea
                       id="scheduled-message"
-                      placeholder="Notification message"
+                      placeholder="Notification message in English"
                       value={scheduledNotificationForm.message}
                       onChange={(e) => setScheduledNotificationForm(prev => ({ ...prev, message: e.target.value }))}
+                      className="border-2 focus:border-blue-500 transition-colors min-h-[100px]"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduled-message-fr" className="text-sm font-semibold">Message (French)</Label>
+                    <Textarea
+                      id="scheduled-message-fr"
+                      placeholder="Message de notification en français"
+                      value={scheduledNotificationForm.message_fr}
+                      onChange={(e) => setScheduledNotificationForm(prev => ({ ...prev, message_fr: e.target.value }))}
                       className="border-2 focus:border-blue-500 transition-colors min-h-[100px]"
                     />
                   </div>
@@ -850,21 +885,37 @@ const NotificationManagement = () => {
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">Manage your scheduled notifications</p>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {scheduledNotifications.map((notification) => (
+                <CardContent className="p-0">
+                  <div className="max-h-[600px] overflow-y-auto px-6 pb-6">
+                    <div className="space-y-4">
+                      {scheduledNotifications.map((notification) => (
                       <div key={notification.id} className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <h4 className="font-semibold text-gray-800 dark:text-gray-200">{notification.title}</h4>
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-200">{notification.title}</h4>
+                                {notification.title_fr && (
+                                  <p className="text-sm text-gray-600 dark:text-gray-400 italic">🇫🇷 {notification.title_fr}</p>
+                                )}
+                              </div>
                               {getScheduledStatusBadge(notification.status)}
                             </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{notification.message}</p>
+                            <div className="mb-2">
+                              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{notification.message}</p>
+                              {notification.message_fr && (
+                                <p className="text-sm text-gray-500 dark:text-gray-500 italic mt-1 line-clamp-2">🇫🇷 {notification.message_fr}</p>
+                              )}
+                            </div>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
                               <span>Scheduled: {format(new Date(notification.scheduled_at), "MMM dd, yyyy HH:mm")}</span>
                               {getTargetTypeBadge(notification.target_type)}
                               {getNotificationTypeBadge(notification.notification_type)}
+                              {(notification.title_fr || notification.message_fr) && (
+                                <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                  🌐 Bilingual
+                                </Badge>
+                              )}
                             </div>
                             {notification.sent_at && (
                               <div className="text-xs text-muted-foreground mt-1">

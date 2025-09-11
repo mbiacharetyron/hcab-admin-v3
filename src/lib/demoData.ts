@@ -790,7 +790,9 @@ export const demoScheduledNotifications: ScheduledNotification[] = [
   {
     id: 1,
     title: "System Maintenance Notice",
+    title_fr: "Avis de maintenance du système",
     message: "The system will be under maintenance from 2 AM to 4 AM tomorrow. Please plan your rides accordingly.",
+    message_fr: "Le système sera en maintenance de 2h à 4h demain. Veuillez planifier vos trajets en conséquence.",
     target_type: "all",
     user_type: undefined,
     target_users: undefined,
@@ -818,7 +820,9 @@ export const demoScheduledNotifications: ScheduledNotification[] = [
   {
     id: 2,
     title: "Driver Update Available",
+    title_fr: "Mise à jour conducteur disponible",
     message: "New driver guidelines have been published. Please review them in your driver app.",
+    message_fr: "De nouvelles directives pour les conducteurs ont été publiées. Veuillez les consulter dans votre application conducteur.",
     target_type: "user_type",
     user_type: "driver",
     target_users: undefined,
@@ -846,7 +850,9 @@ export const demoScheduledNotifications: ScheduledNotification[] = [
   {
     id: 3,
     title: "Welcome to H-Cab!",
+    title_fr: "Bienvenue chez H-Cab !",
     message: "Welcome to our ride-sharing platform! Enjoy your first ride with a 20% discount.",
+    message_fr: "Bienvenue sur notre plateforme de covoiturage ! Profitez de votre premier trajet avec une réduction de 20%.",
     target_type: "user_type",
     user_type: "rider",
     target_users: undefined,
@@ -874,7 +880,9 @@ export const demoScheduledNotifications: ScheduledNotification[] = [
   {
     id: 4,
     title: "Premium Users Exclusive",
+    title_fr: "Exclusif aux utilisateurs premium",
     message: "Exclusive offer for premium users! Get 30% off your next 5 rides.",
+    message_fr: "Offre exclusive pour les utilisateurs premium ! Obtenez 30% de réduction sur vos 5 prochains trajets.",
     target_type: "custom_query",
     user_type: undefined,
     target_users: undefined,
@@ -913,7 +921,9 @@ export const demoScheduledNotifications: ScheduledNotification[] = [
   {
     id: 5,
     title: "Failed Notification",
+    title_fr: "Notification échouée",
     message: "This notification failed to send due to server issues.",
+    message_fr: "Cette notification a échoué à être envoyée en raison de problèmes de serveur.",
     target_type: "all",
     user_type: undefined,
     target_users: undefined,
