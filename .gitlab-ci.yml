@@ -2,15 +2,16 @@ stages:
   - build
   - deploy
 
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  IMAGE_NAME: registry.gitlab.com/hebron-global-llc/hcab-admin-v3/h-cab
+  VERSION: $(date +%y.%m.%d.%H)
+
 build:
   stage: build
   image: docker:26.1.2-cli
   services:
     - docker:26.1.2-dind
-
-  variables:
-    DOCKER_TLS_CERTDIR: "/certs"
-    IMAGE_NAME: registry.gitlab.com/hebron-global-llc/hcab-admin-v3/h-cab
     
   before_script:
     - apk add --no-cache apt
@@ -28,42 +29,60 @@ build:
     - echo $VERSION
 
   script:
-    # Build Docker image for React TypeScript app
-    - docker build --no-cache -t h-cab-image:$VERSION .
+    # Build Docker image with environment variables
+    - docker build 
+        --build-arg VITE_GOOGLE_MAPS_API_KEY="$VITE_GOOGLE_MAPS_API_KEY"
+        --build-arg VITE_API_BASE_URL="$VITE_API_BASE_URL"
+        --build-arg VITE_DEMO_MODE="$VITE_DEMO_MODE"
+        --no-cache 
+        -t h-cab-image:$VERSION .
+    
     - docker tag h-cab-image:$VERSION $IMAGE_NAME:$VERSION
     - docker push $IMAGE_NAME:$VERSION
     - docker rmi h-cab-image:$VERSION
     - echo "Building complete."
+    
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
 deploy:
   stage: deploy
   environment: production
-  variables:
-    IMAGE_NAME: registry.gitlab.com/hebron-global-llc/hcab-admin-v3/h-cab
   before_script:
     - chmod 400 $SSH_KEY
     - export VERSION=$(date +%y.%m.%d.%H)
-    - echo $VERSION
-    - echo $IMAGE_NAME
+    # - echo "Deploying version: $VERSION"
+    # - echo "Image: $IMAGE_NAME:$VERSION"
+
   script:
-    - echo "Deploying application..."
-    - echo $VERSION
-    - echo $IMAGE_NAME
+    - echo "Starting deployment..."
 
     # Create deployment folder if it does not exist
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$IP_ADDRESS "mkdir -p /home/ubuntu/admin-deployment/"
 
-    # Copy all files from the repository to the server
-    - scp -o StrictHostKeyChecking=no -i $SSH_KEY -r . ubuntu@$IP_ADDRESS:/home/ubuntu/admin-deployment/
+    # Copy deployment files to the server
+    - scp -o StrictHostKeyChecking=no -i $SSH_KEY docker-compose.yml ubuntu@$IP_ADDRESS:/home/ubuntu/admin-deployment/
+    - scp -o StrictHostKeyChecking=no -i $SSH_KEY nginx.conf ubuntu@$IP_ADDRESS:/home/ubuntu/admin-deployment/
+    - scp -o StrictHostKeyChecking=no -i $SSH_KEY nginx-proxy.conf ubuntu@$IP_ADDRESS:/home/ubuntu/admin-deployment/
     
+    # Create environment file on server
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$IP_ADDRESS "
+        cd /home/ubuntu/admin-deployment &&
+        echo 'VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY' > .env &&
+        echo 'VITE_API_BASE_URL=$VITE_API_BASE_URL' >> .env &&
+        echo 'VITE_DEMO_MODE=$VITE_DEMO_MODE' >> .env &&
+        echo 'IMAGE_NAME=$IMAGE_NAME' >> .env &&
+        echo 'VERSION=$VERSION' >> .env"
+    
+    # Deploy using Docker Compose
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$IP_ADDRESS "
+        cd /home/ubuntu/admin-deployment &&
         echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY &&
-        docker stop hcab-admin || true &&
-        docker rm hcab-admin || true &&
-        docker system prune -a --volumes -f &&
-        docker run -d --user root --name hcab-admin -p 3200:3200 --restart=always $IMAGE_NAME:$VERSION"
+        docker-compose down || true &&
+        docker system prune -f &&
+        docker-compose pull &&
+        docker-compose up -d &&
+        echo 'Deployment completed successfully'"
 
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
