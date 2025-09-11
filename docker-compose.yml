@@ -2,13 +2,7 @@ version: '3.8'
 
 services:
   hcab-admin:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY}
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
-        VITE_DEMO_MODE: ${VITE_DEMO_MODE}
+    image: ${IMAGE_NAME}:${VERSION}
     container_name: hcab-admin
     ports:
       - "3200:3200"
