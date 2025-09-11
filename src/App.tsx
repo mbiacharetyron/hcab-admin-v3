@@ -19,6 +19,7 @@ import PanicManagement from "./pages/PanicReportEnhanced";
 import NotificationManagement from "./pages/NotificationManagement";
 import DiscountManagement from "./pages/DiscountManagement";
 import WalletBalances from "./pages/WalletBalances";
+import UserDevices from "./pages/UserDevices";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -106,6 +107,11 @@ const App = () => {
         <Route path="/wallet-balances" element={
           <ProtectedRoute>
             <WalletBalances />
+          </ProtectedRoute>
+        } />
+        <Route path="/user-devices" element={
+          <ProtectedRoute>
+            <UserDevices />
           </ProtectedRoute>
         } />
         <Route path="/settings" element={
