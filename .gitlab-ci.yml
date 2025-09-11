@@ -51,8 +51,8 @@ deploy:
   before_script:
     - chmod 400 $SSH_KEY
     - export VERSION=$(date +%y.%m.%d.%H)
-    - echo "Deploying version: $VERSION"
-    - echo "Image: $IMAGE_NAME:$VERSION"
+    # - echo "Deploying version: $VERSION"
+    # - echo "Image: $IMAGE_NAME:$VERSION"
 
   script:
     - echo "Starting deployment..."
