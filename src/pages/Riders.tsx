@@ -229,49 +229,52 @@ const Riders = () => {
       {/* Enhanced Header Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 rounded-2xl"></div>
-        <div className="relative p-8">
-          <div className="flex items-center justify-between">
+        <div className="relative p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
             <div className="space-y-2">
               <div className="flex items-center space-x-3">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
-                  <Users className="w-8 h-8 text-white" />
+                <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                  <Users className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                     All Riders
                   </h1>
-                  <p className="text-lg text-muted-foreground font-medium">
+                  <p className="text-sm sm:text-base lg:text-lg text-muted-foreground font-medium">
                     Manage and monitor all registered riders
                   </p>
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <Button
                 onClick={() => refetch()}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
                 size="lg"
               >
-                <RefreshCw className="w-5 h-5 mr-2" />
-                Refresh Data
+                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Refresh Data</span>
+                <span className="sm:hidden">Refresh</span>
               </Button>
               <Button 
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
                 size="lg"
               >
-                <Plus className="w-5 h-5 mr-2" />
-                Add Rider
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Add Rider</span>
+                <span className="sm:hidden">Add</span>
               </Button>
-              <Button variant="outline" size="lg" className="border-2 hover:bg-gray-50">
-                <Download className="w-5 h-5 mr-2" />
-                Export
+              <Button variant="outline" size="lg" className="border-2 hover:bg-gray-50 w-full sm:w-auto">
+                <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Export</span>
+                <span className="sm:hidden">Export</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-8 mt-8">
+      <div className="space-y-6 sm:space-y-8 mt-6 sm:mt-8">
 
         {/* Enhanced Error State */}
         {error && (

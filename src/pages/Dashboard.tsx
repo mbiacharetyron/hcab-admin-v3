@@ -149,28 +149,28 @@ const Dashboard = () => {
   return (
     <AdminLayout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
-        <div className="space-y-8 p-6">
+        <div className="space-y-6 p-4 sm:p-6">
         {/* Header */}
-          <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <TrendingUp className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
           <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                    <p className="text-gray-600 text-lg">Welcome to H-Cab Admin Dashboard</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+                    <p className="text-gray-600 text-sm sm:text-base lg:text-lg">Welcome to H-Cab Admin Dashboard</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4 text-sm">
-                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 rounded-full">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
+                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 rounded-full w-fit">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-green-700 font-medium">System Online</span>
           </div>
                   <div className="flex items-center space-x-2 text-gray-500">
             <Calendar className="w-4 h-4" />
-                      <span>{new Date().toLocaleDateString('en-US', { 
+                      <span className="text-xs sm:text-sm">{new Date().toLocaleDateString('en-US', { 
                         weekday: 'long', 
                         year: 'numeric', 
                         month: 'long', 
@@ -180,17 +180,18 @@ const Dashboard = () => {
           </div>
         </div>
                 
-                <div className="flex items-center space-x-4">
-                <div className="text-sm text-gray-500">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <div className="text-xs sm:text-sm text-gray-500">
                   Last updated: {new Date().toLocaleTimeString()}
                 </div>
                   <Button
                   onClick={() => refetchStats()}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
                     title="Refresh Dashboard Data"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
-                    <span>Refresh Data</span>
+                    <span className="hidden sm:inline">Refresh Data</span>
+                    <span className="sm:hidden">Refresh</span>
                   </Button>
               </div>
             </div>
@@ -232,22 +233,22 @@ const Dashboard = () => {
 
         {/* Stats Cards */}
           <div>
-              <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Key Metrics</h2>
-              <p className="text-gray-600">Real-time overview of your H-Cab operations</p>
+              <div className="mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Key Metrics</h2>
+              <p className="text-sm sm:text-base text-gray-600">Real-time overview of your H-Cab operations</p>
               </div>
               
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {primaryStatsData.map((stat, index) => (
                 <Card key={index} className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg">
-                      <CardContent className="p-6">
+                      <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                        <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                        <p className="text-sm text-gray-500 mt-1">{stat.change}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.title}</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">{stat.value}</p>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-1 truncate">{stat.change}</p>
                           </div>
-                      <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 ${stat.color} rounded-lg flex items-center justify-center flex-shrink-0 ml-2`}>
                         {stat.icon}
                           </div>
                         </div>
@@ -259,13 +260,13 @@ const Dashboard = () => {
 
           {/* Live Map Section */}
           <div>
-              <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Live Operations Map</h2>
-              <p className="text-gray-600">Real-time view of drivers and active rides</p>
+              <div className="mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Live Operations Map</h2>
+              <p className="text-sm sm:text-base text-gray-600">Real-time view of drivers and active rides</p>
               {!import.meta.env.VITE_GOOGLE_MAPS_API_KEY && (
                 <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm text-yellow-700">
-                    <strong>Note:</strong> To enable the map, add your Google Maps API key to the environment variables as <code>VITE_GOOGLE_MAPS_API_KEY</code>
+                  <p className="text-xs sm:text-sm text-yellow-700">
+                    <strong>Note:</strong> To enable the map, add your Google Maps API key to the environment variables as <code className="text-xs">VITE_GOOGLE_MAPS_API_KEY</code>
                   </p>
                 </div>
               )}

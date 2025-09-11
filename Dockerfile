@@ -13,6 +13,16 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Accept build arguments for environment variables
+ARG VITE_GOOGLE_MAPS_API_KEY
+ARG VITE_API_BASE_URL
+ARG VITE_DEMO_MODE
+
+# Set environment variables for build
+ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_DEMO_MODE=$VITE_DEMO_MODE
+
 # Build the application
 RUN npm run build
 
