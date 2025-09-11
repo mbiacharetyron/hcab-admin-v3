@@ -17,7 +17,7 @@ import { TransactionReport } from "./pages/TransactionReport";
 import RevenueReport from "./pages/RevenueReport";
 import PanicManagement from "./pages/PanicReportEnhanced";
 import NotificationManagement from "./pages/NotificationManagement";
-import DiscountManagement from "./pages/DiscountManagementDebug";
+import DiscountManagement from "./pages/DiscountManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({

@@ -162,11 +162,11 @@ export const useDiscountManagement = (params?: {
   const toggleMutation = useToggleDiscountStatus();
 
   return {
-    discounts: discountsQuery.data?.data || [],
+    discounts: discountsQuery.data?.data || discountsQuery.data || [],
     pagination: {
-      current_page: discountsQuery.data?.current_page || 1,
-      total: discountsQuery.data?.total || 0,
-      per_page: discountsQuery.data?.per_page || 15,
+      current_page: discountsQuery.data?.current_page || discountsQuery.data?.data?.current_page || 1,
+      total: discountsQuery.data?.total || discountsQuery.data?.data?.total || 0,
+      per_page: discountsQuery.data?.per_page || discountsQuery.data?.data?.per_page || 15,
     },
     statistics: statsQuery.data?.data,
     isLoading: discountsQuery.isLoading || statsQuery.isLoading,

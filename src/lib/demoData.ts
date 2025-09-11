@@ -644,21 +644,21 @@ export const demoNotificationLogsResponse = {
 export const demoDiscounts = [
   {
     id: 1,
-    name: "Welcome Bonus",
-    description: "Get 20% off your first ride",
-    code: "WELCOME20",
+    name: "First Ride Discount",
+    description: "Get 20% off your first ride with us!",
+    code: null,
     type: "percentage" as const,
     value: 20,
-    minimum_amount: 1000,
-    maximum_discount: 2000,
-    usage_limit: 1000,
-    usage_count: 245,
+    minimum_amount: 500,
+    maximum_discount: 1000,
+    usage_limit: null,
+    usage_count: 450,
     per_user_limit: 1,
     applicable_ride_options: [1, 2, 3],
     applicable_ride_classes: [1, 2],
     is_active: true,
     starts_at: "2024-01-01T00:00:00Z",
-    expires_at: "2024-12-31T23:59:59Z",
+    expires_at: "2025-12-31T23:59:59Z",
     user_restrictions: {},
     is_first_ride_only: true,
     is_shared_ride_only: false,
@@ -667,16 +667,108 @@ export const demoDiscounts = [
   },
   {
     id: 2,
-    name: "Weekend Special",
-    description: "Fixed XAF 500 off weekend rides",
-    code: "WEEKEND500",
+    name: "Welcome Discount",
+    description: "Use code WELCOME2024 for 15% off your ride",
+    code: "WELCOME2024",
+    type: "percentage" as const,
+    value: 15,
+    minimum_amount: 1000,
+    maximum_discount: 500,
+    usage_limit: 200,
+    usage_count: 89,
+    per_user_limit: 1,
+    applicable_ride_options: [1, 2, 3],
+    applicable_ride_classes: [1, 2],
+    is_active: true,
+    starts_at: "2024-01-01T00:00:00Z",
+    expires_at: "2024-12-31T23:59:59Z",
+    user_restrictions: {},
+    is_first_ride_only: false,
+    is_shared_ride_only: false,
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-15T10:30:00Z"
+  },
+  {
+    id: 3,
+    name: "Shared Ride Savings",
+    description: "Get 25% off when you share your ride",
+    code: null,
+    type: "percentage" as const,
+    value: 25,
+    minimum_amount: 800,
+    maximum_discount: 750,
+    usage_limit: null,
+    usage_count: 234,
+    per_user_limit: 5,
+    applicable_ride_options: [1, 2],
+    applicable_ride_classes: [1],
+    is_active: true,
+    starts_at: "2024-01-01T00:00:00Z",
+    expires_at: "2025-12-31T23:59:59Z",
+    user_restrictions: {},
+    is_first_ride_only: false,
+    is_shared_ride_only: true,
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-15T10:30:00Z"
+  },
+  {
+    id: 4,
+    name: "Fixed Savings",
+    description: "Get 500 XAF off with code SAVE500",
+    code: "SAVE500",
     type: "fixed_amount" as const,
     value: 500,
     minimum_amount: 2000,
     maximum_discount: 500,
-    usage_limit: 500,
-    usage_count: 89,
+    usage_limit: 300,
+    usage_count: 156,
     per_user_limit: 2,
+    applicable_ride_options: [1, 2, 3],
+    applicable_ride_classes: [1, 2],
+    is_active: true,
+    starts_at: "2024-01-01T00:00:00Z",
+    expires_at: "2024-12-31T23:59:59Z",
+    user_restrictions: {},
+    is_first_ride_only: false,
+    is_shared_ride_only: false,
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-15T10:30:00Z"
+  },
+  {
+    id: 5,
+    name: "New User Special",
+    description: "30% off for new users (automatic)",
+    code: null,
+    type: "percentage" as const,
+    value: 30,
+    minimum_amount: 1000,
+    maximum_discount: 1500,
+    usage_limit: null,
+    usage_count: 78,
+    per_user_limit: 1,
+    applicable_ride_options: [1, 2, 3],
+    applicable_ride_classes: [1, 2],
+    is_active: true,
+    starts_at: "2024-01-01T00:00:00Z",
+    expires_at: "2025-12-31T23:59:59Z",
+    user_restrictions: { new_users_only: true },
+    is_first_ride_only: false,
+    is_shared_ride_only: false,
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-15T10:30:00Z"
+  },
+  {
+    id: 6,
+    name: "Weekend Special",
+    description: "10% off with code WEEKEND",
+    code: "WEEKEND",
+    type: "percentage" as const,
+    value: 10,
+    minimum_amount: 1500,
+    maximum_discount: 300,
+    usage_limit: 100,
+    usage_count: 45,
+    per_user_limit: 1,
     applicable_ride_options: [1, 2],
     applicable_ride_classes: [1],
     is_active: true,
@@ -689,19 +781,19 @@ export const demoDiscounts = [
     updated_at: "2024-01-15T10:30:00Z"
   },
   {
-    id: 3,
-    name: "Free Ride Friday",
-    description: "One free ride every Friday",
-    code: "FREEFRIDAY",
+    id: 7,
+    name: "Free Ride",
+    description: "Free ride up to 1000 XAF with code FREERIDE",
+    code: "FREERIDE",
     type: "free_ride" as const,
-    value: 0,
+    value: 1000,
     minimum_amount: 0,
-    maximum_discount: 5000,
-    usage_limit: 200,
-    usage_count: 67,
+    maximum_discount: 1000,
+    usage_limit: 50,
+    usage_count: 23,
     per_user_limit: 1,
     applicable_ride_options: [1, 2, 3],
-    applicable_ride_classes: [1, 2, 3],
+    applicable_ride_classes: [1, 2],
     is_active: true,
     starts_at: "2024-01-01T00:00:00Z",
     expires_at: "2024-12-31T23:59:59Z",
@@ -710,79 +802,213 @@ export const demoDiscounts = [
     is_shared_ride_only: false,
     created_at: "2024-01-01T00:00:00Z",
     updated_at: "2024-01-15T10:30:00Z"
+  },
+  {
+    id: 8,
+    name: "Premium Discount",
+    description: "15% off premium rides with code PREMIUM",
+    code: "PREMIUM",
+    type: "percentage" as const,
+    value: 15,
+    minimum_amount: 3000,
+    maximum_discount: 1000,
+    usage_limit: 75,
+    usage_count: 12,
+    per_user_limit: 1,
+    applicable_ride_options: [3],
+    applicable_ride_classes: [2, 3],
+    is_active: false,
+    starts_at: "2024-01-01T00:00:00Z",
+    expires_at: "2024-06-30T23:59:59Z",
+    user_restrictions: {},
+    is_first_ride_only: false,
+    is_shared_ride_only: false,
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-15T10:30:00Z"
   }
 ];
-
-// Demo discount statistics
-export const demoDiscountStats = {
-  total_discounts: 3,
-  active_discounts: 3,
-  inactive_discounts: 0,
-  total_usage: 401,
-  total_savings: 125000,
-  this_month_usage: 45,
-  this_month_savings: 15000
-};
 
 // Demo discount usage history
 export const demoDiscountUsageHistory = [
   {
     id: 1,
-    booking_id: 1001,
-    discount_id: 1,
     discount: {
-      name: "Welcome Bonus"
+      name: "First Ride Discount",
+      code: null
     },
     user: {
-      name: "John Doe"
+      name: "John Doe",
+      email: "john@example.com"
+    },
+    booking: {
+      id: 1001,
+      source_name: "Home",
+      destination_name: "Office"
     },
     original_amount: 2500,
     discount_amount: 500,
-    created_at: "2024-01-15T08:00:00Z"
+    final_amount: 2000,
+    promo_code: null,
+    created_at: "2024-12-15T08:00:00Z"
   },
   {
     id: 2,
-    booking_id: 1002,
-    discount_id: 2,
     discount: {
-      name: "Weekend Special"
+      name: "Welcome Discount",
+      code: "WELCOME2024"
     },
     user: {
-      name: "Jane Smith"
+      name: "Jane Smith",
+      email: "jane@example.com"
+    },
+    booking: {
+      id: 1002,
+      source_name: "Airport",
+      destination_name: "Hotel"
     },
     original_amount: 3000,
-    discount_amount: 500,
-    created_at: "2024-01-15T09:15:00Z"
+    discount_amount: 450,
+    final_amount: 2550,
+    promo_code: "WELCOME2024",
+    created_at: "2024-12-15T09:15:00Z"
   },
   {
     id: 3,
-    booking_id: 1003,
-    discount_id: 3,
     discount: {
-      name: "Free Ride Friday"
+      name: "Shared Ride Savings",
+      code: null
     },
     user: {
-      name: "Mike Johnson"
+      name: "Mike Johnson",
+      email: "mike@example.com"
+    },
+    booking: {
+      id: 1003,
+      source_name: "Mall",
+      destination_name: "University"
     },
     original_amount: 1800,
-    discount_amount: 1800,
-    created_at: "2024-01-15T10:30:00Z"
+    discount_amount: 450,
+    final_amount: 1350,
+    promo_code: null,
+    created_at: "2024-12-15T10:30:00Z"
+  },
+  {
+    id: 4,
+    discount: {
+      name: "Fixed Savings",
+      code: "SAVE500"
+    },
+    user: {
+      name: "Sarah Wilson",
+      email: "sarah@example.com"
+    },
+    booking: {
+      id: 1004,
+      source_name: "Restaurant",
+      destination_name: "Home"
+    },
+    original_amount: 2200,
+    discount_amount: 500,
+    final_amount: 1700,
+    promo_code: "SAVE500",
+    created_at: "2024-12-15T11:45:00Z"
+  },
+  {
+    id: 5,
+    discount: {
+      name: "New User Special",
+      code: null
+    },
+    user: {
+      name: "David Brown",
+      email: "david@example.com"
+    },
+    booking: {
+      id: 1005,
+      source_name: "Station",
+      destination_name: "Beach"
+    },
+    original_amount: 4000,
+    discount_amount: 1200,
+    final_amount: 2800,
+    promo_code: null,
+    created_at: "2024-12-15T12:20:00Z"
+  },
+  {
+    id: 6,
+    discount: {
+      name: "Free Ride",
+      code: "FREERIDE"
+    },
+    user: {
+      name: "Lisa Garcia",
+      email: "lisa@example.com"
+    },
+    booking: {
+      id: 1006,
+      source_name: "Hospital",
+      destination_name: "Pharmacy"
+    },
+    original_amount: 800,
+    discount_amount: 800,
+    final_amount: 0,
+    promo_code: "FREERIDE",
+    created_at: "2024-12-15T13:10:00Z"
   }
 ];
 
+// Demo discount statistics
+export const demoDiscountStats = {
+  total_discounts: 8,
+  active_discounts: 7,
+  inactive_discounts: 1,
+  total_usage: 1087,
+  total_savings: 450000,
+  this_month_usage: 156,
+  this_month_savings: 67500,
+  top_discounts: [
+    {
+      id: 1,
+      name: "First Ride Discount",
+      usages_count: 450
+    },
+    {
+      id: 3,
+      name: "Shared Ride Savings",
+      usages_count: 234
+    },
+    {
+      id: 4,
+      name: "Fixed Savings",
+      usages_count: 156
+    },
+    {
+      id: 2,
+      name: "Welcome Discount",
+      usages_count: 89
+    },
+    {
+      id: 5,
+      name: "New User Special",
+      usages_count: 78
+    }
+  ],
+  recent_usage: demoDiscountUsageHistory
+};
+
+
 // Demo discounts response
 export const demoDiscountsResponse = {
-  success: true,
-  message: "Discounts retrieved successfully",
+  current_page: 1,
   data: demoDiscounts,
-  pagination: {
-    current_page: 1,
-    total_items: 3,
-    total_pages: 1,
-    per_page: 15
-  },
-  statistics: demoDiscountStats,
-  usage_history: demoDiscountUsageHistory
+  total: demoDiscounts.length,
+  per_page: 15
+};
+
+// Demo discount stats response
+export const demoDiscountStatsResponse = {
+  data: demoDiscountStats
 };
 
 // Demo Scheduled Notifications Data

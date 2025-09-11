@@ -768,6 +768,7 @@ import {
   demoDevicesResponse,
   demoNotificationLogsResponse,
   demoDiscountsResponse,
+  demoDiscountStatsResponse,
   demoScheduledNotificationsResponse
 } from './demoData';
 
@@ -861,6 +862,9 @@ class ApiService {
           }
           // Handle discount management endpoint with query parameters
           if (endpoint.startsWith('/admin/discounts')) {
+            if (endpoint.includes('/stats/overview')) {
+              return demoDiscountStatsResponse as T;
+            }
             return demoDiscountsResponse as T;
           }
           // Handle scheduled notifications endpoint with query parameters
@@ -2290,8 +2294,11 @@ export interface DiscountUsage {
 export interface DiscountStats {
   total_discounts: number;
   active_discounts: number;
+  inactive_discounts: number;
   total_usage: number;
   total_savings: number;
+  this_month_usage: number;
+  this_month_savings: number;
   top_discounts: Array<{
     id: number;
     name: string;
@@ -2301,12 +2308,21 @@ export interface DiscountStats {
     id: number;
     discount: {
       name: string;
+      code?: string;
     };
     user: {
       name: string;
+      email: string;
+    };
+    booking: {
+      id: number;
+      source_name: string;
+      destination_name: string;
     };
     original_amount: number;
     discount_amount: number;
+    final_amount: number;
+    promo_code?: string;
     created_at: string;
   }>;
 }

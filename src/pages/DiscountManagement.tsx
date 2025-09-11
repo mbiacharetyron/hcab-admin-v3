@@ -48,6 +48,316 @@ import { useDiscountManagement } from "@/hooks/useDiscountManagement";
 import { useState } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { DiscountCreateRequest } from "@/lib/api";
+
+// Discount Form Component
+interface DiscountFormProps {
+  onSubmit: (data: DiscountCreateRequest) => void;
+  onCancel: () => void;
+  isLoading?: boolean;
+  initialData?: Partial<DiscountCreateRequest>;
+}
+
+const DiscountForm = ({ onSubmit, onCancel, isLoading = false, initialData }: DiscountFormProps) => {
+  const [formData, setFormData] = useState<DiscountCreateRequest>({
+    name: initialData?.name || '',
+    description: initialData?.description || '',
+    code: initialData?.code || '',
+    type: initialData?.type || 'percentage',
+    value: initialData?.value || 0,
+    minimum_amount: initialData?.minimum_amount || undefined,
+    maximum_discount: initialData?.maximum_discount || undefined,
+    usage_limit: initialData?.usage_limit || undefined,
+    per_user_limit: initialData?.per_user_limit || 1,
+    is_active: initialData?.is_active ?? true,
+    starts_at: initialData?.starts_at || '',
+    expires_at: initialData?.expires_at || '',
+    is_first_ride_only: initialData?.is_first_ride_only ?? false,
+    is_shared_ride_only: initialData?.is_shared_ride_only ?? false,
+    applicable_ride_options: initialData?.applicable_ride_options || [],
+    applicable_ride_classes: initialData?.applicable_ride_classes || [],
+    user_restrictions: initialData?.user_restrictions || {},
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  const handleInputChange = (field: keyof DiscountCreateRequest, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Basic Information */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Basic Information</h3>
+          
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-sm font-semibold">Discount Name *</Label>
+            <Input
+              id="name"
+              placeholder="Enter discount name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              className="border-2 focus:border-green-500 transition-colors"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-sm font-semibold">Description</Label>
+            <Textarea
+              id="description"
+              placeholder="Enter discount description"
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              className="border-2 focus:border-green-500 transition-colors min-h-[80px]"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="code" className="text-sm font-semibold">Promo Code</Label>
+            <Input
+              id="code"
+              placeholder="Enter promo code (optional)"
+              value={formData.code}
+              onChange={(e) => handleInputChange('code', e.target.value)}
+              className="border-2 focus:border-green-500 transition-colors"
+            />
+            <p className="text-xs text-muted-foreground">Leave empty for automatic discounts</p>
+          </div>
+        </div>
+
+        {/* Discount Configuration */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Discount Configuration</h3>
+          
+          <div className="space-y-2">
+            <Label htmlFor="type" className="text-sm font-semibold">Discount Type *</Label>
+            <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+              <SelectTrigger className="border-2 focus:border-green-500 transition-colors">
+                <SelectValue placeholder="Select discount type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="percentage">Percentage</SelectItem>
+                <SelectItem value="fixed_amount">Fixed Amount</SelectItem>
+                <SelectItem value="free_ride">Free Ride</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="value" className="text-sm font-semibold">
+              {formData.type === 'percentage' ? 'Percentage (%)' : 
+               formData.type === 'fixed_amount' ? 'Fixed Amount (XAF)' : 
+               'Maximum Amount (XAF)'} *
+            </Label>
+            <Input
+              id="value"
+              type="number"
+              placeholder={formData.type === 'percentage' ? '20' : '500'}
+              value={formData.value}
+              onChange={(e) => handleInputChange('value', parseFloat(e.target.value) || 0)}
+              className="border-2 focus:border-green-500 transition-colors"
+              required
+            />
+          </div>
+
+          {formData.type === 'percentage' && (
+            <div className="space-y-2">
+              <Label htmlFor="maximum_discount" className="text-sm font-semibold">Maximum Discount (XAF)</Label>
+              <Input
+                id="maximum_discount"
+                type="number"
+                placeholder="1000"
+                value={formData.maximum_discount || ''}
+                onChange={(e) => handleInputChange('maximum_discount', parseFloat(e.target.value) || undefined)}
+                className="border-2 focus:border-green-500 transition-colors"
+              />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="minimum_amount" className="text-sm font-semibold">Minimum Ride Amount (XAF)</Label>
+            <Input
+              id="minimum_amount"
+              type="number"
+              placeholder="500"
+              value={formData.minimum_amount || ''}
+              onChange={(e) => handleInputChange('minimum_amount', parseFloat(e.target.value) || undefined)}
+              className="border-2 focus:border-green-500 transition-colors"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Usage Limits */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Usage Limits</h3>
+          
+          <div className="space-y-2">
+            <Label htmlFor="usage_limit" className="text-sm font-semibold">Total Usage Limit</Label>
+            <Input
+              id="usage_limit"
+              type="number"
+              placeholder="1000 (leave empty for unlimited)"
+              value={formData.usage_limit || ''}
+              onChange={(e) => handleInputChange('usage_limit', parseFloat(e.target.value) || undefined)}
+              className="border-2 focus:border-green-500 transition-colors"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="per_user_limit" className="text-sm font-semibold">Per User Limit *</Label>
+            <Input
+              id="per_user_limit"
+              type="number"
+              placeholder="1"
+              value={formData.per_user_limit}
+              onChange={(e) => handleInputChange('per_user_limit', parseInt(e.target.value) || 1)}
+              className="border-2 focus:border-green-500 transition-colors"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Validity Period */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Validity Period</h3>
+          
+          <div className="space-y-2">
+            <Label htmlFor="starts_at" className="text-sm font-semibold">Start Date</Label>
+            <Input
+              id="starts_at"
+              type="datetime-local"
+              value={formData.starts_at}
+              onChange={(e) => handleInputChange('starts_at', e.target.value)}
+              className="border-2 focus:border-green-500 transition-colors"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="expires_at" className="text-sm font-semibold">Expiry Date</Label>
+            <Input
+              id="expires_at"
+              type="datetime-local"
+              value={formData.expires_at}
+              onChange={(e) => handleInputChange('expires_at', e.target.value)}
+              className="border-2 focus:border-green-500 transition-colors"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Restrictions */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Restrictions</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_first_ride_only"
+                checked={formData.is_first_ride_only}
+                onCheckedChange={(checked) => handleInputChange('is_first_ride_only', checked)}
+              />
+              <Label htmlFor="is_first_ride_only" className="text-sm font-semibold">
+                First Ride Only
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_shared_ride_only"
+                checked={formData.is_shared_ride_only}
+                onCheckedChange={(checked) => handleInputChange('is_shared_ride_only', checked)}
+              />
+              <Label htmlFor="is_shared_ride_only" className="text-sm font-semibold">
+                Shared Rides Only
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_active"
+                checked={formData.is_active}
+                onCheckedChange={(checked) => handleInputChange('is_active', checked)}
+              />
+              <Label htmlFor="is_active" className="text-sm font-semibold">
+                Active
+              </Label>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Applicable Ride Options</Label>
+              <div className="space-y-2">
+                {[1, 2, 3].map((option) => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`ride_option_${option}`}
+                      checked={formData.applicable_ride_options?.includes(option) || false}
+                      onCheckedChange={(checked) => {
+                        const current = formData.applicable_ride_options || [];
+                        if (checked) {
+                          handleInputChange('applicable_ride_options', [...current, option]);
+                        } else {
+                          handleInputChange('applicable_ride_options', current.filter(id => id !== option));
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`ride_option_${option}`} className="text-sm">
+                      Option {option}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Form Actions */}
+      <div className="flex items-center justify-end space-x-3 pt-6 border-t">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isLoading}
+          className="border-2 hover:bg-gray-50"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+        >
+          {isLoading ? (
+            <>
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              Creating...
+            </>
+          ) : (
+            <>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Discount
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
+  );
+};
 
 const DiscountManagement = () => {
   // State for filters and pagination
@@ -77,6 +387,17 @@ const DiscountManagement = () => {
     per_page: limit,
     search: searchTerm || undefined,
     status: statusFilter !== 'all' ? statusFilter === 'active' : undefined,
+  });
+
+  // Debug logging
+  console.log('DiscountManagement Debug:', {
+    discounts,
+    discountsType: typeof discounts,
+    isArray: Array.isArray(discounts),
+    statistics,
+    pagination,
+    isLoading,
+    error
   });
 
   const totalItems = pagination?.total || 0;
@@ -232,13 +553,21 @@ const DiscountManagement = () => {
                     Create Discount
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Create New Discount</DialogTitle>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Plus className="w-5 h-5" />
+                      Create New Discount
+                    </DialogTitle>
                   </DialogHeader>
-                  <div className="p-4 text-center text-muted-foreground">
-                    Discount creation form will be implemented here.
-                  </div>
+                  <DiscountForm 
+                    onSubmit={(data) => {
+                      createDiscount(data);
+                      setShowCreateDialog(false);
+                    }}
+                    onCancel={() => setShowCreateDialog(false)}
+                    isLoading={isCreating}
+                  />
                 </DialogContent>
               </Dialog>
               <Button variant="outline" size="lg" className="border-2 hover:bg-gray-50">
@@ -470,9 +799,10 @@ const DiscountManagement = () => {
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">Manage promotional discounts and campaigns ({totalItems} total)</p>
               </CardHeader>
-              <CardContent>
-                <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <Table>
+              <CardContent className="p-0">
+                <div className="max-h-[600px] overflow-y-auto">
+                  <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <Table>
                     <TableHeader>
                       <TableRow className="border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
                         <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Discount</TableHead>
@@ -493,7 +823,7 @@ const DiscountManagement = () => {
                             </div>
                           </TableCell>
                         </TableRow>
-                      ) : discounts.length === 0 ? (
+                      ) : !discounts || discounts.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={6} className="text-center py-8">
                             <div className="text-gray-500">
@@ -503,7 +833,7 @@ const DiscountManagement = () => {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        discounts.map((discount, index) => (
+                        (Array.isArray(discounts) ? discounts : []).map((discount, index) => (
                           <TableRow 
                             key={discount.id}
                             className={cn(
@@ -513,7 +843,24 @@ const DiscountManagement = () => {
                           >
                             <TableCell>
                               <div className="space-y-2">
-                                <div className="font-semibold text-gray-800 dark:text-gray-200">{discount.name}</div>
+                                <div className="flex items-center gap-2">
+                                  <div className="font-semibold text-gray-800 dark:text-gray-200">{discount.name}</div>
+                                  {!discount.code && (
+                                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 text-xs">
+                                      Auto
+                                    </Badge>
+                                  )}
+                                  {discount.is_first_ride_only && (
+                                    <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 text-xs">
+                                      First Ride
+                                    </Badge>
+                                  )}
+                                  {discount.is_shared_ride_only && (
+                                    <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 text-xs">
+                                      Shared Only
+                                    </Badge>
+                                  )}
+                                </div>
                                 {discount.code && (
                                   <div className="flex items-center space-x-2">
                                     <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded font-mono">
@@ -626,6 +973,7 @@ const DiscountManagement = () => {
                       )}
                     </TableBody>
                   </Table>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -636,25 +984,165 @@ const DiscountManagement = () => {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-8">
+            {/* Top Performing Discounts */}
             <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3 text-xl">
                   <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
                     <BarChart3 className="w-6 h-6 text-white" />
                   </div>
-                  Discount Analytics
+                  Top Performing Discounts
                 </CardTitle>
-                <p className="text-sm text-muted-foreground">Advanced analytics and insights</p>
+                <p className="text-sm text-muted-foreground">Most popular discounts by usage</p>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-xl text-center">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl w-fit mx-auto mb-4">
-                    <PieChart className="w-8 h-8 text-blue-600" />
+              <CardContent>
+                <div className="space-y-4">
+                  {statistics?.top_discounts?.map((discount, index) => (
+                    <div key={discount.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-xl">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                          <span className="text-sm font-bold text-blue-600 dark:text-blue-400">#{index + 1}</span>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-800 dark:text-gray-200">{discount.name}</div>
+                          <div className="text-sm text-muted-foreground">{discount.usages_count} uses</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                          {discount.usages_count}
+                        </div>
+                        <div className="text-xs text-muted-foreground">total uses</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Usage Trends */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                      <PieChart className="w-5 h-5 text-white" />
+                    </div>
+                    Usage Distribution
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Active Discounts</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                        {statistics?.active_discounts || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Inactive Discounts</span>
+                      <span className="text-sm font-bold text-red-600 dark:text-red-400">
+                        {statistics?.inactive_discounts || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Usage</span>
+                      <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                        {statistics?.total_usage?.toLocaleString() || 0}
+                      </span>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Analytics Coming Soon</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Advanced discount analytics with usage trends, conversion rates, and performance insights will be available soon.
-                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg">
+                      <DollarSign className="w-5 h-5 text-white" />
+                    </div>
+                    Savings Overview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Savings</span>
+                      <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                        {statistics?.total_savings?.toLocaleString() || 0} XAF
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">This Month</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                        {statistics?.this_month_savings?.toLocaleString() || 0} XAF
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">This Month Usage</span>
+                      <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                        {statistics?.this_month_usage || 0}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Performance Metrics */}
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
+                    <Activity className="w-6 h-6 text-white" />
+                  </div>
+                  Performance Metrics
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Key performance indicators and insights</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-green-600 dark:text-green-400">Active Rate</div>
+                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                          {statistics ? Math.round((statistics.active_discounts / statistics.total_discounts) * 100) : 0}%
+                        </div>
+                      </div>
+                      <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                        <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-blue-600 dark:text-blue-400">Avg Usage/Discount</div>
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                          {statistics ? Math.round(statistics.total_usage / statistics.total_discounts) : 0}
+                        </div>
+                      </div>
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-orange-600 dark:text-orange-400">Avg Savings/Use</div>
+                        <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                          {statistics ? Math.round(statistics.total_savings / statistics.total_usage) : 0} XAF
+                        </div>
+                      </div>
+                      <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                        <DollarSign className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -670,17 +1158,101 @@ const DiscountManagement = () => {
                   </div>
                   Usage History
                 </CardTitle>
-                <p className="text-sm text-muted-foreground">Detailed discount usage tracking</p>
+                <p className="text-sm text-muted-foreground">Detailed discount usage tracking and analytics</p>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-xl text-center">
-                  <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl w-fit mx-auto mb-4">
-                    <Activity className="w-8 h-8 text-purple-600" />
+              <CardContent className="p-0">
+                <div className="max-h-[600px] overflow-y-auto">
+                  <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
+                          <TableHead className="font-semibold text-gray-700 dark:text-gray-300">User</TableHead>
+                          <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Discount</TableHead>
+                          <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Booking</TableHead>
+                          <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Amounts</TableHead>
+                          <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Used At</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(statistics?.recent_usage || []).map((usage, index) => (
+                          <TableRow 
+                            key={usage.id}
+                            className={cn(
+                              "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors",
+                              index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50/50 dark:bg-gray-800/30"
+                            )}
+                          >
+                            <TableCell>
+                              <div className="space-y-1">
+                                <div className="font-semibold text-gray-800 dark:text-gray-200">
+                                  {usage.user?.name || 'N/A'}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {usage.user?.email || 'N/A'}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="space-y-1">
+                                <div className="font-semibold text-gray-800 dark:text-gray-200">
+                                  {usage.discount?.name || 'N/A'}
+                                </div>
+                                {usage.discount?.code && (
+                                  <div className="flex items-center space-x-2">
+                                    <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded font-mono">
+                                      {usage.discount.code}
+                                    </code>
+                                  </div>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="space-y-1">
+                                <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                  {usage.booking?.source_name || 'Location'} → {usage.booking?.destination_name || 'Destination'}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  Booking #{usage.booking_id || usage.booking?.id || 'N/A'}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="space-y-1">
+                                <div className="text-sm">
+                                  <span className="text-gray-600 dark:text-gray-400">Original: </span>
+                                  <span className="font-semibold text-gray-800 dark:text-gray-200">
+                                    {(usage.original_amount || 0).toLocaleString()} XAF
+                                  </span>
+                                </div>
+                                <div className="text-sm">
+                                  <span className="text-green-600 dark:text-green-400">Saved: </span>
+                                  <span className="font-semibold text-green-600 dark:text-green-400">
+                                    -{(usage.discount_amount || 0).toLocaleString()} XAF
+                                  </span>
+                                </div>
+                                <div className="text-sm">
+                                  <span className="text-gray-600 dark:text-gray-400">Final: </span>
+                                  <span className="font-semibold text-gray-800 dark:text-gray-200">
+                                    {((usage.original_amount || 0) - (usage.discount_amount || 0)).toLocaleString()} XAF
+                                  </span>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="space-y-1">
+                                <div className="font-medium text-gray-800 dark:text-gray-200">
+                                  {usage.created_at ? format(new Date(usage.created_at), "MMM dd, yyyy") : 'N/A'}
+                                </div>
+                                <div className="text-xs text-muted-foreground bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full inline-block">
+                                  {usage.created_at ? format(new Date(usage.created_at), "HH:mm") : 'N/A'}
+                                </div>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Usage History Coming Soon</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Detailed usage history with user tracking, booking details, and performance metrics will be available soon.
-                  </p>
                 </div>
               </CardContent>
             </Card>

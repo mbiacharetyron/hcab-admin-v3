@@ -130,8 +130,6 @@ export const useScheduledNotificationManagement = (params?: {
     // Scheduled notifications data
     scheduledNotifications: scheduledNotificationsQuery.data?.data?.data || [],
     pagination: scheduledNotificationsQuery.data?.data,
-    isLoading: scheduledNotificationsQuery.isLoading,
-    error: scheduledNotificationsQuery.error,
     refetch: scheduledNotificationsQuery.refetch,
 
     // Statistics data
