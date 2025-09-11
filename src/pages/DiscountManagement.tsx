@@ -366,6 +366,8 @@ const DiscountManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(15);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingDiscount, setEditingDiscount] = useState<any>(null);
 
   // API call with filters
   const { 
@@ -446,6 +448,31 @@ const DiscountManagement = () => {
     if (window.confirm('Are you sure you want to delete this discount?')) {
       deleteDiscount(id);
     }
+  };
+
+  const handleEditDiscount = (discount: any) => {
+    setEditingDiscount(discount);
+    setShowEditDialog(true);
+  };
+
+  const handleUpdateDiscount = (data: DiscountCreateRequest) => {
+    if (!editingDiscount) return;
+    
+    updateDiscount({ id: editingDiscount.id, data }, {
+      onSuccess: () => {
+        setShowEditDialog(false);
+        setEditingDiscount(null);
+        refetch();
+      },
+      onError: (error) => {
+        console.error('Error updating discount:', error);
+      }
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setShowEditDialog(false);
+    setEditingDiscount(null);
   };
 
   const handleResetFilters = () => {
@@ -567,6 +594,24 @@ const DiscountManagement = () => {
                     }}
                     onCancel={() => setShowCreateDialog(false)}
                     isLoading={isCreating}
+                  />
+                </DialogContent>
+              </Dialog>
+
+              {/* Edit Discount Dialog */}
+              <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-gray-200 flex items-center">
+                      <Edit className="w-6 h-6 mr-2 text-blue-600" />
+                      Edit Discount
+                    </DialogTitle>
+                  </DialogHeader>
+                  <DiscountForm 
+                    onSubmit={handleUpdateDiscount}
+                    onCancel={handleCancelEdit}
+                    isLoading={isUpdating}
+                    initialData={editingDiscount}
                   />
                 </DialogContent>
               </Dialog>
@@ -951,6 +996,7 @@ const DiscountManagement = () => {
                                 <Button 
                                   variant="ghost" 
                                   size="sm"
+                                  onClick={() => handleEditDiscount(discount)}
                                   className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   title="Edit discount"
                                 >
