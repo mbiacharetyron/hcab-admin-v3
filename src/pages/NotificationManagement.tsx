@@ -75,6 +75,7 @@ import {
   Square
 } from "lucide-react";
 import { useNotificationManagement } from "@/hooks/useNotifications";
+import { useScheduledNotificationManagement } from "@/hooks/useScheduledNotifications";
 import { useState } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -87,12 +88,35 @@ const NotificationManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(15);
 
+  // Scheduled notifications state
+  const [scheduledSearchTerm, setScheduledSearchTerm] = useState('');
+  const [scheduledStatusFilter, setScheduledStatusFilter] = useState<string>('all');
+  const [scheduledTargetTypeFilter, setScheduledTargetTypeFilter] = useState<string>('all');
+  const [scheduledNotificationTypeFilter, setScheduledNotificationTypeFilter] = useState<string>('all');
+  const [scheduledCurrentPage, setScheduledCurrentPage] = useState(1);
+
   // Notification form state
   const [notificationForm, setNotificationForm] = useState({
     title: '',
     body: '',
     target_type: 'all' as 'all' | 'drivers' | 'riders',
     device_tokens: [] as string[],
+  });
+
+  // Scheduled notification form state
+  const [scheduledNotificationForm, setScheduledNotificationForm] = useState({
+    title: '',
+    message: '',
+    target_type: 'all' as 'all' | 'specific_users' | 'user_type' | 'custom_query',
+    user_type: 'rider' as 'rider' | 'driver' | 'admin',
+    notification_type: 'push' as 'push' | 'email' | 'sms' | 'all',
+    scheduled_at: '',
+    target_users: [] as number[],
+    custom_query: [] as Array<{
+      field: string;
+      operator: '=' | '!=' | '<' | '>' | '<=' | '>=' | 'like' | 'in' | 'not_in';
+      value: string | number | boolean;
+    }>,
   });
 
   // API calls
@@ -114,8 +138,31 @@ const NotificationManagement = () => {
   } = useNotificationManagement({
     devicesPage: currentPage,
     devicesLimit: limit,
-    device_type: deviceTypeFilter !== 'all' ? deviceTypeFilter as any : undefined,
+    device_type: deviceTypeFilter !== 'all' ? deviceTypeFilter as 'ios' | 'android' | 'web' | 'unknown' : undefined,
     is_active: statusFilter !== 'all' ? statusFilter === 'active' : undefined,
+  });
+
+  // Scheduled notifications API calls
+  const {
+    scheduledNotifications,
+    pagination: scheduledPagination,
+    stats: scheduledStats,
+    isLoading: scheduledLoading,
+    error: scheduledError,
+    refetch: refetchScheduled,
+    createScheduledNotification,
+    cancelScheduledNotification,
+    rescheduleNotification,
+    isCreating,
+    isCancelling,
+    isRescheduling,
+  } = useScheduledNotificationManagement({
+    status: scheduledStatusFilter !== 'all' ? scheduledStatusFilter as 'pending' | 'sent' | 'failed' | 'cancelled' : undefined,
+    target_type: scheduledTargetTypeFilter !== 'all' ? scheduledTargetTypeFilter as 'all' | 'specific_users' | 'user_type' | 'custom_query' : undefined,
+    notification_type: scheduledNotificationTypeFilter !== 'all' ? scheduledNotificationTypeFilter as 'push' | 'email' | 'sms' | 'all' : undefined,
+    search: scheduledSearchTerm || undefined,
+    page: scheduledCurrentPage,
+    per_page: 15,
   });
 
   // Helper functions
@@ -194,6 +241,94 @@ const NotificationManagement = () => {
         timestamp: Date.now()
       }
     });
+  };
+
+  // Scheduled notifications helper functions
+  const getScheduledStatusBadge = (status: string) => {
+    const colors = {
+      pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+      sent: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      failed: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+      cancelled: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+    };
+    
+    const icons = {
+      pending: <Clock className="w-3 h-3 mr-1" />,
+      sent: <CheckCircle className="w-3 h-3 mr-1" />,
+      failed: <XCircle className="w-3 h-3 mr-1" />,
+      cancelled: <Square className="w-3 h-3 mr-1" />
+    };
+    
+    return (
+      <Badge variant="secondary" className={colors[status as keyof typeof colors] || colors.pending}>
+        {icons[status as keyof typeof icons]}
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </Badge>
+    );
+  };
+
+  const getTargetTypeBadge = (targetType: string) => {
+    const colors = {
+      all: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      specific_users: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+      user_type: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      custom_query: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+    };
+    
+    return (
+      <Badge variant="secondary" className={colors[targetType as keyof typeof colors] || colors.all}>
+        {targetType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+      </Badge>
+    );
+  };
+
+  const getNotificationTypeBadge = (type: string) => {
+    const colors = {
+      push: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      email: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      sms: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+      all: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+    };
+    
+    const icons = {
+      push: <Bell className="w-3 h-3 mr-1" />,
+      email: <Mail className="w-3 h-3 mr-1" />,
+      sms: <Phone className="w-3 h-3 mr-1" />,
+      all: <Zap className="w-3 h-3 mr-1" />
+    };
+    
+    return (
+      <Badge variant="secondary" className={colors[type as keyof typeof colors] || colors.push}>
+        {icons[type as keyof typeof icons]}
+        {type.charAt(0).toUpperCase() + type.slice(1)}
+      </Badge>
+    );
+  };
+
+  const handleCreateScheduledNotification = () => {
+    if (!scheduledNotificationForm.title || !scheduledNotificationForm.message || !scheduledNotificationForm.scheduled_at) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const data = {
+      title: scheduledNotificationForm.title,
+      message: scheduledNotificationForm.message,
+      target_type: scheduledNotificationForm.target_type,
+      notification_type: scheduledNotificationForm.notification_type,
+      scheduled_at: scheduledNotificationForm.scheduled_at,
+      ...(scheduledNotificationForm.target_type === 'user_type' && { user_type: scheduledNotificationForm.user_type }),
+      ...(scheduledNotificationForm.target_type === 'specific_users' && { target_users: scheduledNotificationForm.target_users }),
+      ...(scheduledNotificationForm.target_type === 'custom_query' && { custom_query: scheduledNotificationForm.custom_query }),
+    };
+
+    createScheduledNotification(data);
+  };
+
+  const handleCancelScheduledNotification = (id: number) => {
+    if (confirm('Are you sure you want to cancel this scheduled notification?')) {
+      cancelScheduledNotification(id);
+    }
   };
 
   return (
@@ -326,13 +461,20 @@ const NotificationManagement = () => {
         {/* Enhanced Main Content Tabs */}
         <Tabs defaultValue="send" className="space-y-8">
           <div className="relative">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl shadow-inner">
+            <TabsList className="grid w-full grid-cols-5 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl shadow-inner">
               <TabsTrigger 
                 value="send" 
                 className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-600 font-semibold transition-all duration-200"
               >
                 <Send className="w-4 h-4 mr-2" />
                 Send Notifications
+              </TabsTrigger>
+              <TabsTrigger 
+                value="scheduled"
+                className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-600 font-semibold transition-all duration-200"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Scheduled
               </TabsTrigger>
               <TabsTrigger 
                 value="devices"
@@ -482,6 +624,286 @@ const NotificationManagement = () => {
                       </>
                     )}
                   </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Scheduled Notifications Tab */}
+          <TabsContent value="scheduled" className="space-y-8">
+            {/* Scheduled Notifications Statistics */}
+            {scheduledStats && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Total Scheduled */}
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+                  <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-300">Total Scheduled</CardTitle>
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative">
+                    <div className="text-3xl font-bold text-blue-800 dark:text-blue-200 mb-1">
+                      {scheduledStats.total_notifications}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-blue-600 dark:text-blue-400">All scheduled</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Pending Notifications */}
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-200/20 to-orange-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+                  <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-semibold text-yellow-700 dark:text-yellow-300">Pending</CardTitle>
+                    <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                      <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative">
+                    <div className="text-3xl font-bold text-yellow-800 dark:text-yellow-200 mb-1">
+                      {scheduledStats.pending_notifications}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-yellow-600 dark:text-yellow-400">Awaiting delivery</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Sent Notifications */}
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-200/20 to-emerald-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+                  <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-semibold text-green-700 dark:text-green-300">Sent</CardTitle>
+                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative">
+                    <div className="text-3xl font-bold text-green-800 dark:text-green-200 mb-1">
+                      {scheduledStats.sent_notifications}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-green-600 dark:text-green-400">Successfully delivered</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Success Rate */}
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+                  <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-semibold text-purple-700 dark:text-purple-300">Success Rate</CardTitle>
+                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                      <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative">
+                    <div className="text-3xl font-bold text-purple-800 dark:text-purple-200 mb-1">
+                      {scheduledStats.success_rate.toFixed(1)}%
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-purple-600 dark:text-purple-400">Delivery success</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Create Scheduled Notification Form */}
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                      <Calendar className="w-6 h-6 text-white" />
+                    </div>
+                    Schedule Notification
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">Schedule notifications to be sent at specific times</p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduled-title" className="text-sm font-semibold">Title *</Label>
+                    <Input
+                      id="scheduled-title"
+                      placeholder="Notification title"
+                      value={scheduledNotificationForm.title}
+                      onChange={(e) => setScheduledNotificationForm(prev => ({ ...prev, title: e.target.value }))}
+                      className="border-2 focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduled-message" className="text-sm font-semibold">Message *</Label>
+                    <Textarea
+                      id="scheduled-message"
+                      placeholder="Notification message"
+                      value={scheduledNotificationForm.message}
+                      onChange={(e) => setScheduledNotificationForm(prev => ({ ...prev, message: e.target.value }))}
+                      className="border-2 focus:border-blue-500 transition-colors min-h-[100px]"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduled-datetime" className="text-sm font-semibold">Schedule Date & Time *</Label>
+                    <Input
+                      id="scheduled-datetime"
+                      type="datetime-local"
+                      value={scheduledNotificationForm.scheduled_at}
+                      onChange={(e) => setScheduledNotificationForm(prev => ({ ...prev, scheduled_at: e.target.value }))}
+                      className="border-2 focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduled-target" className="text-sm font-semibold">Target Audience</Label>
+                    <Select 
+                      value={scheduledNotificationForm.target_type} 
+                      onValueChange={(value: 'all' | 'specific_users' | 'user_type' | 'custom_query') => 
+                        setScheduledNotificationForm(prev => ({ ...prev, target_type: value }))
+                      }
+                    >
+                      <SelectTrigger className="border-2 focus:border-blue-500 transition-colors">
+                        <SelectValue placeholder="Select target" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Users</SelectItem>
+                        <SelectItem value="user_type">User Type</SelectItem>
+                        <SelectItem value="specific_users">Specific Users</SelectItem>
+                        <SelectItem value="custom_query">Custom Query</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {scheduledNotificationForm.target_type === 'user_type' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="scheduled-user-type" className="text-sm font-semibold">User Type</Label>
+                      <Select 
+                        value={scheduledNotificationForm.user_type} 
+                        onValueChange={(value: 'rider' | 'driver' | 'admin') => 
+                          setScheduledNotificationForm(prev => ({ ...prev, user_type: value }))
+                        }
+                      >
+                        <SelectTrigger className="border-2 focus:border-blue-500 transition-colors">
+                          <SelectValue placeholder="Select user type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="rider">Riders</SelectItem>
+                          <SelectItem value="driver">Drivers</SelectItem>
+                          <SelectItem value="admin">Admins</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduled-notification-type" className="text-sm font-semibold">Notification Type</Label>
+                    <Select 
+                      value={scheduledNotificationForm.notification_type} 
+                      onValueChange={(value: 'push' | 'email' | 'sms' | 'all') => 
+                        setScheduledNotificationForm(prev => ({ ...prev, notification_type: value }))
+                      }
+                    >
+                      <SelectTrigger className="border-2 focus:border-blue-500 transition-colors">
+                        <SelectValue placeholder="Select notification type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="push">Push Notification</SelectItem>
+                        <SelectItem value="email">Email</SelectItem>
+                        <SelectItem value="sms">SMS</SelectItem>
+                        <SelectItem value="all">All Types</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button
+                    onClick={handleCreateScheduledNotification}
+                    disabled={isCreating || !scheduledNotificationForm.title || !scheduledNotificationForm.message || !scheduledNotificationForm.scheduled_at}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    {isCreating ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Scheduling...
+                      </>
+                    ) : (
+                      <>
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Schedule Notification
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Scheduled Notifications List */}
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg">
+                      <Clock className="w-6 h-6 text-white" />
+                    </div>
+                    Scheduled Notifications
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">Manage your scheduled notifications</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {scheduledNotifications.map((notification) => (
+                      <div key={notification.id} className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold text-gray-800 dark:text-gray-200">{notification.title}</h4>
+                              {getScheduledStatusBadge(notification.status)}
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{notification.message}</p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <span>Scheduled: {format(new Date(notification.scheduled_at), "MMM dd, yyyy HH:mm")}</span>
+                              {getTargetTypeBadge(notification.target_type)}
+                              {getNotificationTypeBadge(notification.notification_type)}
+                            </div>
+                            {notification.sent_at && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                Sent: {format(new Date(notification.sent_at), "MMM dd, yyyy HH:mm")}
+                              </div>
+                            )}
+                            {notification.failure_reason && (
+                              <div className="text-xs text-red-600 dark:text-red-400 mt-1">
+                                Error: {notification.failure_reason}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {notification.status === 'pending' && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleCancelScheduledNotification(notification.id)}
+                                disabled={isCancelling}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
+                              >
+                                <XCircle className="w-4 h-4 mr-1" />
+                                Cancel
+                              </Button>
+                            )}
+                            <Button variant="ghost" size="sm">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {scheduledNotifications.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                        <p>No scheduled notifications found</p>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>

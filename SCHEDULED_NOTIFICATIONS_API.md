@@ -6,6 +6,7 @@ The Scheduled Notifications API allows administrators to schedule notifications 
 
 ## Features
 
+- **Bilingual Support**: Send notifications in both English and French
 - **Multiple Notification Types**: Push notifications, email, SMS, or all combined
 - **Flexible Targeting**: Send to all users, specific users, user types, or custom queries
 - **Scheduled Delivery**: Set exact date and time for notification delivery
@@ -13,6 +14,7 @@ The Scheduled Notifications API allows administrators to schedule notifications 
 - **Status Tracking**: Monitor notification status (pending, sent, failed, cancelled)
 - **Statistics**: Comprehensive analytics and reporting
 - **Management**: Cancel, reschedule, and manage notifications
+- **Language Preference**: Automatically sends in user's preferred language
 
 ## Database Schema
 
@@ -22,7 +24,9 @@ The Scheduled Notifications API allows administrators to schedule notifications 
 CREATE TABLE scheduled_notifications (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
+    title_fr VARCHAR(255) NULL,
     message TEXT NOT NULL,
+    message_fr TEXT NULL,
     target_users JSON NULL,
     target_type ENUM('all', 'specific_users', 'user_type', 'custom_query') DEFAULT 'all',
     user_type VARCHAR(255) NULL,
@@ -129,7 +133,9 @@ All endpoints are prefixed with `/api/v1/admin/scheduled-notifications`
 ```json
 {
   "title": "System Maintenance",
+  "title_fr": "Maintenance du système",
   "message": "The system will be under maintenance from 2 AM to 4 AM.",
+  "message_fr": "Le système sera en maintenance de 2h à 4h.",
   "target_type": "all",
   "user_type": null,
   "target_users": null,
@@ -146,13 +152,15 @@ All endpoints are prefixed with `/api/v1/admin/scheduled-notifications`
 ### Field Descriptions
 
 #### Required Fields
-- `title`: Notification title (max 255 characters)
-- `message`: Notification message (max 1000 characters)
+- `title`: Notification title in English (max 255 characters)
+- `message`: Notification message in English (max 1000 characters)
 - `target_type`: Target audience type
 - `notification_type`: Type of notification to send
 - `scheduled_at`: When to send the notification (must be in the future)
 
 #### Optional Fields
+- `title_fr`: Notification title in French (max 255 characters)
+- `message_fr`: Notification message in French (max 1000 characters)
 - `user_type`: Required if `target_type` is `user_type` (`rider`, `driver`, `admin`)
 - `target_users`: Array of user IDs (required if `target_type` is `specific_users`)
 - `custom_query`: Array of query conditions (required if `target_type` is `custom_query`)
@@ -335,30 +343,62 @@ All endpoints are prefixed with `/api/v1/admin/scheduled-notifications`
 
 ---
 
+## Bilingual Support
+
+The system supports sending notifications in both English and French. Here's how it works:
+
+### Language Detection
+- The system automatically detects the user's language preference from their profile (`user.language` field)
+- If no language preference is set, it defaults to English
+- Users receive notifications in their preferred language
+
+### Content Fallback
+- If a French translation is not provided, the English version is used
+- If an English version is not provided, the French version is used
+- Both versions can be provided for complete bilingual support
+
+### Email Notifications
+- Primary language content is sent first
+- Secondary language content is included below with a separator
+- Example: French user receives French content first, then English content below
+
+### Push Notifications
+- Only the user's preferred language is sent
+- Bilingual content is included in the notification data for client-side handling
+
+### SMS Notifications
+- Only the user's preferred language is sent (due to SMS length limitations)
+
+---
+
 ## Usage Examples
 
-### Schedule Notification to All Users
+### Schedule Bilingual Notification to All Users
 ```bash
 curl -X POST "https://api.example.com/api/v1/admin/scheduled-notifications" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Welcome Message",
+    "title_fr": "Message de bienvenue",
     "message": "Welcome to our ride-sharing platform!",
+    "message_fr": "Bienvenue sur notre plateforme de covoiturage !",
     "target_type": "all",
     "notification_type": "push",
     "scheduled_at": "2025-01-15 09:00:00"
   }'
 ```
 
-### Schedule Notification to Drivers Only
+### Schedule Bilingual Notification to Drivers Only
 ```bash
 curl -X POST "https://api.example.com/api/v1/admin/scheduled-notifications" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Driver Update",
+    "title_fr": "Mise à jour conducteur",
     "message": "New driver guidelines have been published.",
+    "message_fr": "De nouvelles directives pour les conducteurs ont été publiées.",
     "target_type": "user_type",
     "user_type": "driver",
     "notification_type": "all",
@@ -366,14 +406,16 @@ curl -X POST "https://api.example.com/api/v1/admin/scheduled-notifications" \
   }'
 ```
 
-### Schedule Notification with Custom Query
+### Schedule Bilingual Notification with Custom Query
 ```bash
 curl -X POST "https://api.example.com/api/v1/admin/scheduled-notifications" \
   -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Premium Users",
+    "title_fr": "Utilisateurs premium",
     "message": "Exclusive offer for premium users!",
+    "message_fr": "Offre exclusive pour les utilisateurs premium !",
     "target_type": "custom_query",
     "custom_query": [
       {

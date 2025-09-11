@@ -767,7 +767,8 @@ import {
   demoPanicReportsResponse,
   demoDevicesResponse,
   demoNotificationLogsResponse,
-  demoDiscountsResponse
+  demoDiscountsResponse,
+  demoScheduledNotificationsResponse
 } from './demoData';
 
 // API Service Class
@@ -861,6 +862,10 @@ class ApiService {
           // Handle discount management endpoint with query parameters
           if (endpoint.startsWith('/admin/discounts')) {
             return demoDiscountsResponse as T;
+          }
+          // Handle scheduled notifications endpoint with query parameters
+          if (endpoint.startsWith('/admin/scheduled-notifications')) {
+            return demoScheduledNotificationsResponse as T;
           }
           throw new Error(`Demo endpoint not found: ${endpoint}`);
       }
@@ -1707,6 +1712,99 @@ class ApiService {
     }
   }
 
+  // Scheduled Notifications
+  async getScheduledNotifications(params?: {
+    status?: 'pending' | 'sent' | 'failed' | 'cancelled';
+    target_type?: 'all' | 'specific_users' | 'user_type' | 'custom_query';
+    user_type?: 'rider' | 'driver' | 'admin';
+    notification_type?: 'push' | 'email' | 'sms' | 'all';
+    date_from?: string;
+    date_to?: string;
+    search?: string;
+    page?: number;
+    per_page?: number;
+    lang?: string;
+  }): Promise<ScheduledNotificationsResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.target_type) queryParams.append('target_type', params.target_type);
+      if (params?.user_type) queryParams.append('user_type', params.user_type);
+      if (params?.notification_type) queryParams.append('notification_type', params.notification_type);
+      if (params?.date_from) queryParams.append('date_from', params.date_from);
+      if (params?.date_to) queryParams.append('date_to', params.date_to);
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const url = `/admin/scheduled-notifications${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const result = await this.request<ScheduledNotificationsResponse>(url);
+      return result;
+    } catch (error) {
+      console.error('API: Get scheduled notifications error:', error);
+      throw error;
+    }
+  }
+
+  async getScheduledNotification(id: number): Promise<ScheduledNotificationResponse> {
+    try {
+      const result = await this.request<ScheduledNotificationResponse>(`/admin/scheduled-notifications/${id}`);
+      return result;
+    } catch (error) {
+      console.error('API: Get scheduled notification error:', error);
+      throw error;
+    }
+  }
+
+  async createScheduledNotification(data: ScheduledNotificationCreateRequest): Promise<ScheduledNotificationCreateResponse> {
+    try {
+      const result = await this.request<ScheduledNotificationCreateResponse>('/admin/scheduled-notifications', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      return result;
+    } catch (error) {
+      console.error('API: Create scheduled notification error:', error);
+      throw error;
+    }
+  }
+
+  async cancelScheduledNotification(id: number): Promise<ScheduledNotificationActionResponse> {
+    try {
+      const result = await this.request<ScheduledNotificationActionResponse>(`/admin/scheduled-notifications/${id}/cancel`, {
+        method: 'PUT',
+      });
+      return result;
+    } catch (error) {
+      console.error('API: Cancel scheduled notification error:', error);
+      throw error;
+    }
+  }
+
+  async rescheduleNotification(id: number, data: ScheduledNotificationRescheduleRequest): Promise<ScheduledNotificationActionResponse> {
+    try {
+      const result = await this.request<ScheduledNotificationActionResponse>(`/admin/scheduled-notifications/${id}/reschedule`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+      return result;
+    } catch (error) {
+      console.error('API: Reschedule notification error:', error);
+      throw error;
+    }
+  }
+
+  async getScheduledNotificationStats(): Promise<ScheduledNotificationStatsResponse> {
+    try {
+      const result = await this.request<ScheduledNotificationStatsResponse>('/admin/scheduled-notifications/stats');
+      return result;
+    } catch (error) {
+      console.error('API: Get scheduled notification stats error:', error);
+      throw error;
+    }
+  }
+
   // Set authentication token
   setToken(token: string) {
     this.token = token;
@@ -1794,6 +1892,14 @@ export const sendTestNotification = (request: Parameters<typeof apiService.sendT
 export const getDevices = (params?: Parameters<typeof apiService.getDevices>[0]) => apiService.getDevices(params);
 export const getNotificationLogs = (params?: Parameters<typeof apiService.getNotificationLogs>[0]) => apiService.getNotificationLogs(params);
 
+// Scheduled Notifications API exports
+export const getScheduledNotifications = (params?: Parameters<typeof apiService.getScheduledNotifications>[0]) => apiService.getScheduledNotifications(params);
+export const getScheduledNotification = (id: number) => apiService.getScheduledNotification(id);
+export const createScheduledNotification = (data: ScheduledNotificationCreateRequest) => apiService.createScheduledNotification(data);
+export const cancelScheduledNotification = (id: number) => apiService.cancelScheduledNotification(id);
+export const rescheduleNotification = (id: number, data: ScheduledNotificationRescheduleRequest) => apiService.rescheduleNotification(id, data);
+export const getScheduledNotificationStats = () => apiService.getScheduledNotificationStats();
+
 // Firebase Notifications Interfaces
 export interface NotificationRequest {
   title: string;
@@ -1880,6 +1986,121 @@ export interface NotificationMetrics {
     this_week: number;
     this_month: number;
   };
+}
+
+// Scheduled Notifications Interfaces
+export interface ScheduledNotification {
+  id: number;
+  title: string;
+  message: string;
+  target_type: 'all' | 'specific_users' | 'user_type' | 'custom_query';
+  user_type?: 'rider' | 'driver' | 'admin';
+  target_users?: number[];
+  custom_query?: Array<{
+    field: string;
+    operator: '=' | '!=' | '<' | '>' | '<=' | '>=' | 'like' | 'in' | 'not_in';
+    value: string | number | boolean;
+  }>;
+  notification_data?: Record<string, string | number | boolean>;
+  notification_type: 'push' | 'email' | 'sms' | 'all';
+  scheduled_at: string;
+  sent_at?: string;
+  status: 'pending' | 'sent' | 'failed' | 'cancelled';
+  failure_reason?: string;
+  sent_count: number;
+  failed_count: number;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+  creator?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
+export interface ScheduledNotificationsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    current_page: number;
+    data: ScheduledNotification[];
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    links: Array<{
+      url?: string;
+      label: string;
+      active: boolean;
+    }>;
+    next_page_url?: string;
+    path: string;
+    per_page: number;
+    prev_page_url?: string;
+    to: number;
+    total: number;
+  };
+}
+
+export interface ScheduledNotificationResponse {
+  success: boolean;
+  message: string;
+  data: ScheduledNotification;
+}
+
+export interface ScheduledNotificationCreateRequest {
+  title: string;
+  message: string;
+  target_type: 'all' | 'specific_users' | 'user_type' | 'custom_query';
+  user_type?: 'rider' | 'driver' | 'admin';
+  target_users?: number[];
+  custom_query?: Array<{
+    field: string;
+    operator: '=' | '!=' | '<' | '>' | '<=' | '>=' | 'like' | 'in' | 'not_in';
+    value: string | number | boolean;
+  }>;
+  notification_type: 'push' | 'email' | 'sms' | 'all';
+  scheduled_at: string;
+  notification_data?: Record<string, string | number | boolean>;
+}
+
+export interface ScheduledNotificationCreateResponse {
+  success: boolean;
+  message: string;
+  data: {
+    notification: ScheduledNotification;
+    target_user_count: number;
+  };
+}
+
+export interface ScheduledNotificationRescheduleRequest {
+  scheduled_at: string;
+}
+
+export interface ScheduledNotificationActionResponse {
+  success: boolean;
+  message: string;
+  data: unknown[];
+}
+
+export interface ScheduledNotificationStats {
+  total_notifications: number;
+  pending_notifications: number;
+  sent_notifications: number;
+  failed_notifications: number;
+  cancelled_notifications: number;
+  scheduled_today: number;
+  scheduled_this_week: number;
+  scheduled_this_month: number;
+  success_rate: number;
+  failure_rate: number;
+}
+
+export interface ScheduledNotificationStatsResponse {
+  success: boolean;
+  message: string;
+  data: ScheduledNotificationStats;
 }
 
 // Panic Management Interfaces

@@ -1,5 +1,15 @@
 // Demo data for testing when API is not available
-import type { DashboardStats, Ride, User, RideOption, PanicReport, PanicReportsResponse } from './api';
+import type { 
+  DashboardStats, 
+  Ride, 
+  User, 
+  RideOption, 
+  PanicReport, 
+  PanicReportsResponse,
+  ScheduledNotification,
+  ScheduledNotificationsResponse,
+  ScheduledNotificationStats
+} from './api';
 
 export const demoDashboardStats: DashboardStats = {
   trips: {
@@ -773,4 +783,210 @@ export const demoDiscountsResponse = {
   },
   statistics: demoDiscountStats,
   usage_history: demoDiscountUsageHistory
+};
+
+// Demo Scheduled Notifications Data
+export const demoScheduledNotifications: ScheduledNotification[] = [
+  {
+    id: 1,
+    title: "System Maintenance Notice",
+    message: "The system will be under maintenance from 2 AM to 4 AM tomorrow. Please plan your rides accordingly.",
+    target_type: "all",
+    user_type: undefined,
+    target_users: undefined,
+    custom_query: undefined,
+    notification_data: {
+      priority: "high",
+      category: "system"
+    },
+    notification_type: "push",
+    scheduled_at: "2025-01-16T02:00:00.000000Z",
+    sent_at: undefined,
+    status: "pending",
+    failure_reason: undefined,
+    sent_count: 0,
+    failed_count: 0,
+    created_by: 1,
+    created_at: "2025-01-15T10:00:00.000000Z",
+    updated_at: "2025-01-15T10:00:00.000000Z",
+    creator: {
+      id: 1,
+      name: "Admin User",
+      email: "admin@hcab.tech"
+    }
+  },
+  {
+    id: 2,
+    title: "Driver Update Available",
+    message: "New driver guidelines have been published. Please review them in your driver app.",
+    target_type: "user_type",
+    user_type: "driver",
+    target_users: undefined,
+    custom_query: undefined,
+    notification_data: {
+      priority: "medium",
+      category: "update"
+    },
+    notification_type: "all",
+    scheduled_at: "2025-01-15T14:30:00.000000Z",
+    sent_at: "2025-01-15T14:30:05.000000Z",
+    status: "sent",
+    failure_reason: undefined,
+    sent_count: 145,
+    failed_count: 5,
+    created_by: 1,
+    created_at: "2025-01-15T09:00:00.000000Z",
+    updated_at: "2025-01-15T14:30:05.000000Z",
+    creator: {
+      id: 1,
+      name: "Admin User",
+      email: "admin@hcab.tech"
+    }
+  },
+  {
+    id: 3,
+    title: "Welcome to H-Cab!",
+    message: "Welcome to our ride-sharing platform! Enjoy your first ride with a 20% discount.",
+    target_type: "user_type",
+    user_type: "rider",
+    target_users: undefined,
+    custom_query: undefined,
+    notification_data: {
+      priority: "low",
+      category: "promotion"
+    },
+    notification_type: "push",
+    scheduled_at: "2025-01-15T12:00:00.000000Z",
+    sent_at: "2025-01-15T12:00:03.000000Z",
+    status: "sent",
+    failure_reason: undefined,
+    sent_count: 1200,
+    failed_count: 50,
+    created_by: 1,
+    created_at: "2025-01-15T08:00:00.000000Z",
+    updated_at: "2025-01-15T12:00:03.000000Z",
+    creator: {
+      id: 1,
+      name: "Admin User",
+      email: "admin@hcab.tech"
+    }
+  },
+  {
+    id: 4,
+    title: "Premium Users Exclusive",
+    message: "Exclusive offer for premium users! Get 30% off your next 5 rides.",
+    target_type: "custom_query",
+    user_type: undefined,
+    target_users: undefined,
+    custom_query: [
+      {
+        field: "subscription_type",
+        operator: "=",
+        value: "premium"
+      },
+      {
+        field: "is_active",
+        operator: "=",
+        value: "true"
+      }
+    ],
+    notification_data: {
+      priority: "high",
+      category: "promotion"
+    },
+    notification_type: "all",
+    scheduled_at: "2025-01-16T10:00:00.000000Z",
+    sent_at: undefined,
+    status: "pending",
+    failure_reason: undefined,
+    sent_count: 0,
+    failed_count: 0,
+    created_by: 1,
+    created_at: "2025-01-15T11:00:00.000000Z",
+    updated_at: "2025-01-15T11:00:00.000000Z",
+    creator: {
+      id: 1,
+      name: "Admin User",
+      email: "admin@hcab.tech"
+    }
+  },
+  {
+    id: 5,
+    title: "Failed Notification",
+    message: "This notification failed to send due to server issues.",
+    target_type: "all",
+    user_type: undefined,
+    target_users: undefined,
+    custom_query: undefined,
+    notification_data: {
+      priority: "medium",
+      category: "test"
+    },
+    notification_type: "push",
+    scheduled_at: "2025-01-14T15:00:00.000000Z",
+    sent_at: undefined,
+    status: "failed",
+    failure_reason: "Server timeout during delivery",
+    sent_count: 0,
+    failed_count: 2500,
+    created_by: 1,
+    created_at: "2025-01-14T14:00:00.000000Z",
+    updated_at: "2025-01-14T15:05:00.000000Z",
+    creator: {
+      id: 1,
+      name: "Admin User",
+      email: "admin@hcab.tech"
+    }
+  }
+];
+
+// Demo scheduled notifications stats
+export const demoScheduledNotificationStats: ScheduledNotificationStats = {
+  total_notifications: 25,
+  pending_notifications: 8,
+  sent_notifications: 15,
+  failed_notifications: 2,
+  cancelled_notifications: 0,
+  scheduled_today: 3,
+  scheduled_this_week: 12,
+  scheduled_this_month: 25,
+  success_rate: 88.24,
+  failure_rate: 11.76
+};
+
+// Demo scheduled notifications response
+export const demoScheduledNotificationsResponse: ScheduledNotificationsResponse = {
+  success: true,
+  message: "Scheduled notifications retrieved successfully",
+  data: {
+    current_page: 1,
+    data: demoScheduledNotifications,
+    first_page_url: "http://localhost/api/v1/admin/scheduled-notifications?page=1",
+    from: 1,
+    last_page: 1,
+    last_page_url: "http://localhost/api/v1/admin/scheduled-notifications?page=1",
+    links: [
+      {
+        url: null,
+        label: "&laquo; Previous",
+        active: false
+      },
+      {
+        url: "http://localhost/api/v1/admin/scheduled-notifications?page=1",
+        label: "1",
+        active: true
+      },
+      {
+        url: null,
+        label: "Next &raquo;",
+        active: false
+      }
+    ],
+    next_page_url: null,
+    path: "http://localhost/api/v1/admin/scheduled-notifications",
+    per_page: 15,
+    prev_page_url: null,
+    to: 5,
+    total: 5
+  }
 };
