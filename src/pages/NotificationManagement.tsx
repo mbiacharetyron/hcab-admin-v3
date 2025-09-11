@@ -886,7 +886,7 @@ const NotificationManagement = () => {
                   <p className="text-sm text-muted-foreground">Manage your scheduled notifications</p>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <div className="max-h-[600px] overflow-y-auto px-6 pb-6">
+                  <div className="max-h-[1200px] overflow-y-auto px-6 pb-6">
                     <div className="space-y-4">
                       {scheduledNotifications.map((notification) => (
                       <div key={notification.id} className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
@@ -947,13 +947,14 @@ const NotificationManagement = () => {
                           </div>
                         </div>
                       </div>
-                    ))}
-                    {scheduledNotifications.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                        <p>No scheduled notifications found</p>
-                      </div>
-                    )}
+                      ))}
+                      {scheduledNotifications.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                          <p>No scheduled notifications found</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1045,9 +1046,10 @@ const NotificationManagement = () => {
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">All registered devices and their status ({devices.length} total)</p>
               </CardHeader>
-              <CardContent>
-                <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <Table>
+              <CardContent className="p-0">
+                <div className="max-h-[600px] overflow-y-auto">
+                  <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <Table>
                     <TableHeader>
                       <TableRow className="border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
                         <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Device ID</TableHead>
@@ -1110,6 +1112,7 @@ const NotificationManagement = () => {
                       ))}
                     </TableBody>
                   </Table>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -1127,9 +1130,10 @@ const NotificationManagement = () => {
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">History of all sent notifications ({logs.length} total)</p>
               </CardHeader>
-              <CardContent>
-                <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <Table>
+              <CardContent className="p-0">
+                <div className="max-h-[600px] overflow-y-auto">
+                  <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <Table>
                     <TableHeader>
                       <TableRow className="border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
                         <TableHead className="font-semibold text-gray-700 dark:text-gray-300">Log ID</TableHead>
@@ -1202,6 +1206,7 @@ const NotificationManagement = () => {
                       ))}
                     </TableBody>
                   </Table>
+                  </div>
                 </div>
               </CardContent>
             </Card>
