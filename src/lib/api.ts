@@ -1753,6 +1753,51 @@ class ApiService {
     }
   }
 
+  // User Wallet Transactions
+  async getUserWalletTransactions(userId: number, params?: {
+    page?: number;
+    per_page?: number;
+    transaction_type?: 'deposit' | 'withdrawal' | 'payment' | 'refund' | 'transfer';
+    payment_method?: 'MTN_MOMO' | 'ORANGE_MONEY' | 'STRIPE' | 'WALLET';
+    status?: 'pending' | 'completed' | 'failed';
+    start_date?: string;
+    end_date?: string;
+    min_amount?: number;
+    max_amount?: number;
+    search?: string;
+    sort_by?: 'created_at' | 'amount' | 'transaction_type' | 'status';
+    sort_order?: 'asc' | 'desc';
+    lang?: string;
+  }): Promise<UserWalletTransactionsResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
+      if (params?.transaction_type) queryParams.append('transaction_type', params.transaction_type);
+      if (params?.payment_method) queryParams.append('payment_method', params.payment_method);
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+      if (params?.min_amount) queryParams.append('min_amount', params.min_amount.toString());
+      if (params?.max_amount) queryParams.append('max_amount', params.max_amount.toString());
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+      if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const url = `/admin/users/${userId}/wallet-transactions${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+      console.log('API: Fetching user wallet transactions from:', `${this.baseURL}${url}`);
+      const result = await this.request<UserWalletTransactionsResponse>(url);
+      console.log('API: User wallet transactions response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: User wallet transactions fetch error:', error);
+      throw error;
+    }
+  }
+
   // Scheduled Notifications
   async getScheduledNotifications(params?: {
     status?: 'pending' | 'sent' | 'failed' | 'cancelled';
@@ -2012,6 +2057,9 @@ export const sendNotification = (request: NotificationRequest) => apiService.sen
 export const sendTestNotification = (request: Parameters<typeof apiService.sendTestNotification>[0]) => apiService.sendTestNotification(request);
 export const getDevices = (params?: Parameters<typeof apiService.getDevices>[0]) => apiService.getDevices(params);
 export const getNotificationLogs = (params?: Parameters<typeof apiService.getNotificationLogs>[0]) => apiService.getNotificationLogs(params);
+
+// User Wallet Transactions API exports
+export const getUserWalletTransactions = (userId: number, params?: Parameters<typeof apiService.getUserWalletTransactions>[1]) => apiService.getUserWalletTransactions(userId, params);
 
 // Scheduled Notifications API exports
 export const getScheduledNotifications = (params?: Parameters<typeof apiService.getScheduledNotifications>[0]) => apiService.getScheduledNotifications(params);
@@ -2499,6 +2547,59 @@ export interface DiscountUsageResponse {
   data: DiscountUsage[];
   total: number;
   per_page: number;
+}
+
+// User Wallet Transactions Interfaces
+export interface UserWalletTransaction {
+  id: number;
+  transaction_id: string;
+  transaction_type: 'deposit' | 'withdrawal' | 'payment' | 'refund' | 'transfer';
+  payment_method: 'MTN_MOMO' | 'ORANGE_MONEY' | 'STRIPE' | 'WALLET';
+  amount: number;
+  fee: number;
+  final_amount: number;
+  status: 'pending' | 'completed' | 'failed';
+  phone_number?: string;
+  s3p_receiptNumber?: string;
+  stripe_payment_intent_id?: string;
+  message?: string;
+  error_code?: string;
+  booking_id?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserWalletTransactionsSummary {
+  total_transactions: number;
+  total_deposits: number;
+  total_withdrawals: number;
+  total_payments: number;
+  total_fees: number;
+  completed_transactions: number;
+  pending_transactions: number;
+  failed_transactions: number;
+}
+
+export interface UserWalletTransactionsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      phone: string;
+      role: string;
+    };
+    transactions: UserWalletTransaction[];
+    pagination: {
+      current_page: number;
+      last_page: number;
+      per_page: number;
+      total: number;
+    };
+    summary: UserWalletTransactionsSummary;
+  };
 }
 
 // Wallet Balance API interfaces

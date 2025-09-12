@@ -90,3 +90,4 @@ const PanicReportWithAuth = () => {
 };
 
 export default PanicReportWithAuth;
+

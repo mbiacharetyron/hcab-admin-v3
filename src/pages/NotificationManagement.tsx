@@ -15,6 +15,14 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { 
   Pagination, 
   PaginationContent, 
@@ -72,7 +80,9 @@ import {
   Settings,
   Play,
   Pause,
-  Square
+  Square,
+  RotateCcw,
+  Save
 } from "lucide-react";
 import { useNotificationManagement } from "@/hooks/useNotifications";
 import { useScheduledNotificationManagement } from "@/hooks/useScheduledNotifications";
