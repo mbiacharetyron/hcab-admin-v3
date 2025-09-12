@@ -1046,6 +1046,21 @@ class ApiService {
     }
   }
 
+  // Delete User Account
+  async deleteUserAccount(userId: number): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log('API: Deleting user account:', `${this.baseURL}/admin/user/${userId}/delete-account`);
+      const result = await this.request<{ success: boolean; message: string }>(`/admin/user/${userId}/delete-account`, {
+        method: 'DELETE',
+      });
+      console.log('API: User account deleted:', result);
+      return result;
+    } catch (error) {
+      console.error('API: User account deletion error:', error);
+      throw error;
+    }
+  }
+
   // Ride Option Details
   async getRideOptionDetails(rideOptionId: number): Promise<RideOption> {
     return this.request<RideOption>(`/ride-option/${rideOptionId}`);
@@ -1943,6 +1958,7 @@ if (typeof window !== 'undefined') {
 export const getDashboardStats = () => apiService.getDashboardStats();
 export const getAllRides = (params?: Parameters<typeof apiService.getAllRides>[0]) => apiService.getAllRides(params);
 export const getUserDetails = (userId: number) => apiService.getUserDetails(userId);
+export const deleteUserAccount = (userId: number) => apiService.deleteUserAccount(userId);
 export const getRideOptionDetails = (rideOptionId: number) => apiService.getRideOptionDetails(rideOptionId);
 export const getDrivers = (params?: Parameters<typeof apiService.getDrivers>[0]) => apiService.getDrivers(params);
 export const getOnlineDriverCoordinates = () => apiService.getOnlineDriverCoordinates();
