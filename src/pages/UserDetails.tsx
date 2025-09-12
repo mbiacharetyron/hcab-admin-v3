@@ -43,9 +43,277 @@ import {
   ThumbsUp,
   ThumbsDown,
   Percent,
-  ClipboardList
+  ClipboardList,
+  Crown,
+  Gem,
+  Award,
+  Target,
+  Zap,
+  Sparkles,
+  Heart,
+  Trophy,
+  Medal,
+  Badge as BadgeIcon,
+  Users,
+  DollarSign,
+  BarChart3,
+  PieChart,
+  LineChart,
+  Monitor,
+  Smartphone,
+  Wifi,
+  WifiOff,
+  Battery,
+  Signal,
+  Map,
+  Navigation,
+  Route,
+  Timer,
+  Play,
+  Pause,
+  Square,
+  Circle,
+  Triangle,
+  Hexagon,
+  Octagon,
+  Diamond,
+  Flame,
+  Snowflake,
+  Sun,
+  Moon,
+  Cloud,
+  CloudRain,
+  CloudSnow,
+  Wind,
+  Droplets,
+  Thermometer,
+  Gauge,
+  Layers,
+  Grid3X3,
+  Layout,
+  PanelLeft,
+  PanelRight,
+  Sidebar,
+  Menu,
+  MoreHorizontal,
+  MoreVertical,
+  Plus,
+  Minus,
+  X,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUp,
+  ArrowDown,
+  ArrowRight,
+  RotateCcw,
+  RotateCw,
+  Maximize,
+  Minimize,
+  Move,
+  Copy,
+  Scissors,
+  Edit,
+  Trash2,
+  Save,
+  Upload,
+  Search,
+  Filter,
+  SortAsc,
+  SortDesc,
+  List,
+  Grid,
+  Table,
+  Database,
+  Server,
+  HardDrive,
+  Cpu,
+  MemoryStick,
+  Wrench,
+  Settings,
+  Cog,
+  Palette,
+  Brush,
+  Eraser,
+  Paintbrush,
+  Pen,
+  Pencil,
+  Highlighter,
+  Type,
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Indent,
+  Outdent,
+  ListOrdered,
+  Quote,
+  Code,
+  Terminal,
+  Command,
+  Keyboard,
+  Mouse,
+  Touchpad,
+  Headphones,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
+  PlayCircle,
+  PauseCircle,
+  StopCircle,
+  SkipBack,
+  SkipForward,
+  Repeat,
+  Shuffle,
+  Radio,
+  Tv,
+  Camera,
+  Video,
+  Image,
+  Film,
+  Music,
+  HeadphonesIcon,
+  Speaker,
+  Bluetooth,
+  Wifi as WifiIcon,
+  Signal as SignalIcon,
+  Battery as BatteryIcon,
+  Power,
+  Plug,
+  Zap as Lightning,
+  Flashlight,
+  FlashlightOff,
+  Lightbulb,
+  LightbulbOff,
+  Lamp,
+  LampDesk,
+  LampFloor,
+  LampWallUp,
+  LampCeiling,
+  Flame as Fire,
+  Snowflake as Snow,
+  Sun as SunIcon,
+  Moon as MoonIcon,
+  Cloud as CloudIcon,
+  CloudRain as Rain,
+  CloudSnow as SnowIcon,
+  Wind as WindIcon,
+  Droplets as Drops,
+  Thermometer as Temp,
+  Gauge as Speed,
+  Layers as Stack,
+  Grid3X3 as GridIcon,
+  Layout as LayoutIcon,
+  PanelLeft as PanelL,
+  PanelRight as PanelR,
+  Sidebar as SidebarIcon,
+  Menu as MenuIcon,
+  MoreHorizontal as MoreH,
+  MoreVertical as MoreV,
+  Plus as PlusIcon,
+  Minus as MinusIcon,
+  X as XIcon,
+  Check as CheckIcon,
+  ChevronDown as ChevronD,
+  ChevronUp as ChevronU,
+  ChevronLeft as ChevronL,
+  ChevronRight as ChevronR,
+  ArrowUp as ArrowU,
+  ArrowDown as ArrowD,
+  ArrowRight as ArrowR,
+  RotateCcw as RotateL,
+  RotateCw as RotateR,
+  Maximize as MaxIcon,
+  Minimize as MinIcon,
+  Move as MoveIcon,
+  Copy as CopyIcon,
+  Scissors as CutIcon,
+  Edit as EditIcon,
+  Trash2 as TrashIcon,
+  Save as SaveIcon,
+  Upload as UploadIcon,
+  Search as SearchIcon,
+  Filter as FilterIcon,
+  SortAsc as SortUp,
+  SortDesc as SortDown,
+  List as ListIcon,
+  Grid as GridIcon2,
+  Table as TableIcon,
+  Database as DbIcon,
+  Server as ServerIcon,
+  HardDrive as HdIcon,
+  Cpu as CpuIcon,
+  MemoryStick as RamIcon,
+  Wrench as WrenchIcon,
+  Settings as SettingsIcon,
+  Cog as CogIcon,
+  Palette as PaletteIcon,
+  Brush as BrushIcon,
+  Eraser as EraserIcon,
+  Paintbrush as PaintIcon,
+  Pen as PenIcon,
+  Pencil as PencilIcon,
+  Highlighter as HighlighterIcon,
+  Type as TypeIcon,
+  Bold as BoldIcon,
+  Italic as ItalicIcon,
+  Underline as UnderlineIcon,
+  Strikethrough as StrikeIcon,
+  AlignLeft as AlignL,
+  AlignCenter as AlignC,
+  AlignRight as AlignR,
+  AlignJustify as AlignJ,
+  Indent as IndentIcon,
+  Outdent as OutdentIcon,
+  ListOrdered as ListO,
+  Quote as QuoteIcon,
+  Code as CodeIcon,
+  Terminal as TerminalIcon,
+  Command as CommandIcon,
+  Keyboard as KeyboardIcon,
+  Mouse as MouseIcon,
+  Touchpad as TouchIcon,
+  Headphones as HeadphonesIcon2,
+  Mic as MicIcon,
+  MicOff as MicOffIcon,
+  Volume2 as VolumeIcon,
+  VolumeX as VolumeOffIcon,
+  PlayCircle as PlayC,
+  PauseCircle as PauseC,
+  StopCircle as StopC,
+  SkipBack as SkipB,
+  SkipForward as SkipF,
+  Repeat as RepeatIcon,
+  Shuffle as ShuffleIcon,
+  Radio as RadioIcon,
+  Tv as TvIcon,
+  Camera as CameraIcon,
+  Video as VideoIcon,
+  Image as ImageIcon,
+  Film as FilmIcon,
+  Music as MusicIcon,
+  Speaker as SpeakerIcon,
+  Bluetooth as BluetoothIcon,
+  Power as PowerIcon,
+  Plug as PlugIcon,
+  Flashlight as FlashIcon,
+  FlashlightOff as FlashOffIcon,
+  Lightbulb as LightIcon,
+  LightbulbOff as LightOffIcon,
+  Lamp as LampIcon,
+  LampDesk as DeskIcon,
+  LampFloor as FloorIcon,
+  LampWallUp as WallIcon,
+  LampCeiling as CeilingIcon
 } from "lucide-react";
-import { useUserDetails } from "@/hooks/useUserDetails";
+import { useUserDetails, useDeleteUserAccount } from "@/hooks/useUserDetails";
 import { useDriverValidationStatus, useValidateDriver } from "@/hooks/useDriverValidation";
 import { useDriverRideOptions, useUnassignDriver, useAssignDriver, useRideOptions } from "@/hooks/useRideOptions";
 import { useParams, useNavigate } from "react-router-dom";
@@ -85,6 +353,9 @@ const UserDetails = () => {
   const unassignDriver = useUnassignDriver();
   const assignDriver = useAssignDriver();
 
+  // Delete user account hook
+  const deleteUserAccount = useDeleteUserAccount();
+
   // State for validation dialog
   const [isValidationDialogOpen, setIsValidationDialogOpen] = useState(false);
   const [validationAction, setValidationAction] = useState<'approve' | 'reject'>('approve');
@@ -94,6 +365,10 @@ const UserDetails = () => {
   // State for assignment dialog
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
   const [selectedRideOptionId, setSelectedRideOptionId] = useState<number | null>(null);
+
+  // State for delete user dialog
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteReason, setDeleteReason] = useState('');
 
   const user = userResponse?.data;
   const validationData = validationResponse?.data;
@@ -248,6 +523,20 @@ const UserDetails = () => {
     }
   };
 
+  const handleDeleteUser = async () => {
+    if (!deleteReason.trim()) return;
+
+    try {
+      await deleteUserAccount.mutateAsync(Number(userId));
+      setIsDeleteDialogOpen(false);
+      setDeleteReason('');
+      // Navigate back to users list after successful deletion
+      navigate('/users', { replace: true });
+    } catch (error) {
+      console.error('Delete user error:', error);
+    }
+  };
+
   // Get available ride options (not already assigned)
   const availableRideOptions = allRideOptionsResponse?.data?.filter(option => 
     !rideOptions.some(assigned => assigned.id === option.id && assigned.is_assigned)
@@ -256,214 +545,489 @@ const UserDetails = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" onClick={() => navigate(-1)}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">User Details</h1>
-              <p className="text-muted-foreground">Complete profile and account information</p>
-            </div>
+        {/* Enhanced Header */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 text-white shadow-2xl">
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-purple-600/80 to-indigo-600/90"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-32 -translate-y-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl transform -translate-x-24 translate-y-24"></div>
+          
+          {/* Floating Icons */}
+          <div className="absolute top-6 right-6 text-white/20 animate-bounce delay-300">
+            <Crown className="w-8 h-8" />
           </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" onClick={() => refetch()}>
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </Button>
-            <Button>
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
+          <div className="absolute bottom-6 left-6 text-white/20 animate-bounce delay-700">
+            <Gem className="w-6 h-6" />
           </div>
-        </div>
-
-        {/* User Profile Header */}
-        <Card className="overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center space-x-6">
-                <Avatar className="w-24 h-24 border-4 border-white/20">
-                  <AvatarImage src={user.image} alt={user.name} />
-                  <AvatarFallback className="text-2xl bg-white/20 text-white">
-                    {user.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-2">
-                  <div>
-                    <h2 className="text-3xl font-bold">{user.name}</h2>
-                    <p className="text-white/80 text-lg">@{user.username}</p>
+          
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(-1)}
+                className="bg-white/20 backdrop-blur-md border-white/30 text-white hover:bg-white/30 transition-all duration-300 shadow-lg"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-white/20 rounded-full blur-sm"></div>
+                    <div className="relative bg-white/20 p-2 rounded-full">
+                      <User className="w-6 h-6" />
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                      <User className="w-3 h-3 mr-1" />
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                    </Badge>
-                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                      <Globe className="w-3 h-3 mr-1" />
-                      {user.language.toUpperCase()}
-                    </Badge>
+                  <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                    User Details
+                  </h1>
+                </div>
+                <p className="text-white/80 text-lg font-medium">Complete profile and account information</p>
+                <div className="flex items-center space-x-4 text-sm text-white/70">
+                  <div className="flex items-center space-x-1">
+                    <Shield className="w-4 h-4" />
+                    <span>Secure Access</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Activity className="w-4 h-4" />
+                    <span>Real-time Data</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Analytics Ready</span>
                   </div>
                 </div>
               </div>
-              <div className="text-right space-y-2">
-                <div className="flex items-center space-x-2">
+            </div>
+            <div className="flex items-center space-x-3">
+              <Button 
+                variant="outline" 
+                onClick={() => refetch()}
+                className="bg-white/20 backdrop-blur-md border-white/30 text-white hover:bg-white/30 transition-all duration-300 shadow-lg"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh
+              </Button>
+              <Button className="bg-white/20 backdrop-blur-md border-white/30 text-white hover:bg-white/30 transition-all duration-300 shadow-lg">
+                <Download className="w-4 h-4 mr-2" />
+                Export
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className="bg-red-500/20 backdrop-blur-md border-red-300/30 text-white hover:bg-red-500/30 transition-all duration-300 shadow-lg"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete User
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced User Profile Header */}
+        <Card className="overflow-hidden shadow-2xl border-0">
+          <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 text-white">
+            {/* Background Effects */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-purple-600/80 to-indigo-600/90"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl transform translate-x-24 -translate-y-24"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform -translate-x-16 translate-y-16"></div>
+            
+            {/* Floating Elements */}
+            <div className="absolute top-4 right-4 text-white/20 animate-pulse">
+              <Star className="w-6 h-6" />
+            </div>
+            <div className="absolute bottom-4 left-4 text-white/20 animate-pulse delay-500">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            
+            <div className="relative z-10 flex items-start justify-between">
+              <div className="flex items-center space-x-8">
+                {/* Enhanced Avatar */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-white/20 rounded-full blur-lg scale-110"></div>
+                  <Avatar className="relative w-28 h-28 border-4 border-white/30 shadow-2xl">
+                    <AvatarImage src={user.image} alt={user.name} />
+                    <AvatarFallback className="text-3xl bg-white/20 text-white font-bold">
+                      {user.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {/* Online Status Indicator */}
+                  <div className={`absolute bottom-2 right-2 w-6 h-6 rounded-full border-2 border-white ${
+                    user.is_online ? 'bg-green-500' : 'bg-gray-400'
+                  }`}>
+                    <div className={`w-full h-full rounded-full ${
+                      user.is_online ? 'bg-green-400 animate-pulse' : 'bg-gray-300'
+                    }`}></div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-4xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                      {user.name}
+                    </h2>
+                    <p className="text-white/80 text-xl font-medium">@{user.username}</p>
+                  </div>
+                  
+                  {/* Enhanced Badges */}
+                  <div className="flex items-center space-x-3">
+                    <Badge className="bg-white/20 backdrop-blur-md text-white border-white/30 shadow-lg px-4 py-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-white/20 rounded-full blur-sm"></div>
+                          <div className="relative bg-white/20 p-1 rounded-full">
+                            <User className="w-3 h-3" />
+                          </div>
+                        </div>
+                        <span className="font-semibold">{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>
+                      </div>
+                    </Badge>
+                    <Badge className="bg-white/20 backdrop-blur-md text-white border-white/30 shadow-lg px-4 py-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-white/20 rounded-full blur-sm"></div>
+                          <div className="relative bg-white/20 p-1 rounded-full">
+                            <Globe className="w-3 h-3" />
+                          </div>
+                        </div>
+                        <span className="font-semibold">{user.language.toUpperCase()}</span>
+                      </div>
+                    </Badge>
+                  </div>
+                  
+                  {/* Quick Stats */}
+                  <div className="flex items-center space-x-6 text-sm text-white/70">
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Joined {formatDate(user.created_at)}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="w-4 h-4" />
+                      <span>Last seen {formatDate(user.last_login_at)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Enhanced Status Section */}
+              <div className="text-right space-y-3">
+                <div className="flex items-center space-x-3">
                   {getStatusBadge(user.is_active, "Active", "Inactive")}
                   {getStatusBadge(user.is_online, "Online", "Offline")}
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   {getStatusBadge(user.is_validated, "Validated", "Not Validated")}
                   {getStatusBadge(user.otp_verified, "Verified", "Unverified")}
+                </div>
+                
+                {/* Additional Status Indicators */}
+                <div className="flex items-center space-x-3 pt-2">
+                  <div className="flex items-center space-x-1 text-white/70">
+                    <Shield className="w-4 h-4" />
+                    <span className="text-sm">Security</span>
+                  </div>
+                  <div className="flex items-center space-x-1 text-white/70">
+                    <Activity className="w-4 h-4" />
+                    <span className="text-sm">Activity</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </Card>
 
-        {/* Main Content Tabs */}
+        {/* Enhanced Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="vehicle" className="flex items-center gap-2">
-              <Car className="w-4 h-4" />
-              Vehicle
-            </TabsTrigger>
-            <TabsTrigger value="documents" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              Documents
-            </TabsTrigger>
-            <TabsTrigger value="financial" className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              Financial
-            </TabsTrigger>
-            <TabsTrigger value="ride-options" className="flex items-center gap-2">
-              <Settings2 className="w-4 h-4" />
-              Ride Options
-            </TabsTrigger>
-            <TabsTrigger value="validation" className="flex items-center gap-2">
-              <ClipboardList className="w-4 h-4" />
-              Validation
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              Security
-            </TabsTrigger>
-          </TabsList>
+          <div className="relative">
+            <TabsList className="grid w-full grid-cols-7 bg-white/95 backdrop-blur-md border border-gray-200/50 shadow-xl rounded-2xl p-2">
+              <TabsTrigger 
+                value="overview" 
+                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-sm opacity-0 data-[state=active]:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-blue-500/10 p-1 rounded-full data-[state=active]:bg-white/20">
+                    <User className="w-4 h-4" />
+                  </div>
+                </div>
+                <span className="font-medium">Overview</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="vehicle" 
+                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-green-500/20 rounded-full blur-sm opacity-0 data-[state=active]:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-green-500/10 p-1 rounded-full data-[state=active]:bg-white/20">
+                    <Car className="w-4 h-4" />
+                  </div>
+                </div>
+                <span className="font-medium">Vehicle</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="documents" 
+                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-sm opacity-0 data-[state=active]:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-orange-500/10 p-1 rounded-full data-[state=active]:bg-white/20">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                </div>
+                <span className="font-medium">Documents</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="financial" 
+                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-orange-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-yellow-500/20 rounded-full blur-sm opacity-0 data-[state=active]:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-yellow-500/10 p-1 rounded-full data-[state=active]:bg-white/20">
+                    <CreditCard className="w-4 h-4" />
+                  </div>
+                </div>
+                <span className="font-medium">Financial</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="ride-options" 
+                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-sm opacity-0 data-[state=active]:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-purple-500/10 p-1 rounded-full data-[state=active]:bg-white/20">
+                    <Settings2 className="w-4 h-4" />
+                  </div>
+                </div>
+                <span className="font-medium">Ride Options</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="validation" 
+                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-blue-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-sm opacity-0 data-[state=active]:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-indigo-500/10 p-1 rounded-full data-[state=active]:bg-white/20">
+                    <ClipboardList className="w-4 h-4" />
+                  </div>
+                </div>
+                <span className="font-medium">Validation</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="security" 
+                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-red-500/20 rounded-full blur-sm opacity-0 data-[state=active]:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-red-500/10 p-1 rounded-full data-[state=active]:bg-white/20">
+                    <Shield className="w-4 h-4" />
+                  </div>
+                </div>
+                <span className="font-medium">Security</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          {/* Overview Tab */}
+          {/* Enhanced Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Contact Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Mail className="w-5 h-5" />
-                    Contact Information
+              {/* Enhanced Contact Information */}
+              <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-blue-50/30 overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
+                <CardHeader className="relative z-10">
+                  <CardTitle className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-blue-500 rounded-full blur-sm opacity-30"></div>
+                      <div className="relative bg-blue-500 p-2 rounded-full">
+                        <Mail className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      Contact Information
+                    </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <Mail className="w-4 h-4 text-muted-foreground" />
+                <CardContent className="space-y-6 relative z-10">
+                  <div className="flex items-center space-x-4 p-4 bg-white/50 rounded-xl border border-blue-100">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-sm"></div>
+                      <div className="relative bg-blue-500/10 p-2 rounded-full">
+                        <Mail className="w-5 h-5 text-blue-600" />
+                      </div>
+                    </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Email</p>
-                      <p className="font-medium">{user.email}</p>
+                      <p className="text-sm text-gray-600 font-medium">Email Address</p>
+                      <p className="font-semibold text-gray-800">{user.email}</p>
                     </div>
                   </div>
-                  <Separator />
-                  <div className="flex items-center space-x-3">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
+                  
+                  <div className="flex items-center space-x-4 p-4 bg-white/50 rounded-xl border border-green-100">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-green-500/20 rounded-full blur-sm"></div>
+                      <div className="relative bg-green-500/10 p-2 rounded-full">
+                        <Phone className="w-5 h-5 text-green-600" />
+                      </div>
+                    </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Phone</p>
-                      <p className="font-medium">{user.phone}</p>
+                      <p className="text-sm text-gray-600 font-medium">Phone Number</p>
+                      <p className="font-semibold text-gray-800">{user.phone}</p>
                     </div>
                   </div>
-                  <Separator />
-                  <div className="flex items-center space-x-3">
-                    <LocationIcon className="w-4 h-4 text-muted-foreground" />
+                  
+                  <div className="flex items-center space-x-4 p-4 bg-white/50 rounded-xl border border-purple-100">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-sm"></div>
+                      <div className="relative bg-purple-500/10 p-2 rounded-full">
+                        <LocationIcon className="w-5 h-5 text-purple-600" />
+                      </div>
+                    </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Location</p>
-                      <p className="font-medium">{user.latitude}, {user.longitude}</p>
+                      <p className="text-sm text-gray-600 font-medium">Location</p>
+                      <p className="font-semibold text-gray-800">{user.latitude}, {user.longitude}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Account Status */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    Account Status
+              {/* Enhanced Account Status */}
+              <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-green-50/30 overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
+                <CardHeader className="relative z-10">
+                  <CardTitle className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-green-500 rounded-full blur-sm opacity-30"></div>
+                      <div className="relative bg-green-500 p-2 rounded-full">
+                        <Activity className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      Account Status
+                    </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6 relative z-10">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-green-500/20 rounded-full blur-sm"></div>
+                        <div className="relative bg-green-500/10 p-2 rounded-full w-12 h-12 mx-auto mb-2">
+                          <Key className="w-6 h-6 text-green-600 mx-auto" />
+                        </div>
+                      </div>
                       <p className="text-2xl font-bold text-green-600">{user.passcode_attempts}</p>
-                      <p className="text-xs text-muted-foreground">Passcode Attempts</p>
+                      <p className="text-xs text-gray-600 font-medium">Passcode Attempts</p>
                     </div>
-                    <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-sm"></div>
+                        <div className="relative bg-blue-500/10 p-2 rounded-full w-12 h-12 mx-auto mb-2">
+                          <Lock className="w-6 h-6 text-blue-600 mx-auto" />
+                        </div>
+                      </div>
                       <p className="text-2xl font-bold text-blue-600">
                         {user.has_active_passcode ? "1" : "0"}
                       </p>
-                      <p className="text-xs text-muted-foreground">Active Passcode</p>
+                      <p className="text-xs text-gray-600 font-medium">Active Passcode</p>
                     </div>
                   </div>
-                  <Separator />
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">In Drive</span>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 bg-white/50 rounded-xl border border-gray-100">
+                      <div className="flex items-center space-x-2">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-sm"></div>
+                          <div className="relative bg-orange-500/10 p-1 rounded-full">
+                            <Car className="w-4 h-4 text-orange-600" />
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">In Drive</span>
+                      </div>
                       {getStatusBadge(user.in_drive, "Yes", "No")}
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Cab Mode</span>
-                      <Badge variant="outline">{user.cab_mode || "Not Set"}</Badge>
+                    <div className="flex justify-between items-center p-3 bg-white/50 rounded-xl border border-gray-100">
+                      <div className="flex items-center space-x-2">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-sm"></div>
+                          <div className="relative bg-purple-500/10 p-1 rounded-full">
+                            <Settings2 className="w-4 h-4 text-purple-600" />
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">Cab Mode</span>
+                      </div>
+                      <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                        {user.cab_mode || "Not Set"}
+                      </Badge>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Timeline */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5" />
-                    Timeline
+              {/* Enhanced Timeline */}
+              <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-purple-50/30 overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl"></div>
+                <CardHeader className="relative z-10">
+                  <CardTitle className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-purple-500 rounded-full blur-sm opacity-30"></div>
+                      <div className="relative bg-purple-500 p-2 rounded-full">
+                        <Clock className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                      Timeline
+                    </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                <CardContent className="space-y-6 relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-4 p-3 bg-white/50 rounded-xl border border-blue-100">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-sm"></div>
+                        <div className="relative bg-blue-500/10 p-2 rounded-full">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        </div>
+                      </div>
                       <div>
-                        <p className="text-sm font-medium">Account Created</p>
-                        <p className="text-xs text-muted-foreground">{formatDate(user.created_at)}</p>
+                        <p className="text-sm font-semibold text-gray-800">Account Created</p>
+                        <p className="text-xs text-gray-600">{formatDate(user.created_at)}</p>
                       </div>
                     </div>
-                    <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                    <div className="flex items-start space-x-4 p-3 bg-white/50 rounded-xl border border-green-100">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-green-500/20 rounded-full blur-sm"></div>
+                        <div className="relative bg-green-500/10 p-2 rounded-full">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        </div>
+                      </div>
                       <div>
-                        <p className="text-sm font-medium">Last Login</p>
-                        <p className="text-xs text-muted-foreground">{formatDate(user.last_login_at)}</p>
+                        <p className="text-sm font-semibold text-gray-800">Last Login</p>
+                        <p className="text-xs text-gray-600">{formatDate(user.last_login_at)}</p>
                       </div>
                     </div>
-                    <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                    <div className="flex items-start space-x-4 p-3 bg-white/50 rounded-xl border border-purple-100">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-sm"></div>
+                        <div className="relative bg-purple-500/10 p-2 rounded-full">
+                          <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                        </div>
+                      </div>
                       <div>
-                        <p className="text-sm font-medium">Last Updated</p>
-                        <p className="text-xs text-muted-foreground">{formatDate(user.updated_at)}</p>
+                        <p className="text-sm font-semibold text-gray-800">Last Updated</p>
+                        <p className="text-xs text-gray-600">{formatDate(user.updated_at)}</p>
                       </div>
                     </div>
                   </div>
-                  <Separator />
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Referral Code</p>
-                    <p className="font-mono text-lg font-bold">{user.referral_code}</p>
+                  
+                  <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-sm"></div>
+                      <div className="relative bg-purple-500/10 p-2 rounded-full w-12 h-12 mx-auto mb-3">
+                        <Star className="w-6 h-6 text-purple-600 mx-auto" />
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 font-medium mb-2">Referral Code</p>
+                    <p className="font-mono text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                      {user.referral_code}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -1169,6 +1733,86 @@ const UserDetails = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Delete User Dialog */}
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-red-500 rounded-full blur-sm opacity-30"></div>
+                  <div className="relative bg-red-500 p-2 rounded-full">
+                    <Trash2 className="h-5 w-5 text-white" />
+                  </div>
+                </div>
+                Delete User Account
+              </DialogTitle>
+              <DialogDescription>
+                This action will permanently delete the user account and all associated data. This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start space-x-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-red-800">Warning</h4>
+                    <p className="text-sm text-red-700 mt-1">
+                      Deleting this user will permanently remove:
+                    </p>
+                    <ul className="text-sm text-red-700 mt-2 space-y-1">
+                      <li>• User profile and account information</li>
+                      <li>• All ride history and bookings</li>
+                      <li>• Vehicle and document information</li>
+                      <li>• Financial records and transactions</li>
+                      <li>• All associated data and relationships</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="delete-reason" className="text-sm font-semibold">
+                  Reason for deletion *
+                </Label>
+                <Textarea
+                  id="delete-reason"
+                  placeholder="Please provide a reason for deleting this user account..."
+                  value={deleteReason}
+                  onChange={(e) => setDeleteReason(e.target.value)}
+                  rows={3}
+                  className="border-red-200 focus:border-red-500 focus:ring-red-500/20"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsDeleteDialogOpen(false)}
+                disabled={deleteUserAccount.isPending}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleDeleteUser}
+                disabled={!deleteReason.trim() || deleteUserAccount.isPending}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {deleteUserAccount.isPending ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete User Account
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
