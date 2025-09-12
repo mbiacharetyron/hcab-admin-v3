@@ -319,6 +319,7 @@ import { useDriverValidationStatus, useValidateDriver } from "@/hooks/useDriverV
 import { useDriverRideOptions, useUnassignDriver, useAssignDriver, useRideOptions } from "@/hooks/useRideOptions";
 import { useParams, useNavigate } from "react-router-dom";
 import UserWalletTransactions from "@/components/UserWalletTransactions";
+import DriverDocumentUpload from "@/components/DriverDocumentUpload";
 import { format } from "date-fns";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
@@ -363,6 +364,7 @@ const UserDetails = () => {
   const [validationAction, setValidationAction] = useState<'approve' | 'reject'>('approve');
   const [validationReason, setValidationReason] = useState('');
   const [adminNotes, setAdminNotes] = useState('');
+  const [isDocumentUploadOpen, setIsDocumentUploadOpen] = useState(false);
 
   // State for assignment dialog
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
@@ -1124,6 +1126,37 @@ const UserDetails = () => {
 
           {/* Documents Tab */}
           <TabsContent value="documents" className="space-y-6">
+            {/* Admin Document Upload Section */}
+            {user.role === 'driver' && (
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Upload className="w-5 h-5" />
+                    Admin Document Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Submit or update driver documents on behalf of {user.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Follow the correct order: Car Details → Car Photos → ID Document → License → Insurance → Registration → Inspection
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => setIsDocumentUploadOpen(true)}
+                      className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Submit Documents
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {user.driver_documents ? (
               <div className="space-y-6">
                 {/* Document Status Overview */}
@@ -1343,7 +1376,7 @@ const UserDetails = () => {
 
           {/* Wallet Transactions Tab */}
           <TabsContent value="wallet" className="space-y-6">
-            <UserWalletTransactions userId={userId} />
+            <UserWalletTransactions userId={parseInt(userId)} />
           </TabsContent>
 
           {/* Security Tab */}
@@ -1832,6 +1865,15 @@ const UserDetails = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Driver Document Upload Modal */}
+        {isDocumentUploadOpen && (
+          <DriverDocumentUpload
+            driverId={parseInt(userId)}
+            driverName={user.name}
+            onClose={() => setIsDocumentUploadOpen(false)}
+          />
+        )}
       </div>
     </AdminLayout>
   );
