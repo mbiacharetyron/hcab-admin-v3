@@ -53,6 +53,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import PanicMap from "@/components/PanicMap";
 import PanicMapModal from "@/components/PanicMapModal";
+import MapPreview from "@/components/MapPreview";
 import { PanicReport } from "@/lib/api";
 
 const PanicManagementEnhanced = () => {
@@ -68,6 +69,8 @@ const PanicManagementEnhanced = () => {
   const [pulseAnimation, setPulseAnimation] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
   const [modalReport, setModalReport] = useState<PanicReport | null>(null);
+  const [hoveredReport, setHoveredReport] = useState<PanicReport | null>(null);
+  const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 });
 
   // API call with filters
   const { 
@@ -286,11 +289,11 @@ const PanicManagementEnhanced = () => {
                   <h1 className="text-5xl font-black bg-gradient-to-r from-gray-900 via-red-600 to-orange-600 dark:from-white dark:via-red-400 dark:to-orange-400 bg-clip-text text-transparent drop-shadow-sm">
                     Panic Management
                   </h1>
-                  <p className="text-xl text-muted-foreground font-semibold flex items-center gap-2">
+                  <div className="text-xl text-muted-foreground font-semibold flex items-center gap-2">
                     <Shield className="w-5 h-5 text-red-500" />
                     Emergency Response & Safety Monitoring
                     <Sparkles className="w-4 h-4 text-yellow-500 animate-spin" />
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -521,10 +524,10 @@ const PanicManagementEnhanced = () => {
                     <h3 className="text-2xl font-black bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                       Advanced Filters
                     </h3>
-                    <p className="text-base text-muted-foreground font-medium flex items-center gap-2">
+                    <div className="text-base text-muted-foreground font-medium flex items-center gap-2">
                       <Search className="w-4 h-4" />
                       Filter and search through panic reports
-                    </p>
+                    </div>
                   </div>
                 </div>
                 
@@ -619,10 +622,10 @@ const PanicManagementEnhanced = () => {
                     <h2 className="font-black bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                       Panic Reports
                     </h2>
-                    <p className="text-base text-muted-foreground font-medium flex items-center gap-2">
+                    <div className="text-base text-muted-foreground font-medium flex items-center gap-2">
                       <Shield className="w-4 h-4" />
                       Emergency reports requiring immediate attention ({totalItems} total)
-                    </p>
+                    </div>
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -693,10 +696,10 @@ const PanicManagementEnhanced = () => {
                                     <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{report.user.name}</p>
                                   </div>
                                   <div className="p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-xl">
-                                    <p className="flex items-center gap-2 font-semibold text-gray-700 dark:text-gray-300">
+                                    <div className="flex items-center gap-2 font-semibold text-gray-700 dark:text-gray-300">
                                       <Phone className="w-4 h-4" />
                                       Phone
-                                    </p>
+                                    </div>
                                     <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{report.user.phone}</p>
                                   </div>
                                   <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-xl">
@@ -783,6 +786,11 @@ const PanicManagementEnhanced = () => {
                               variant="outline"
                               size="lg"
                               onClick={() => handleViewOnMap(report)}
+                              onMouseEnter={(e) => {
+                                setHoveredReport(report);
+                                setPreviewPosition({ x: e.clientX, y: e.clientY });
+                              }}
+                              onMouseLeave={() => setHoveredReport(null)}
                               className="border-2 border-blue-200 dark:border-blue-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 dark:hover:from-blue-900/30 dark:hover:to-cyan-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-105 rounded-xl font-semibold"
                             >
                               <Map className="w-5 h-5 mr-2" />
@@ -933,6 +941,15 @@ const PanicManagementEnhanced = () => {
         onClose={handleCloseMapModal}
         report={modalReport}
       />
+
+      {/* Map Preview on Hover */}
+      {hoveredReport && (
+        <MapPreview
+          report={hoveredReport}
+          isVisible={true}
+          position={previewPosition}
+        />
+      )}
     </AdminLayout>
   );
 };

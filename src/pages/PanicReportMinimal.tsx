@@ -87,3 +87,4 @@ const PanicReportMinimal = () => {
 };
 
 export default PanicReportMinimal;
+

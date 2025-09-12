@@ -90,3 +90,4 @@ const PanicReportWithLayout = () => {
 };
 
 export default PanicReportWithLayout;
+

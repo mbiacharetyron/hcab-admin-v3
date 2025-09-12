@@ -1753,6 +1753,119 @@ class ApiService {
     }
   }
 
+  // User Wallet Transactions
+  async getUserWalletTransactions(userId: number, params?: {
+    page?: number;
+    per_page?: number;
+    transaction_type?: 'deposit' | 'withdrawal' | 'payment' | 'refund' | 'transfer';
+    payment_method?: 'MTN_MOMO' | 'ORANGE_MONEY' | 'STRIPE' | 'WALLET';
+    status?: 'pending' | 'completed' | 'failed';
+    start_date?: string;
+    end_date?: string;
+    min_amount?: number;
+    max_amount?: number;
+    search?: string;
+    sort_by?: 'created_at' | 'amount' | 'transaction_type' | 'status';
+    sort_order?: 'asc' | 'desc';
+    lang?: string;
+  }): Promise<UserWalletTransactionsResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
+      if (params?.transaction_type) queryParams.append('transaction_type', params.transaction_type);
+      if (params?.payment_method) queryParams.append('payment_method', params.payment_method);
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.start_date) queryParams.append('start_date', params.start_date);
+      if (params?.end_date) queryParams.append('end_date', params.end_date);
+      if (params?.min_amount) queryParams.append('min_amount', params.min_amount.toString());
+      if (params?.max_amount) queryParams.append('max_amount', params.max_amount.toString());
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+      if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const url = `/admin/users/${userId}/wallet-transactions${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+      console.log('API: Fetching user wallet transactions from:', `${this.baseURL}${url}`);
+      const result = await this.request<UserWalletTransactionsResponse>(url);
+      console.log('API: User wallet transactions response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: User wallet transactions fetch error:', error);
+      throw error;
+    }
+  }
+
+  // Driver Document Submission
+  async submitDriverDocuments(driverId: number, documents: DriverDocumentSubmission): Promise<DriverDocumentSubmissionResponse> {
+    try {
+      const formData = new FormData();
+
+      // Car Details
+      if (documents.car_brand) formData.append('car_brand', documents.car_brand);
+      if (documents.car_brand_model) formData.append('car_brand_model', documents.car_brand_model);
+      if (documents.model_year) formData.append('model_year', documents.model_year.toString());
+      if (documents.car_color) formData.append('car_color', documents.car_color);
+      if (documents.license_plate) formData.append('license_plate', documents.license_plate);
+      if (documents.vin_number) formData.append('vin_number', documents.vin_number);
+      if (documents.seat_number) formData.append('seat_number', documents.seat_number.toString());
+
+      // Car Photos
+      if (documents.exterior_photo1) formData.append('exterior_photo1', documents.exterior_photo1);
+      if (documents.exterior_photo2) formData.append('exterior_photo2', documents.exterior_photo2);
+      if (documents.exterior_photo3) formData.append('exterior_photo3', documents.exterior_photo3);
+      if (documents.interior_photo1) formData.append('interior_photo1', documents.interior_photo1);
+      if (documents.interior_photo2) formData.append('interior_photo2', documents.interior_photo2);
+
+      // ID Document
+      if (documents.id_document_type) formData.append('id_document_type', documents.id_document_type);
+      if (documents.id_document_number) formData.append('id_document_number', documents.id_document_number);
+      if (documents.id_document_front) formData.append('id_document_front', documents.id_document_front);
+      if (documents.id_document_back) formData.append('id_document_back', documents.id_document_back);
+
+      // License
+      if (documents.license_number) formData.append('license_number', documents.license_number);
+      if (documents.expiry_date) formData.append('expiry_date', documents.expiry_date);
+      if (documents.license_front_side) formData.append('license_front_side', documents.license_front_side);
+      if (documents.license_back_side) formData.append('license_back_side', documents.license_back_side);
+
+      // Insurance
+      if (documents.insurance_number) formData.append('insurance_number', documents.insurance_number);
+      if (documents.insurance_expiry_date) formData.append('insurance_expiry_date', documents.insurance_expiry_date);
+      if (documents.insurance_image) formData.append('insurance_image', documents.insurance_image);
+
+      // Registration
+      if (documents.car_registration) formData.append('car_registration', documents.car_registration);
+      if (documents.car_registration_expiry_date) formData.append('car_registration_expiry_date', documents.car_registration_expiry_date);
+      if (documents.car_registration_photo) formData.append('car_registration_photo', documents.car_registration_photo);
+
+      // Inspection
+      if (documents.car_inspection_date) formData.append('car_inspection_date', documents.car_inspection_date);
+      if (documents.car_inspection_photo) formData.append('car_inspection_photo', documents.car_inspection_photo);
+
+      // Admin Notes
+      if (documents.admin_notes) formData.append('admin_notes', documents.admin_notes);
+
+      const url = `/admin/drivers/${driverId}/documents`;
+
+      console.log('API: Submitting driver documents to:', `${this.baseURL}${url}`);
+      const result = await this.request<DriverDocumentSubmissionResponse>(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          // Don't set Content-Type header, let browser set it with boundary for FormData
+        }
+      });
+      console.log('API: Driver document submission response:', result);
+      return result;
+    } catch (error) {
+      console.error('API: Driver document submission error:', error);
+      throw error;
+    }
+  }
+
   // Scheduled Notifications
   async getScheduledNotifications(params?: {
     status?: 'pending' | 'sent' | 'failed' | 'cancelled';
@@ -2012,6 +2125,76 @@ export const sendNotification = (request: NotificationRequest) => apiService.sen
 export const sendTestNotification = (request: Parameters<typeof apiService.sendTestNotification>[0]) => apiService.sendTestNotification(request);
 export const getDevices = (params?: Parameters<typeof apiService.getDevices>[0]) => apiService.getDevices(params);
 export const getNotificationLogs = (params?: Parameters<typeof apiService.getNotificationLogs>[0]) => apiService.getNotificationLogs(params);
+
+// User Wallet Transactions API exports
+export const getUserWalletTransactions = (userId: number, params?: Parameters<typeof apiService.getUserWalletTransactions>[1]) => apiService.getUserWalletTransactions(userId, params);
+
+// Driver Document Submission API exports
+export const submitDriverDocuments = (driverId: number, documents: DriverDocumentSubmission) => apiService.submitDriverDocuments(driverId, documents);
+
+// Driver Document Submission Interfaces
+export interface DriverDocumentSubmission {
+  // Car Details
+  car_brand?: string;
+  car_brand_model?: string;
+  model_year?: number;
+  car_color?: string;
+  license_plate?: string;
+  vin_number?: string;
+  seat_number?: number;
+  
+  // Car Photos
+  exterior_photo1?: File;
+  exterior_photo2?: File;
+  exterior_photo3?: File;
+  interior_photo1?: File;
+  interior_photo2?: File;
+  
+  // ID Document
+  id_document_type?: string;
+  id_document_number?: string;
+  id_document_front?: File;
+  id_document_back?: File;
+  
+  // License
+  license_number?: string;
+  expiry_date?: string;
+  license_front_side?: File;
+  license_back_side?: File;
+  
+  // Insurance
+  insurance_number?: string;
+  insurance_expiry_date?: string;
+  insurance_image?: File;
+  
+  // Registration
+  car_registration?: string;
+  car_registration_expiry_date?: string;
+  car_registration_photo?: File;
+  
+  // Inspection
+  car_inspection_date?: string;
+  car_inspection_photo?: File;
+  
+  // Admin Notes
+  admin_notes?: string;
+}
+
+export interface DriverDocumentSubmissionResponse {
+  success: boolean;
+  message: string;
+  data: {
+    driver_id: number;
+    completion_percentage: number;
+    documents_submitted: string[];
+    submitted_by: {
+      id: number;
+      name: string;
+      email: string;
+    };
+    submission_timestamp: string;
+  };
+}
 
 // Scheduled Notifications API exports
 export const getScheduledNotifications = (params?: Parameters<typeof apiService.getScheduledNotifications>[0]) => apiService.getScheduledNotifications(params);
@@ -2499,6 +2682,59 @@ export interface DiscountUsageResponse {
   data: DiscountUsage[];
   total: number;
   per_page: number;
+}
+
+// User Wallet Transactions Interfaces
+export interface UserWalletTransaction {
+  id: number;
+  transaction_id: string;
+  transaction_type: 'deposit' | 'withdrawal' | 'payment' | 'refund' | 'transfer';
+  payment_method: 'MTN_MOMO' | 'ORANGE_MONEY' | 'STRIPE' | 'WALLET';
+  amount: number;
+  fee: number;
+  final_amount: number;
+  status: 'pending' | 'completed' | 'failed';
+  phone_number?: string;
+  s3p_receiptNumber?: string;
+  stripe_payment_intent_id?: string;
+  message?: string;
+  error_code?: string;
+  booking_id?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserWalletTransactionsSummary {
+  total_transactions: number;
+  total_deposits: number;
+  total_withdrawals: number;
+  total_payments: number;
+  total_fees: number;
+  completed_transactions: number;
+  pending_transactions: number;
+  failed_transactions: number;
+}
+
+export interface UserWalletTransactionsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      phone: string;
+      role: string;
+    };
+    transactions: UserWalletTransaction[];
+    pagination: {
+      current_page: number;
+      last_page: number;
+      per_page: number;
+      total: number;
+    };
+    summary: UserWalletTransactionsSummary;
+  };
 }
 
 // Wallet Balance API interfaces

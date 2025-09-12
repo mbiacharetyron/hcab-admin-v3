@@ -311,12 +311,15 @@ import {
   LampDesk as DeskIcon,
   LampFloor as FloorIcon,
   LampWallUp as WallIcon,
-  LampCeiling as CeilingIcon
+  LampCeiling as CeilingIcon,
+  Wallet
 } from "lucide-react";
 import { useUserDetails, useDeleteUserAccount } from "@/hooks/useUserDetails";
 import { useDriverValidationStatus, useValidateDriver } from "@/hooks/useDriverValidation";
 import { useDriverRideOptions, useUnassignDriver, useAssignDriver, useRideOptions } from "@/hooks/useRideOptions";
 import { useParams, useNavigate } from "react-router-dom";
+import UserWalletTransactions from "@/components/UserWalletTransactions";
+import DriverDocumentUpload from "@/components/DriverDocumentUpload";
 import { format } from "date-fns";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
@@ -361,6 +364,7 @@ const UserDetails = () => {
   const [validationAction, setValidationAction] = useState<'approve' | 'reject'>('approve');
   const [validationReason, setValidationReason] = useState('');
   const [adminNotes, setAdminNotes] = useState('');
+  const [isDocumentUploadOpen, setIsDocumentUploadOpen] = useState(false);
 
   // State for assignment dialog
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
@@ -739,7 +743,7 @@ const UserDetails = () => {
         {/* Enhanced Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
           <div className="relative">
-            <TabsList className="grid w-full grid-cols-7 bg-white/95 backdrop-blur-md border border-gray-200/50 shadow-xl rounded-2xl p-2">
+            <TabsList className="grid w-full grid-cols-8 bg-white/95 backdrop-blur-md border border-gray-200/50 shadow-xl rounded-2xl p-2">
               <TabsTrigger 
                 value="overview" 
                 className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
@@ -787,6 +791,18 @@ const UserDetails = () => {
                   </div>
                 </div>
                 <span className="font-medium">Financial</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="wallet" 
+                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white rounded-xl transition-all duration-300 hover:bg-gray-100"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-sm opacity-0 data-[state=active]:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-emerald-500/10 p-1 rounded-full data-[state=active]:bg-white/20">
+                    <Wallet className="w-4 h-4" />
+                  </div>
+                </div>
+                <span className="font-medium">Wallet</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="ride-options" 
@@ -1110,6 +1126,37 @@ const UserDetails = () => {
 
           {/* Documents Tab */}
           <TabsContent value="documents" className="space-y-6">
+            {/* Admin Document Upload Section */}
+            {user.role === 'driver' && (
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Upload className="w-5 h-5" />
+                    Admin Document Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Submit or update driver documents on behalf of {user.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Follow the correct order: Car Details → Car Photos → ID Document → License → Insurance → Registration → Inspection
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => setIsDocumentUploadOpen(true)}
+                      className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Submit Documents
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {user.driver_documents ? (
               <div className="space-y-6">
                 {/* Document Status Overview */}
@@ -1325,6 +1372,11 @@ const UserDetails = () => {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          {/* Wallet Transactions Tab */}
+          <TabsContent value="wallet" className="space-y-6">
+            <UserWalletTransactions userId={parseInt(userId)} />
           </TabsContent>
 
           {/* Security Tab */}
@@ -1813,6 +1865,15 @@ const UserDetails = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Driver Document Upload Modal */}
+        {isDocumentUploadOpen && (
+          <DriverDocumentUpload
+            driverId={parseInt(userId)}
+            driverName={user.name}
+            onClose={() => setIsDocumentUploadOpen(false)}
+          />
+        )}
       </div>
     </AdminLayout>
   );
