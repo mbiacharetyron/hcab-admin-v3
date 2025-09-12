@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 // Import the H-Cab logo
 import logoImage from '@/assets/images/logos/logo.png';
@@ -263,6 +264,11 @@ export const Sidebar = () => {
                 </div>
               </div>
             )}
+            
+            {/* Theme Toggle */}
+            <div className={cn("flex justify-center", !collapsed && "w-full")}>
+              <ThemeToggle />
+            </div>
             
             <Button
               variant="outline"
