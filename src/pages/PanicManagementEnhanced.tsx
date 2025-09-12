@@ -53,6 +53,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import PanicMap from "@/components/PanicMap";
 import PanicMapModal from "@/components/PanicMapModal";
+import MapPreview from "@/components/MapPreview";
 import { PanicReport } from "@/lib/api";
 
 const PanicManagementEnhanced = () => {
@@ -68,6 +69,8 @@ const PanicManagementEnhanced = () => {
   const [pulseAnimation, setPulseAnimation] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
   const [modalReport, setModalReport] = useState<PanicReport | null>(null);
+  const [hoveredReport, setHoveredReport] = useState<PanicReport | null>(null);
+  const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 });
 
   // API call with filters
   const { 
@@ -783,6 +786,11 @@ const PanicManagementEnhanced = () => {
                               variant="outline"
                               size="lg"
                               onClick={() => handleViewOnMap(report)}
+                              onMouseEnter={(e) => {
+                                setHoveredReport(report);
+                                setPreviewPosition({ x: e.clientX, y: e.clientY });
+                              }}
+                              onMouseLeave={() => setHoveredReport(null)}
                               className="border-2 border-blue-200 dark:border-blue-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 dark:hover:from-blue-900/30 dark:hover:to-cyan-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-105 rounded-xl font-semibold"
                             >
                               <Map className="w-5 h-5 mr-2" />
@@ -933,6 +941,15 @@ const PanicManagementEnhanced = () => {
         onClose={handleCloseMapModal}
         report={modalReport}
       />
+
+      {/* Map Preview on Hover */}
+      {hoveredReport && (
+        <MapPreview
+          report={hoveredReport}
+          isVisible={true}
+          position={previewPosition}
+        />
+      )}
     </AdminLayout>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,16 @@ import {
   Car,
   Clock,
   Navigation,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Share2,
+  ZoomIn,
+  ZoomOut,
+  Layers,
+  Maximize2,
+  Minimize2,
+  CheckCircle,
+  Loader2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -29,24 +38,44 @@ const PanicMapModal: React.FC<PanicMapModalProps> = ({ isOpen, onClose, report }
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mapType, setMapType] = useState<google.maps.MapTypeId>(google.maps.MapTypeId.ROADMAP);
+  const [isLoading, setIsLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (isOpen && report && mapRef.current && window.google) {
-      // Initialize map
+      setIsLoading(true);
+      
+      // Initialize map with enhanced styling
       const map = new google.maps.Map(mapRef.current, {
         zoom: 15,
         center: {
           lat: report.latitude,
           lng: report.longitude
         },
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeId: mapType,
         styles: [
           {
             featureType: 'poi',
             elementType: 'labels',
             stylers: [{ visibility: 'off' }]
+          },
+          {
+            featureType: 'water',
+            elementType: 'geometry',
+            stylers: [{ color: '#e9e9e9' }, { lightness: 17 }]
+          },
+          {
+            featureType: 'landscape',
+            elementType: 'geometry',
+            stylers: [{ color: '#f5f5f5' }, { lightness: 20 }]
           }
-        ]
+        ],
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        zoomControl: false
       });
 
       mapInstanceRef.current = map;
@@ -110,6 +139,11 @@ const PanicMapModal: React.FC<PanicMapModalProps> = ({ isOpen, onClose, report }
       setTimeout(() => {
         marker.setAnimation(null);
       }, 2000);
+
+      // Map loaded event
+      google.maps.event.addListenerOnce(map, 'idle', () => {
+        setIsLoading(false);
+      });
     }
 
     return () => {
@@ -117,7 +151,59 @@ const PanicMapModal: React.FC<PanicMapModalProps> = ({ isOpen, onClose, report }
         markerRef.current.setMap(null);
       }
     };
-  }, [isOpen, report]);
+  }, [isOpen, report, mapType]);
+
+  // Map control functions
+  const handleZoomIn = () => {
+    if (mapInstanceRef.current) {
+      const currentZoom = mapInstanceRef.current.getZoom();
+      mapInstanceRef.current.setZoom(currentZoom + 1);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (mapInstanceRef.current) {
+      const currentZoom = mapInstanceRef.current.getZoom();
+      mapInstanceRef.current.setZoom(currentZoom - 1);
+    }
+  };
+
+  const handleMapTypeChange = () => {
+    const newMapType = mapType === google.maps.MapTypeId.ROADMAP 
+      ? google.maps.MapTypeId.SATELLITE 
+      : google.maps.MapTypeId.ROADMAP;
+    setMapType(newMapType);
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setMapTypeId(newMapType);
+    }
+  };
+
+  const handleCopyCoordinates = async () => {
+    if (report) {
+      const coordinates = `${report.latitude}, ${report.longitude}`;
+      try {
+        await navigator.clipboard.writeText(coordinates);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy coordinates:', err);
+      }
+    }
+  };
+
+  const handleShareLocation = async () => {
+    if (report && navigator.share) {
+      try {
+        await navigator.share({
+          title: `Panic Report #${report.id} Location`,
+          text: `Panic report location: ${report.location}`,
+          url: `https://www.google.com/maps?q=${report.latitude},${report.longitude}`
+        });
+      } catch (err) {
+        console.error('Failed to share location:', err);
+      }
+    }
+  };
 
   if (!report) return null;
 
@@ -157,12 +243,26 @@ const PanicMapModal: React.FC<PanicMapModalProps> = ({ isOpen, onClose, report }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] p-0 overflow-hidden">
+      <DialogContent className={cn(
+        "p-0 overflow-hidden transition-all duration-300",
+        isFullscreen ? "max-w-[100vw] max-h-[100vh] w-screen h-screen" : "max-w-6xl max-h-[90vh]"
+      )}>
         <div className="flex h-full">
           {/* Map Section */}
           <div className="flex-1 relative">
+            {/* Loading Overlay */}
+            {isLoading && (
+              <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-20 flex items-center justify-center">
+                <div className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border border-gray-200 dark:border-gray-700">
+                  <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">Loading map...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Header Info */}
             <div className="absolute top-4 left-4 z-10">
-              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-3 border border-gray-200 dark:border-gray-700">
+              <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-xl shadow-lg p-3 border border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex items-center gap-2">
                   <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
                     <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
@@ -179,15 +279,63 @@ const PanicMapModal: React.FC<PanicMapModalProps> = ({ isOpen, onClose, report }
               </div>
             </div>
 
-            <div className="absolute top-4 right-4 z-10">
+            {/* Map Controls */}
+            <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+              {/* Fullscreen Toggle */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsFullscreen(!isFullscreen)}
+                className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md hover:bg-gray-50 dark:hover:bg-gray-800 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+              >
+                {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              </Button>
+              
+              {/* Close Button */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={onClose}
-                className="bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700"
+                className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md hover:bg-gray-50 dark:hover:bg-gray-800 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
               >
                 <X className="w-4 h-4" />
               </Button>
+            </div>
+
+            {/* Map Type and Zoom Controls */}
+            <div className="absolute bottom-4 right-4 z-10 flex flex-col gap-2">
+              {/* Map Type Toggle */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleMapTypeChange}
+                className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md hover:bg-gray-50 dark:hover:bg-gray-800 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                title="Switch map type"
+              >
+                <Layers className="w-4 h-4" />
+              </Button>
+              
+              {/* Zoom Controls */}
+              <div className="flex flex-col gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleZoomIn}
+                  className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md hover:bg-gray-50 dark:hover:bg-gray-800 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                  title="Zoom in"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleZoomOut}
+                  className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md hover:bg-gray-50 dark:hover:bg-gray-800 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                  title="Zoom out"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
 
             <div 
@@ -350,6 +498,32 @@ const PanicMapModal: React.FC<PanicMapModalProps> = ({ isOpen, onClose, report }
                   <Navigation className="w-4 h-4 mr-2" />
                   Get Directions
                 </Button>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopyCoordinates}
+                    className="border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    {copied ? (
+                      <CheckCircle className="w-4 h-4 mr-1 text-green-600" />
+                    ) : (
+                      <Copy className="w-4 h-4 mr-1" />
+                    )}
+                    {copied ? 'Copied!' : 'Copy Coords'}
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleShareLocation}
+                    className="border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    <Share2 className="w-4 h-4 mr-1" />
+                    Share
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
